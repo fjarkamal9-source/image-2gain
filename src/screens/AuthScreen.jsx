@@ -1,4 +1,5 @@
 ﻿import { useNavigate } from 'react-router-dom';
+import Logo2Gain from '../components/ui/Logo2Gain';
 import { useAuth } from '../hooks/useAuth';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { setOnboarding } from '../utils/storage';
@@ -26,17 +27,20 @@ export default function AuthScreen() {
   };
 
   return (
-    <div className="auth-screen">
+    <div className="app-frame auth-screen">
       <img className="auth-screen__bg" src="/img/auth-bg.jpg" alt="" aria-hidden decoding="async" />
       <div className="auth-screen__overlay" aria-hidden />
       <div className="auth-screen__content">
         <header className="auth-screen__header">
-          <img src="/logo-2gain.png" alt="2GAIN" className="auth-screen__logo" />
+          <Logo2Gain />
         </header>
         <p className="auth-screen__tagline">
-          Rencontre des sportifs
-          <br />
-          près de toi
+          <span className="auth-screen__tagline-line auth-screen__tagline-line--blue">
+            Rencontre des sportifs
+          </span>
+          <span className="auth-screen__tagline-line auth-screen__tagline-line--orange">
+            près de toi
+          </span>
         </p>
         <div className="auth-screen__actions">
           <button type="button" className="auth-screen__btn auth-screen__btn--google" onClick={handleGoogle}>

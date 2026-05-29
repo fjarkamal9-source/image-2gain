@@ -70,6 +70,14 @@ create table if not exists hides (
   unique (hider_id, hidden_id)
 );
 
+create table if not exists fcm_tokens (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references profiles(id) on delete cascade,
+  token text not null,
+  created_at timestamptz default now(),
+  unique (user_id, token)
+);
+
 alter table profiles enable row level security;
 alter table likes enable row level security;
 alter table matches enable row level security;
@@ -77,6 +85,7 @@ alter table messages enable row level security;
 alter table venues_liked enable row level security;
 alter table passes enable row level security;
 alter table hides enable row level security;
+alter table fcm_tokens enable row level security;
 
 create policy "profiles read all" on profiles for select using (true);
 create policy "profiles upsert own" on profiles for all using (auth.uid() = id);
@@ -104,10 +113,16 @@ create policy "venues_liked own" on venues_liked for all using (auth.uid() = use
 create policy "passes own" on passes for all using (auth.uid() = passer_id);
 create policy "hides own" on hides for all using (auth.uid() = hider_id);
 
+create policy "fcm_tokens own" on fcm_tokens
+  for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
 -- Migration si la table profiles existe déjà :
 -- alter table profiles add column if not exists niveau text;
 -- alter table profiles add column if not exists frequence text;
 -- alter table profiles add column if not exists visible boolean default true;
+-- create table fcm_tokens … (voir définition ci-dessus) si migration manuelle
 
 insert into storage.buckets (id, name, public) values ('photos', 'photos', true)
 on conflict do nothing;
