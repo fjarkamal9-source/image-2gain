@@ -1,0 +1,68 @@
+export const VENUE_TYPES = {
+  salle: { label: 'Salles', color: '#E74C3C', filter: 'Salles' },
+  terrain: { label: 'Terrains', color: '#FF6B00', filter: 'Terrains' },
+  piscine: { label: 'Piscines', color: '#1ABC9C', filter: 'Piscines' },
+  running: { label: 'Running', color: '#2ECC71', filter: 'Running' },
+  event: { label: 'Événements', color: '#9B59B6', filter: 'Événements' },
+};
+
+export const venues = [
+  { id: 'd1', name: 'Fitness Park Dijon', type: 'salle', city: 'Dijon', lat: 47.322, lng: 5.041 },
+  { id: 'd2', name: "L'Appart Fitness Dijon Centre", type: 'salle', city: 'Dijon', lat: 47.328, lng: 5.038 },
+  { id: 'd3', name: "L'Appart Fitness Toison d'Or", type: 'salle', city: 'Dijon', lat: 47.33, lng: 5.045 },
+  { id: 'd4', name: 'Le Klube', type: 'salle', city: 'Dijon', lat: 47.315, lng: 5.052 },
+  { id: 'd5', name: 'Keepcool Valmy', type: 'salle', city: 'Dijon', lat: 47.325, lng: 5.048 },
+  { id: 'd6', name: 'Gigafit Dijon', type: 'salle', city: 'Dijon', lat: 47.318, lng: 5.035 },
+  { id: 'd7', name: 'United Fitness', type: 'salle', city: 'Dijon', lat: 47.322, lng: 5.055 },
+  { id: 'd8', name: 'Piscine Olympique Dijon', type: 'piscine', city: 'Dijon', lat: 47.316, lng: 5.042 },
+  { id: 'd9', name: 'Piscine du Carrousel', type: 'piscine', city: 'Dijon', lat: 47.329, lng: 5.04 },
+  { id: 'd10', name: 'Stade Gaston Gérard', type: 'terrain', city: 'Dijon', lat: 47.32, lng: 5.062 },
+  { id: 'd11', name: 'Complexe Epirey', type: 'terrain', city: 'Dijon', lat: 47.335, lng: 5.028 },
+  { id: 'd12', name: 'Complexe Masingue', type: 'terrain', city: 'Dijon', lat: 47.31, lng: 5.05 },
+  { id: 'd13', name: 'Complexe Condorcet', type: 'terrain', city: 'Dijon', lat: 47.327, lng: 5.058 },
+  { id: 'd14', name: 'Courts Tennis Colombière', type: 'terrain', city: 'Dijon', lat: 47.314, lng: 5.046 },
+  { id: 'd15', name: 'Lac Kir — Running', type: 'running', city: 'Dijon', lat: 47.278, lng: 5.065 },
+  { id: 'd16', name: 'Base Nautique Lac Kir', type: 'piscine', city: 'Dijon', lat: 47.275, lng: 5.068 },
+  { id: 'd17', name: 'Skatepark Dijon', type: 'event', city: 'Dijon', lat: 47.324, lng: 5.044 },
+  { id: 'd18', name: 'Escalade Epirey', type: 'event', city: 'Dijon', lat: 47.336, lng: 5.027 },
+  { id: 'd19', name: 'On Air Fitness Besançon', type: 'salle', city: 'Besançon', lat: 47.248, lng: 6.018 },
+  { id: 'd20', name: 'Liberty Gym Besançon', type: 'salle', city: 'Besançon', lat: 47.242, lng: 6.025 },
+  { id: 'b1', name: 'Liberty Gym Planoise', type: 'salle', city: 'Besançon', lat: 47.235, lng: 6.01 },
+  { id: 'b2', name: 'Moving Besançon', type: 'salle', city: 'Besançon', lat: 47.25, lng: 6.03 },
+  { id: 'b3', name: 'Snatch Fitness', type: 'salle', city: 'Besançon', lat: 47.238, lng: 6.022 },
+  { id: 'b4', name: 'Iksir Fitness', type: 'salle', city: 'Besançon', lat: 47.245, lng: 6.015 },
+  { id: 'b5', name: 'Piscine Mallarmé', type: 'piscine', city: 'Besançon', lat: 47.24, lng: 6.028 },
+  { id: 'b6', name: 'Piscine La Fayette', type: 'piscine', city: 'Besançon', lat: 47.252, lng: 6.02 },
+  { id: 'b7', name: 'Piscine Port Joint', type: 'piscine', city: 'Besançon', lat: 47.23, lng: 6.035 },
+  { id: 'b8', name: 'Complexe La Malcombe', type: 'terrain', city: 'Besançon', lat: 47.255, lng: 6.008 },
+  { id: 'b9', name: 'Centre Croppet', type: 'terrain', city: 'Besançon', lat: 47.228, lng: 6.04 },
+  { id: 'b10', name: 'Play Arena', type: 'event', city: 'Besançon', lat: 47.246, lng: 6.032 },
+  { id: 'b11', name: 'Gymnase Montboucons', type: 'terrain', city: 'Besançon', lat: 47.26, lng: 6.005 },
+  { id: 'b12', name: 'Complexe Saint-Claude', type: 'terrain', city: 'Besançon', lat: 47.233, lng: 6.018 },
+  { id: 'b13', name: 'Stade de la Malcombe', type: 'terrain', city: 'Besançon', lat: 47.256, lng: 6.006 },
+  { id: 'b14', name: 'Forêt Chailluz — Running', type: 'running', city: 'Besançon', lat: 47.22, lng: 6.05 },
+  { id: 'b15', name: 'Berges du Doubs', type: 'running', city: 'Besançon', lat: 47.245, lng: 6.045 },
+  { id: 'b16', name: 'Escalade Croppet', type: 'event', city: 'Besançon', lat: 47.227, lng: 6.042 },
+  { id: 'b17', name: 'Espace Pierre-Talagrand', type: 'salle', city: 'Dole', lat: 47.092, lng: 5.49 },
+  { id: 'b18', name: 'Complexe Ernest-Gagnoux', type: 'terrain', city: 'Dole', lat: 47.088, lng: 5.495 },
+  { id: 'do1', name: 'Hécube Dole', type: 'salle', city: 'Dole', lat: 47.095, lng: 5.485 },
+  { id: 'do2', name: 'Stade de Lahr', type: 'terrain', city: 'Dole', lat: 47.09, lng: 5.5 },
+  { id: 'do3', name: 'Piscine Talagrand', type: 'piscine', city: 'Dole', lat: 47.093, lng: 5.488 },
+  { id: 'do4', name: 'Acro-Isis', type: 'event', city: 'Dole', lat: 47.091, lng: 5.492 },
+  { id: 'do5', name: 'Tennis Club Dolois', type: 'terrain', city: 'Dole', lat: 47.087, lng: 5.498 },
+  { id: 'do6', name: 'Terrain Precipiano', type: 'terrain', city: 'Dole', lat: 47.094, lng: 5.502 },
+  { id: 'do7', name: 'Parcours Aristide Briand', type: 'running', city: 'Dole', lat: 47.089, lng: 5.487 },
+  { id: 'do8', name: 'Berges du Doubs Dole', type: 'running', city: 'Dole', lat: 47.086, lng: 5.505 },
+  { id: 'do9', name: "Mur d'Escalade Talagrand", type: 'event', city: 'Dole', lat: 47.092, lng: 5.486 },
+  { id: 'd21', name: 'Basic-Fit Dijon', type: 'salle', city: 'Dijon', lat: 47.319, lng: 5.049 },
+  { id: 'd22', name: 'Parcours de Santé Toison', type: 'running', city: 'Dijon', lat: 47.331, lng: 5.051 },
+  { id: 'do10', name: 'Gymnase des Tilleuls', type: 'terrain', city: 'Dole', lat: 47.09, lng: 5.493 },
+  { id: 'do11', name: 'Fitness Club Dolois', type: 'salle', city: 'Dole', lat: 47.094, lng: 5.491 },
+];
+
+export function filterVenues(filterKey) {
+  if (!filterKey || filterKey === 'Tous') return venues;
+  const typeKey = Object.keys(VENUE_TYPES).find((k) => VENUE_TYPES[k].filter === filterKey);
+  if (!typeKey) return venues;
+  return venues.filter((v) => v.type === typeKey);
+}
