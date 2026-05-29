@@ -3,74 +3,109 @@ import { useNavigate } from 'react-router-dom';
 import AvatarImage from './AvatarImage';
 import CTAButton from './CTAButton';
 import { useProfile } from '../../hooks/useProfile';
+import { getProfilePhotoUrl } from '../../utils/profileEdit';
+
+const CONFETTI_COLORS = ['#FF6B00', '#1A3FCC'];
+
+function buildConfetti(count = 72) {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    delay: Math.random() * 0.6,
+    duration: 2.2 + Math.random() * 1.8,
+    color: CONFETTI_COLORS[i % 2],
+    size: 5 + Math.random() * 9,
+    round: i % 3 === 0,
+    drift: -30 + Math.random() * 60,
+  }));
+}
 
 export default function MatchPopup({ matchProfile, onClose }) {
   const navigate = useNavigate();
   const { profile } = useProfile();
-  const [step, setStep] = useState(0);
+  const [entered, setEntered] = useState(false);
   const [confetti, setConfetti] = useState([]);
 
+  const myPhoto = profile?.photo_url || getProfilePhotoUrl();
+  const myPrenom = profile?.prenom || 'Toi';
+  const matchPhoto = matchProfile?.photo || matchProfile?.photo_url || '';
+  const matchId = matchProfile?.matchId;
+
   useEffect(() => {
-    const timers = [
-      setTimeout(() => setStep(1), 200),
-      setTimeout(() => setStep(2), 400),
-      setTimeout(() => setStep(3), 600),
-      setTimeout(() => setStep(4), 800),
-      setTimeout(() => {
-        setStep(5);
-        const pieces = Array.from({ length: 48 }, (_, i) => ({
-          id: i,
-          left: Math.random() * 100,
-          delay: Math.random() * 0.5,
-          color: ['#FF6B00', '#1A3FCC', '#2ECC71', '#fff'][i % 4],
-        }));
-        setConfetti(pieces);
-      }, 1000),
-      setTimeout(() => setStep(6), 1200),
-    ];
-    return () => timers.forEach(clearTimeout);
+    setConfetti(buildConfetti());
+    const frame = requestAnimationFrame(() => setEntered(true));
+    return () => cancelAnimationFrame(frame);
   }, []);
+
+  const handleMessage = () => {
+    if (matchId) {
+      onClose();
+      navigate(`/chat/${matchId}`);
+    }
+  };
 
   if (!matchProfile) return null;
 
   return (
-    <div className="match-overlay" role="dialog" aria-modal="true">
-      {step >= 5 &&
-        confetti.map((c) => (
+    <div className={`match-overlay ${entered ? 'match-overlay--visible' : ''}`} role="dialog" aria-modal="true">
+      <div className="match-particles" aria-hidden>
+        {confetti.map((c) => (
           <span
             key={c.id}
-            className="confetti-piece"
+            className={`match-particle ${c.round ? 'match-particle--round' : ''}`}
             style={{
               left: `${c.left}%`,
+              width: c.size,
+              height: c.round ? c.size : c.size * 1.4,
               background: c.color,
               animationDelay: `${c.delay}s`,
+              animationDuration: `${c.duration}s`,
+              ['--drift']: `${c.drift}px`,
             }}
           />
         ))}
-      <div className="match-content">
-        {step >= 1 && <p className="match-line1">C&apos;EST UN</p>}
-        {step >= 2 && <p className="match-line2">MATCH ! 💪</p>}
-        {step >= 3 && (
-          <div className="match-avatars">
-            <AvatarImage src={profile?.photo_url} name={profile?.prenom} size={72} />
-            <AvatarImage src={matchProfile.photo} name={matchProfile.prenom} size={72} />
+      </div>
+
+      <div className={`match-content ${entered ? 'match-content--visible' : ''}`}>
+        <p className="match-line1">C&apos;EST UN</p>
+        <p className="match-line2">MATCH ! 💪</p>
+
+        <div className="match-avatars">
+          <div className="match-avatar-slot match-avatar-slot--me">
+            <AvatarImage
+              src={myPhoto}
+              name={myPrenom}
+              size={88}
+              className="match-avatar-img"
+            />
+            <span className="match-avatar-label">{myPrenom}</span>
           </div>
-        )}
-        {step >= 4 && (
-          <p className="match-sub">
-            Toi et {matchProfile.prenom} avez liké vos profils
-          </p>
-        )}
-        {step >= 6 && (
-          <div className="match-actions">
-            <CTAButton onClick={() => navigate(`/chat/${matchProfile.matchId || matchProfile.id}`)}>
-              Envoyer un message
-            </CTAButton>
-            <button type="button" className="match-continue" onClick={onClose}>
-              Continuer à swiper
-            </button>
+          <div className="match-avatars__badge" aria-hidden>
+            ♥
           </div>
-        )}
+          <div className="match-avatar-slot match-avatar-slot--them">
+            <AvatarImage
+              src={matchPhoto}
+              name={matchProfile.prenom}
+              size={88}
+              className="match-avatar-img"
+            />
+            <span className="match-avatar-label">{matchProfile.prenom}</span>
+          </div>
+        </div>
+
+        <p className="match-sub">
+          Toi et {matchProfile.prenom} avez liké vos profils
+        </p>
+
+        <div className="match-actions">
+          <CTAButton disabled={!matchId} onClick={handleMessage}>
+            Envoyer un message
+          </CTAButton>
+          <button type="button" className="match-continue" onClick={onClose}>
+            Continuer à swiper
+          </button>
+        </div>
       </div>
     </div>
   );
