@@ -1,27 +1,41 @@
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackButton from '../../components/ui/BackButton';
 import Toggle from '../../components/ui/Toggle';
 import { useAuth } from '../../hooks/useAuth';
-import { useState } from 'react';
+import { getSession } from '../../utils/storage';
+import {
+  fetchProfileSettings,
+  saveProfileSettings,
+} from '../../utils/profileSettings';
 import {
   getDiscoverySettings,
   setSettingsAgeMax,
   setSettingsAgeMin,
-  setSettingsDistance,
-  setSettingsNiveau,
 } from '../../utils/settingsStorage';
 
-const NIVEAUX = ['Débutant', 'Intermédiaire', 'Avancé', ''];
+const NIVEAUX = ['Débutant', 'Intermédiaire', 'Avancé'];
+const FREQUENCES = ['1x/sem', '2x/sem', '3x/sem', '4x/sem', '5x/sem'];
+const LOOKING_FOR = ['Des hommes', 'Des femmes', 'Tout le monde'];
+
+function getUserId(user) {
+  return user?.id || getSession()?.id || null;
+}
 
 export default function SettingsScreen() {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const navigate = useNavigate();
-  const initial = getDiscoverySettings();
+  const userId = getUserId(user);
+  const ageDefaults = getDiscoverySettings();
 
-  const [distance, setDistance] = useState(initial.distance);
-  const [ageMin, setAgeMin] = useState(initial.ageMin);
-  const [ageMax, setAgeMax] = useState(initial.ageMax);
-  const [niveau, setNiveau] = useState(initial.niveau || '');
+  const [loading, setLoading] = useState(true);
+  const [distance, setDistance] = useState(25);
+  const [lookingFor, setLookingFor] = useState('');
+  const [niveau, setNiveau] = useState('');
+  const [frequence, setFrequence] = useState('');
+  const [pauseMode, setPauseMode] = useState(false);
+  const [ageMin, setAgeMin] = useState(ageDefaults.ageMin);
+  const [ageMax, setAgeMax] = useState(ageDefaults.ageMax);
   const [notifs, setNotifs] = useState({
     match: true,
     message: true,
@@ -29,9 +43,55 @@ export default function SettingsScreen() {
     event: false,
   });
 
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      const settings = await fetchProfileSettings(userId);
+      if (cancelled) return;
+      setDistance(settings.distance);
+      setLookingFor(settings.looking_for || '');
+      setNiveau(settings.niveau || '');
+      setFrequence(settings.frequence || '');
+      setPauseMode(!settings.visible);
+      setLoading(false);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
+
+  const persist = useCallback(
+    (patch) => {
+      saveProfileSettings(userId, patch);
+    },
+    [userId]
+  );
+
   const updateDistance = (v) => {
     setDistance(v);
-    setSettingsDistance(v);
+    persist({ distance: v });
+  };
+
+  const updateLookingFor = (v) => {
+    setLookingFor(v);
+    persist({ looking_for: v });
+  };
+
+  const updateNiveau = (v) => {
+    setNiveau(v);
+    persist({ niveau: v });
+  };
+
+  const updateFrequence = (v) => {
+    setFrequence(v);
+    persist({ frequence: v });
+  };
+
+  const updatePauseMode = (paused) => {
+    setPauseMode(paused);
+    persist({ visible: !paused });
   };
 
   const updateAgeMin = (v) => {
@@ -42,12 +102,6 @@ export default function SettingsScreen() {
   const updateAgeMax = (v) => {
     setAgeMax(v);
     setSettingsAgeMax(v);
-  };
-
-  const updateNiveau = (v) => {
-    setNiveau(v);
-    if (v) setSettingsNiveau(v);
-    else localStorage.removeItem('settings_niveau');
   };
 
   const handleLogout = async () => {
@@ -61,6 +115,9 @@ export default function SettingsScreen() {
         <BackButton />
         <h1>Paramètres</h1>
       </header>
+
+      {loading && <p className="settings-loading">Chargement…</p>}
+
       <section className="settings-section">
         <h2>MON COMPTE</h2>
         <button type="button" className="settings-row" onClick={() => navigate('/profile/edit')}>
@@ -72,6 +129,7 @@ export default function SettingsScreen() {
         <button type="button" className="settings-row">Email</button>
         <button type="button" className="settings-row">Téléphone</button>
       </section>
+
       <section className="settings-section">
         <h2>DÉCOUVERTE</h2>
         <label className="settings-slider-row">
@@ -81,9 +139,26 @@ export default function SettingsScreen() {
             min={1}
             max={100}
             value={distance}
+            disabled={loading}
             onChange={(e) => updateDistance(Number(e.target.value))}
           />
         </label>
+
+        <p className="edit-hint" style={{ marginTop: 12 }}>Tu veux rencontrer</p>
+        <div className="pill-select-row pill-select-row--wrap">
+          {LOOKING_FOR.map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              className={`pill-select ${lookingFor === opt ? 'pill-select--active' : ''}`}
+              disabled={loading}
+              onClick={() => updateLookingFor(opt)}
+            >
+              {opt}
+            </button>
+          ))}
+        </div>
+
         <label className="settings-slider-row">
           Âge minimum : {ageMin} ans
           <input
@@ -110,27 +185,54 @@ export default function SettingsScreen() {
             }}
           />
         </label>
-        <p className="edit-hint" style={{ marginTop: 12 }}>Niveau sportif</p>
+
+        <p className="edit-hint" style={{ marginTop: 12 }}>Mon niveau sportif</p>
         <div className="pill-select-row pill-select-row--wrap">
           <button
             type="button"
             className={`pill-select ${!niveau ? 'pill-select--active' : ''}`}
+            disabled={loading}
             onClick={() => updateNiveau('')}
           >
-            Tous
+            —
           </button>
-          {NIVEAUX.filter(Boolean).map((n) => (
+          {NIVEAUX.map((n) => (
             <button
               key={n}
               type="button"
               className={`pill-select ${niveau === n ? 'pill-select--active' : ''}`}
+              disabled={loading}
               onClick={() => updateNiveau(n)}
             >
               {n}
             </button>
           ))}
         </div>
+
+        <p className="edit-hint" style={{ marginTop: 12 }}>Ma fréquence d&apos;entraînement</p>
+        <div className="pill-select-row pill-select-row--wrap">
+          <button
+            type="button"
+            className={`pill-select ${!frequence ? 'pill-select--active' : ''}`}
+            disabled={loading}
+            onClick={() => updateFrequence('')}
+          >
+            —
+          </button>
+          {FREQUENCES.map((f) => (
+            <button
+              key={f}
+              type="button"
+              className={`pill-select ${frequence === f ? 'pill-select--active' : ''}`}
+              disabled={loading}
+              onClick={() => updateFrequence(f)}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
       </section>
+
       <section className="settings-section">
         <h2>NOTIFICATIONS</h2>
         <Toggle label="Nouveaux matchs" checked={notifs.match} onChange={(v) => setNotifs((n) => ({ ...n, match: v }))} />
@@ -138,12 +240,24 @@ export default function SettingsScreen() {
         <Toggle label="Likes reçus" checked={notifs.like} onChange={(v) => setNotifs((n) => ({ ...n, like: v }))} />
         <Toggle label="Événements" checked={notifs.event} onChange={(v) => setNotifs((n) => ({ ...n, event: v }))} />
       </section>
+
       <section className="settings-section">
         <h2>CONFIDENTIALITÉ</h2>
-        <button type="button" className="settings-row">Visibilité du profil</button>
+        <Toggle
+          label="Mode pause"
+          checked={pauseMode}
+          disabled={loading}
+          onChange={updatePauseMode}
+        />
+        <p className="edit-hint">
+          {pauseMode
+            ? 'Ton profil est masqué : tu n’apparais plus dans la découverte.'
+            : 'Ton profil est visible dans la découverte.'}
+        </p>
         <button type="button" className="settings-row">Bloquer des utilisateurs</button>
         <button type="button" className="settings-row">Données personnelles</button>
       </section>
+
       <section className="settings-section">
         <h2>PREMIUM</h2>
         <button
@@ -154,6 +268,7 @@ export default function SettingsScreen() {
           Devenir Premium
         </button>
       </section>
+
       <section className="settings-section">
         <h2>COMPTE</h2>
         <button type="button" className="settings-row settings-row--danger" onClick={handleLogout}>

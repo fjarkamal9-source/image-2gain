@@ -10,6 +10,7 @@ import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 import { getUserProfile } from '../../utils/completeOnboarding';
 import { filterDiscoveryProfiles } from '../../utils/discoveryFilter';
 import { mapRowToSwipeProfile } from '../../utils/mapSwipeProfile';
+import { isProfileVisibleInDiscovery } from '../../utils/profileSettings';
 import { getDiscoverySettings } from '../../utils/settingsStorage';
 import {
   addLikeSent,
@@ -111,7 +112,7 @@ export default function HomeSwipe() {
       } else {
         const me = getUserProfile();
         const mapped = (data || [])
-          .filter((row) => !excluded.has(row.id))
+          .filter((row) => !excluded.has(row.id) && isProfileVisibleInDiscovery(row))
           .map((row) => mapRowToSwipeProfile(row, me?.lat, me?.lng));
         setSourceProfiles(mapped);
       }

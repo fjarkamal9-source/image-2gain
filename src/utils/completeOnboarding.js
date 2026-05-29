@@ -59,6 +59,7 @@ export async function flushOnboardingToProfile() {
         lat: profile.lat,
         lng: profile.lng,
         onboarding_completed: true,
+        visible: true,
       });
     } catch {
       /* mock mode fallback */

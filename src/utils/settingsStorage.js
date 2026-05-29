@@ -37,8 +37,19 @@ function write(key, value) {
 }
 
 export function getDiscoverySettings() {
+  let profileDistance = null;
+  try {
+    const raw = localStorage.getItem('2gain_user_profile');
+    if (raw) {
+      const p = JSON.parse(raw);
+      if (p?.max_distance != null) profileDistance = Number(p.max_distance);
+    }
+  } catch {
+    /* ignore */
+  }
+
   return {
-    distance: readNumber(KEYS.distance, 25),
+    distance: profileDistance ?? readNumber(KEYS.distance, 25),
     ageMin: readNumber(KEYS.ageMin, 18),
     ageMax: readNumber(KEYS.ageMax, 35),
     niveau: readString(KEYS.niveau, '') || null,

@@ -8,6 +8,9 @@ create table if not exists profiles (
   gender text,
   looking_for text,
   max_distance int default 25,
+  niveau text,
+  frequence text,
+  visible boolean default true,
   intentions jsonb default '[]',
   sports jsonb default '[]',
   photo_url text,
@@ -100,6 +103,11 @@ create policy "messages match insert" on messages for insert with check (
 create policy "venues_liked own" on venues_liked for all using (auth.uid() = user_id);
 create policy "passes own" on passes for all using (auth.uid() = passer_id);
 create policy "hides own" on hides for all using (auth.uid() = hider_id);
+
+-- Migration si la table profiles existe déjà :
+-- alter table profiles add column if not exists niveau text;
+-- alter table profiles add column if not exists frequence text;
+-- alter table profiles add column if not exists visible boolean default true;
 
 insert into storage.buckets (id, name, public) values ('photos', 'photos', true)
 on conflict do nothing;
