@@ -60,9 +60,9 @@ export const venues = [
   { id: 'do11', name: 'Fitness Club Dolois', type: 'salle', city: 'Dole', lat: 47.094, lng: 5.491 },
 ];
 
-export function filterVenues(filterKey, list = venues) {
-  if (!filterKey || filterKey === 'Tous') return list;
+export function filterVenues(filterKey) {
+  if (!filterKey || filterKey === 'Tous') return venues;
   const typeKey = Object.keys(VENUE_TYPES).find((k) => VENUE_TYPES[k].filter === filterKey);
-  if (!typeKey) return list;
-  return list.filter((v) => v.type === typeKey);
+  if (!typeKey) return venues;
+  return venues.filter((v) => v.type === typeKey);
 }
