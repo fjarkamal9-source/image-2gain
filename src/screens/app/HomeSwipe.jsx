@@ -124,15 +124,15 @@ export default function HomeSwipe() {
     };
   }, [user, location.key, deckVersion]);
 
-  const deck = useMemo(
-    () =>
-      filterDiscoveryProfiles(
-        sourceProfiles.length ? sourceProfiles : MOCK_PROFILES,
-        getDiscoverySettings(),
-        excludedIds
-      ),
-    [sourceProfiles, excludedIds]
-  );
+  const deck = useMemo(() => {
+    const me = getUserProfile();
+    return filterDiscoveryProfiles(
+      sourceProfiles.length ? sourceProfiles : MOCK_PROFILES,
+      getDiscoverySettings(),
+      excludedIds,
+      me
+    );
+  }, [sourceProfiles, excludedIds, deckVersion]);
   const visible = deck.slice(index, index + 3);
   const count = deck.length;
 
