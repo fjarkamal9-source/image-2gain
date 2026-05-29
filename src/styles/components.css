@@ -1452,6 +1452,19 @@
   display: flex;
   flex-direction: column;
 }
+.edit-profile-loading {
+  padding: 24px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 15px;
+}
+.edit-save-feedback {
+  text-align: center;
+  color: var(--success);
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
 .edit-profile-body {
   flex: 1;
   overflow-y: auto;

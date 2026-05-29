@@ -1,15 +1,15 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackButton from '../../components/ui/BackButton';
 import AvatarImage from '../../components/ui/AvatarImage';
 import CTAButton from '../../components/ui/CTAButton';
-import { getOnboarding, getOnboardingJSON } from '../../utils/storage';
+import { useAuth } from '../../hooks/useAuth';
+import { getSession } from '../../utils/storage';
 import {
-  getProfilePhotoUrl,
+  fetchEditableProfile,
   saveProfileEdit,
-  setProfilePhotoUrl,
+  uploadProfileAvatar,
 } from '../../utils/profileEdit';
-import { getUserProfile } from '../../utils/completeOnboarding';
 
 const SPORTS = [
   'Musculation', 'Running', 'Fitness', 'Yoga', 'CrossFit', 'Natation',
@@ -29,27 +29,52 @@ const INTENTIONS = [
   { emoji: '📅', label: 'Événements sportifs' },
 ];
 
+function getUserId(user) {
+  return user?.id || getSession()?.id || null;
+}
+
 export default function EditProfile() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const fileRef = useRef(null);
-  const profile = getUserProfile();
+  const userId = getUserId(user);
 
-  const [photoUrl, setPhotoUrl] = useState(getProfilePhotoUrl());
-  const [prenom, setPrenom] = useState(getOnboarding('prenom') || profile?.prenom || '');
-  const [ville, setVille] = useState(getOnboarding('ville') || profile?.ville || '');
-  const [bio, setBio] = useState(getOnboarding('bio') || profile?.bio || '');
-  const [sports, setSports] = useState(
-    getOnboardingJSON('sports', [])?.length
-      ? getOnboardingJSON('sports', [])
-      : profile?.sports || []
-  );
-  const [intentions, setIntentions] = useState(
-    getOnboardingJSON('intentions', [])?.length
-      ? getOnboardingJSON('intentions', [])
-      : profile?.intentions || []
-  );
-  const [niveau, setNiveau] = useState(getOnboarding('niveau') || profile?.niveau || '');
-  const [frequence, setFrequence] = useState(getOnboarding('frequence') || profile?.frequence || '');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState('');
+  const [prenom, setPrenom] = useState('');
+  const [ville, setVille] = useState('');
+  const [bio, setBio] = useState('');
+  const [maxDistance, setMaxDistance] = useState(25);
+  const [sports, setSports] = useState([]);
+  const [intentions, setIntentions] = useState([]);
+  const [niveau, setNiveau] = useState('');
+  const [frequence, setFrequence] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      const { profile } = await fetchEditableProfile(userId);
+      if (cancelled) return;
+      setPhotoUrl(profile.photo_url || '');
+      setPrenom(profile.prenom || '');
+      setVille(profile.ville || '');
+      setBio(profile.bio || '');
+      setMaxDistance(profile.max_distance ?? 25);
+      setSports(profile.sports || []);
+      setIntentions(profile.intentions || []);
+      setNiveau(profile.niveau || '');
+      setFrequence(profile.frequence || '');
+      setLoading(false);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
 
   const toggleSport = (sport) => {
     setSports((prev) => {
@@ -65,28 +90,41 @@ export default function EditProfile() {
     );
   };
 
-  const onPhotoChange = (file) => {
+  const onPhotoChange = async (file) => {
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = reader.result;
-      setPhotoUrl(dataUrl);
-      setProfilePhotoUrl(dataUrl);
-    };
-    reader.readAsDataURL(file);
+    setUploadingPhoto(true);
+    try {
+      const url = await uploadProfileAvatar(userId, file);
+      setPhotoUrl(url);
+    } finally {
+      setUploadingPhoto(false);
+    }
   };
 
-  const handleSave = () => {
-    saveProfileEdit({
-      prenom: prenom.trim(),
-      ville: ville.trim(),
-      bio: bio.trim(),
+  const handleSave = async () => {
+    setSaving(true);
+    setSaved(false);
+
+    const result = await saveProfileEdit(userId, {
+      prenom,
+      ville,
+      bio,
       sports,
       intentions,
       niveau,
       frequence,
+      max_distance: maxDistance,
+      photo_url: photoUrl,
     });
-    navigate('/profile');
+
+    setSaving(false);
+
+    if (result.ok) {
+      setSaved(true);
+      window.setTimeout(() => {
+        navigate('/profile');
+      }, 1400);
+    }
   };
 
   return (
@@ -97,123 +135,144 @@ export default function EditProfile() {
         <span className="edit-profile-header__spacer" />
       </header>
 
-      <div className="edit-profile-body">
-        <section className="edit-section">
-          <h2 className="edit-section__title">Photo</h2>
-          <div className="edit-photo-row">
-            <AvatarImage src={photoUrl} name={prenom || '?'} size={72} />
-            <button
-              type="button"
-              className="edit-photo-btn"
-              onClick={() => fileRef.current?.click()}
-            >
-              Changer la photo
-            </button>
+      {loading ? (
+        <p className="edit-profile-loading">Chargement…</p>
+      ) : (
+        <div className="edit-profile-body">
+          <section className="edit-section">
+            <h2 className="edit-section__title">Photo</h2>
+            <div className="edit-photo-row">
+              <AvatarImage src={photoUrl} name={prenom || '?'} size={72} />
+              <button
+                type="button"
+                className="edit-photo-btn"
+                disabled={uploadingPhoto}
+                onClick={() => fileRef.current?.click()}
+              >
+                {uploadingPhoto ? 'Envoi…' : 'Changer la photo'}
+              </button>
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={(e) => onPhotoChange(e.target.files?.[0])}
+              />
+            </div>
+          </section>
+
+          <section className="edit-section">
+            <h2 className="edit-section__title">Infos</h2>
+            <label className="edit-label">Prénom</label>
             <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              hidden
-              onChange={(e) => onPhotoChange(e.target.files?.[0])}
+              className="edit-input edit-input--title"
+              value={prenom}
+              onChange={(e) => setPrenom(e.target.value)}
+              maxLength={30}
             />
-          </div>
-        </section>
+            <label className="edit-label">Ville</label>
+            <input
+              className="edit-input"
+              value={ville}
+              onChange={(e) => setVille(e.target.value)}
+            />
+            <label className="edit-label">Bio</label>
+            <textarea
+              className="bio-textarea"
+              maxLength={150}
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              placeholder="Présente-toi en quelques mots…"
+            />
+            <p className="bio-counter">{bio.length}/150</p>
+          </section>
 
-        <section className="edit-section">
-          <h2 className="edit-section__title">Infos</h2>
-          <label className="edit-label">Prénom</label>
-          <input
-            className="edit-input edit-input--title"
-            value={prenom}
-            onChange={(e) => setPrenom(e.target.value)}
-            maxLength={30}
-          />
-          <label className="edit-label">Ville</label>
-          <input
-            className="edit-input"
-            value={ville}
-            onChange={(e) => setVille(e.target.value)}
-          />
-          <label className="edit-label">Bio</label>
-          <textarea
-            className="bio-textarea"
-            maxLength={150}
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-            placeholder="Présente-toi en quelques mots…"
-          />
-          <p className="bio-counter">{bio.length}/150</p>
-        </section>
+          <section className="edit-section">
+            <h2 className="edit-section__title">Distance max</h2>
+            <p className="distance-value">{maxDistance} km</p>
+            <input
+              type="range"
+              min={1}
+              max={100}
+              value={maxDistance}
+              className="distance-slider"
+              onChange={(e) => setMaxDistance(Number(e.target.value))}
+            />
+          </section>
 
-        <section className="edit-section">
-          <h2 className="edit-section__title">Sport</h2>
-          <p className="edit-hint">Jusqu&apos;à 3 sports</p>
-          <div className="sports-tags">
-            {SPORTS.map((sport) => (
-              <button
-                key={sport}
-                type="button"
-                className={`sport-tag ${sports.includes(sport) ? 'sport-tag--selected' : ''}`}
-                onClick={() => toggleSport(sport)}
-              >
-                {sport}
-              </button>
-            ))}
-          </div>
-        </section>
+          <section className="edit-section">
+            <h2 className="edit-section__title">Sport</h2>
+            <p className="edit-hint">Jusqu&apos;à 3 sports</p>
+            <div className="sports-tags">
+              {SPORTS.map((sport) => (
+                <button
+                  key={sport}
+                  type="button"
+                  className={`sport-tag ${sports.includes(sport) ? 'sport-tag--selected' : ''}`}
+                  onClick={() => toggleSport(sport)}
+                >
+                  {sport}
+                </button>
+              ))}
+            </div>
+          </section>
 
-        <section className="edit-section">
-          <h2 className="edit-section__title">Niveau</h2>
-          <div className="pill-select-row">
-            {NIVEAUX.map((n) => (
-              <button
-                key={n}
-                type="button"
-                className={`pill-select ${niveau === n ? 'pill-select--active' : ''}`}
-                onClick={() => setNiveau(n)}
-              >
-                {n}
-              </button>
-            ))}
-          </div>
-        </section>
+          <section className="edit-section">
+            <h2 className="edit-section__title">Niveau</h2>
+            <div className="pill-select-row">
+              {NIVEAUX.map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  className={`pill-select ${niveau === n ? 'pill-select--active' : ''}`}
+                  onClick={() => setNiveau(n)}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+          </section>
 
-        <section className="edit-section">
-          <h2 className="edit-section__title">Fréquence</h2>
-          <div className="pill-select-row pill-select-row--wrap">
-            {FREQUENCES.map((f) => (
-              <button
-                key={f}
-                type="button"
-                className={`pill-select ${frequence === f ? 'pill-select--active' : ''}`}
-                onClick={() => setFrequence(f)}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
-        </section>
+          <section className="edit-section">
+            <h2 className="edit-section__title">Fréquence</h2>
+            <div className="pill-select-row pill-select-row--wrap">
+              {FREQUENCES.map((f) => (
+                <button
+                  key={f}
+                  type="button"
+                  className={`pill-select ${frequence === f ? 'pill-select--active' : ''}`}
+                  onClick={() => setFrequence(f)}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+          </section>
 
-        <section className="edit-section">
-          <h2 className="edit-section__title">Objectif</h2>
-          <div className="intentions-grid">
-            {INTENTIONS.map(({ emoji, label }) => (
-              <button
-                key={label}
-                type="button"
-                className={`intention-card ${intentions.includes(label) ? 'intention-card--selected' : ''}`}
-                onClick={() => toggleIntention(label)}
-              >
-                <span className="intention-emoji">{emoji}</span>
-                <span>{label}</span>
-              </button>
-            ))}
-          </div>
-        </section>
-      </div>
+          <section className="edit-section">
+            <h2 className="edit-section__title">Objectif</h2>
+            <div className="intentions-grid">
+              {INTENTIONS.map(({ emoji, label }) => (
+                <button
+                  key={label}
+                  type="button"
+                  className={`intention-card ${intentions.includes(label) ? 'intention-card--selected' : ''}`}
+                  onClick={() => toggleIntention(label)}
+                >
+                  <span className="intention-emoji">{emoji}</span>
+                  <span>{label}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+        </div>
+      )}
 
       <div className="edit-profile-footer">
-        <CTAButton onClick={handleSave}>Sauvegarder</CTAButton>
+        {saved && <p className="edit-save-feedback">Sauvegardé ✓</p>}
+        <CTAButton disabled={loading || saving} onClick={handleSave}>
+          {saving ? 'Enregistrement…' : 'Sauvegarder'}
+        </CTAButton>
       </div>
     </div>
   );
