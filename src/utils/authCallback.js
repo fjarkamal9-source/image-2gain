@@ -6,8 +6,19 @@ export async function resolvePostOAuthRoute() {
     return '/auth';
   }
 
-  const { data } = await supabase.auth.getSession();
-  const session = data?.session;
+  const code = new URLSearchParams(window.location.search).get('code');
+  let session;
+
+  if (code) {
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    if (error || !data?.session) {
+      return '/auth';
+    }
+    session = data.session;
+  } else {
+    const { data } = await supabase.auth.getSession();
+    session = data?.session;
+  }
 
   if (!session?.user) {
     return '/auth';

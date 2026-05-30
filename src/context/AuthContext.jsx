@@ -12,24 +12,33 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const init = async () => {
-      if (isSupabaseConfigured && supabase) {
-        const { data } = await supabase.auth.getSession();
-        if (data?.session?.user) {
-          setUser({
-            id: data.session.user.id,
-            email: data.session.user.email,
-            prenom: data.session.user.user_metadata?.prenom || 'Sportif',
-          });
-          setLoading(false);
-          return;
-        }
-      }
-      const saved = getSession();
-      setUser(saved);
+    if (!isSupabaseConfigured || !supabase) {
+      setUser(getSession());
       setLoading(false);
-    };
-    init();
+      return;
+    }
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        const next = {
+          id: session.user.id,
+          email: session.user.email,
+          prenom:
+            session.user.user_metadata?.prenom ||
+            session.user.user_metadata?.full_name?.split(' ')?.[0] ||
+            'Sportif',
+        };
+        setUser(next);
+        setSession(next);
+      } else {
+        setUser(getSession());
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const signInGoogle = useCallback(async () => {

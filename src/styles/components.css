@@ -423,7 +423,12 @@
   background: #fff;
   gap: 16px;
 }
-.splash-logo { height: 100px; width: auto; }
+.splash-logo.logo-2gain .logo-2gain__symbol {
+  width: 140px;
+}
+.splash-logo.logo-2gain .logo-2gain__wordmark {
+  font-size: 32px;
+}
 .splash-tagline {
   font-family: var(--font-title);
   font-size: 16px;
