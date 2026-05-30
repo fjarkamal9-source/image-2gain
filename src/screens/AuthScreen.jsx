@@ -16,8 +16,8 @@ export default function AuthScreen() {
         setOnboarding('prenom', 'K');
         navigate('/onboarding/email');
       }
-    } catch {
-      /* OAuth redirect ou erreur réseau */
+    } catch (err) {
+      console.error('OAuth error:', err);
     }
   };
 

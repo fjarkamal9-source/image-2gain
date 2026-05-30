@@ -20,7 +20,8 @@ export function AuthProvider({ children }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state:', event, session?.user?.email);
       if (session?.user) {
         const next = {
           id: session.user.id,
@@ -32,8 +33,10 @@ export function AuthProvider({ children }) {
         };
         setUser(next);
         setSession(next);
-      } else {
+      } else if (event === 'INITIAL_SESSION') {
         setUser(getSession());
+      } else {
+        setUser(null);
       }
       setLoading(false);
     });
@@ -70,6 +73,7 @@ export function AuthProvider({ children }) {
     }
     clearSession();
     localStorage.removeItem('2gain_user_profile');
+    localStorage.removeItem('2gain_profile_complete');
     setUser(null);
   }, []);
 

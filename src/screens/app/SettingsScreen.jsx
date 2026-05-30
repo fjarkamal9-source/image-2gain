@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import BackButton from '../../components/ui/BackButton';
 import Toggle from '../../components/ui/Toggle';
 import { useAuth } from '../../hooks/useAuth';
+import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 import { getSession } from '../../utils/storage';
 import {
   fetchProfileSettings,
@@ -23,7 +24,7 @@ function getUserId(user) {
 }
 
 export default function SettingsScreen() {
-  const { signOut, user } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const userId = getUserId(user);
   const ageDefaults = getDiscoverySettings();
@@ -104,10 +105,17 @@ export default function SettingsScreen() {
     setSettingsAgeMax(v);
   };
 
-  const handleLogout = async () => {
-    await signOut();
-    navigate('/auth', { replace: true });
-  };
+  async function handleDeleteAccount() {
+    if (!window.confirm('Es-tu sûr de vouloir supprimer ton compte ?')) return;
+
+    if (isSupabaseConfigured && supabase && userId) {
+      await supabase.from('profiles').delete().eq('id', userId);
+      await supabase.auth.signOut();
+    }
+
+    localStorage.clear();
+    window.location.href = '/auth';
+  }
 
   return (
     <div className="settings-screen">
@@ -271,10 +279,13 @@ export default function SettingsScreen() {
 
       <section className="settings-section">
         <h2>COMPTE</h2>
-        <button type="button" className="settings-row settings-row--danger" onClick={handleLogout}>
+        <button
+          onClick={() => { localStorage.clear(); window.location.href = '/auth'; }}
+          className="settings-row settings-row--danger"
+        >
           Se déconnecter
         </button>
-        <button type="button" className="settings-row settings-row--danger">
+        <button type="button" className="settings-row settings-row--danger" onClick={handleDeleteAccount}>
           Supprimer mon compte
         </button>
       </section>
