@@ -15,8 +15,8 @@ function readFileAsDataUrl(file) {
   });
 }
 
-function buildLocalEditableProfile() {
-  const p = getUserProfile() || {};
+async function buildLocalEditableProfile() {
+  const p = (await getUserProfile()) || {};
   return {
     prenom: getOnboarding('prenom') || p.prenom || '',
     ville: getOnboarding('ville') || p.ville || '',
@@ -56,12 +56,22 @@ function applyProfileToLocal(profile) {
   }
 }
 
+function readCachedProfilePhotoUrl() {
+  try {
+    const raw = localStorage.getItem('2gain_user_profile');
+    if (raw) return JSON.parse(raw).photo_url || '';
+  } catch {
+    /* ignore */
+  }
+  return '';
+}
+
 export function getProfilePhotoUrl() {
   try {
     return (
       localStorage.getItem('profile_photo_url') ||
       getOnboarding('photo_url') ||
-      getUserProfile()?.photo_url ||
+      readCachedProfilePhotoUrl() ||
       ''
     );
   } catch {
@@ -85,8 +95,7 @@ export function setProfilePhotoUrl(url) {
   }
 }
 
-export function getProfileTags() {
-  const profile = getUserProfile();
+export function getProfileTags(profile) {
   const objectifs = getOnboardingJSON('intentions', null) ?? profile?.intentions ?? [];
   const sports = getOnboardingJSON('sports', null) ?? profile?.sports ?? [];
   const niveau = getOnboarding('niveau') || profile?.niveau || null;
@@ -96,7 +105,9 @@ export function getProfileTags() {
 
 export function syncUserProfile(partial) {
   try {
-    const current = getUserProfile() || {};
+    let current = {};
+    const raw = localStorage.getItem('2gain_user_profile');
+    if (raw) current = JSON.parse(raw);
     const merged = { ...current, ...partial };
     localStorage.setItem('2gain_user_profile', JSON.stringify(merged));
   } catch {
@@ -106,7 +117,7 @@ export function syncUserProfile(partial) {
 
 /** Charge le profil éditable (Supabase → cache local, ou local seul). */
 export async function fetchEditableProfile(userId) {
-  const local = buildLocalEditableProfile();
+  const local = await buildLocalEditableProfile();
 
   if (!isSupabaseConfigured || !supabase || !userId) {
     return { profile: local, fromRemote: false };

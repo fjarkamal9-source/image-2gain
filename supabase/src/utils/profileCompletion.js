@@ -1,9 +1,6 @@
 import { getOnboarding, getOnboardingJSON } from './storage';
 import { getProfilePhotoUrl } from './profileEdit';
-import { getUserProfile } from './completeOnboarding';
-
-export function computeProfileCompletion() {
-  const profile = getUserProfile();
+export function computeProfileCompletion(profile) {
   const photo = getProfilePhotoUrl();
   const prenom = getOnboarding('prenom') || profile?.prenom;
   const bio = getOnboarding('bio') || profile?.bio;

@@ -1,5 +1,4 @@
 import { MOCK_PROFILES } from '../data/mockProfiles';
-import { getUserProfile } from './completeOnboarding';
 import { getOnboarding, getOnboardingJSON } from './storage';
 import { getDiscoverySettings } from './settingsStorage';
 
@@ -133,7 +132,13 @@ export function getViewerDiscoveryContext(viewer) {
     };
   }
 
-  const p = getUserProfile() || {};
+  let p = {};
+  try {
+    const raw = localStorage.getItem('2gain_user_profile');
+    if (raw) p = JSON.parse(raw);
+  } catch {
+    /* ignore */
+  }
   const sports = getOnboardingJSON('sports', []);
   return {
     sports: sports.length ? sports : getProfileSports(p),

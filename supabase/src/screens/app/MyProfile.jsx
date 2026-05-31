@@ -37,7 +37,7 @@ export default function MyProfile() {
   const navigate = useNavigate();
   const { profile, completion } = useProfile();
   const likedVenues = getVenuesLiked(venues);
-  const { objectifs, sports, niveau, frequence } = getProfileTags();
+  const { objectifs, sports, niveau, frequence } = getProfileTags(profile);
 
   const likesRecus = getLikesRecusCount();
   const matchsActifs = getMatchsActifsCount();

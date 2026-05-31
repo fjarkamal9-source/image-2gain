@@ -1,10 +1,14 @@
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { syncUserProfile } from './profileEdit';
 import { getDiscoverySettings, setSettingsDistance } from './settingsStorage';
-import { getUserProfile } from './completeOnboarding';
-
 function readLocalProfile() {
-  return getUserProfile() || {};
+  try {
+    const raw = localStorage.getItem('2gain_user_profile');
+    if (raw) return JSON.parse(raw);
+  } catch {
+    /* ignore */
+  }
+  return {};
 }
 
 function cacheLocally(patch) {

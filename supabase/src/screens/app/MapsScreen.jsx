@@ -41,7 +41,18 @@ export default function MapsScreen() {
   const [filter, setFilter] = useState('Tous');
   const [selected, setSelected] = useState(null);
   const [likedVenues, setLikedVenues] = useState(() => getVenuesLiked(venues));
-  const user = getUserProfile();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getUserProfile().then((p) => {
+      if (!cancelled) setUser(p);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const center = [user?.lat ?? 47.322, user?.lng ?? 5.041];
   const ville = user?.ville?.includes('Besançon') ? 'Besançon' : user?.ville?.includes('Dole') ? 'Dole' : 'Dijon';
 

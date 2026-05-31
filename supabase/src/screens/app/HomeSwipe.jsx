@@ -77,6 +77,17 @@ export default function HomeSwipe() {
   const [sourceProfiles, setSourceProfiles] = useState([]);
   const [profilesLoading, setProfilesLoading] = useState(true);
   const [deckVersion, setDeckVersion] = useState(0);
+  const [me, setMe] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getUserProfile().then((p) => {
+      if (!cancelled) setMe(p);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   const refreshDeck = useCallback(() => {
     setDeckVersion((v) => v + 1);
@@ -110,10 +121,10 @@ export default function HomeSwipe() {
         console.error('fetch profiles', error);
         setSourceProfiles(MOCK_PROFILES);
       } else {
-        const me = getUserProfile();
+        const meProfile = await getUserProfile();
         const mapped = (data || [])
           .filter((row) => !excluded.has(row.id) && isProfileVisibleInDiscovery(row))
-          .map((row) => mapRowToSwipeProfile(row, me?.lat, me?.lng));
+          .map((row) => mapRowToSwipeProfile(row, meProfile?.lat, meProfile?.lng));
         setSourceProfiles(mapped);
       }
 
@@ -126,14 +137,13 @@ export default function HomeSwipe() {
   }, [user, location.key, deckVersion]);
 
   const deck = useMemo(() => {
-    const me = getUserProfile();
     return filterDiscoveryProfiles(
       sourceProfiles.length ? sourceProfiles : MOCK_PROFILES,
       getDiscoverySettings(),
       excludedIds,
       me
     );
-  }, [sourceProfiles, excludedIds, deckVersion]);
+  }, [sourceProfiles, excludedIds, deckVersion, me]);
   const visible = deck.slice(index, index + 3);
   const count = deck.length;
 

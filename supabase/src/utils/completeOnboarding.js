@@ -1,10 +1,11 @@
-import { getOnboarding, getOnboardingJSON, getSession, setOnboardingJSON } from './storage';
+import { getOnboarding, getOnboardingJSON, setOnboardingJSON } from './storage';
 import { calcAge, parseBirthDate } from './age';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
 export async function flushOnboardingToProfile() {
-  const session = getSession();
-  if (!session) return;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  const session = { id: user.id, email: user.email, prenom: user.user_metadata?.full_name?.split(' ')?.[0] || 'Sportif' };
 
   const profile = {
     id: session.id,
@@ -69,19 +70,19 @@ export async function flushOnboardingToProfile() {
   return profile;
 }
 
-export function getUserProfile() {
+export async function getUserProfile() {
   try {
     const raw = localStorage.getItem('2gain_user_profile');
     if (raw) return JSON.parse(raw);
   } catch {
     /* ignore */
   }
-  const session = getSession();
-  return session
+  const { data: { user } } = await supabase.auth.getUser();
+  return user
     ? {
-        id: session.id,
-        prenom: session.prenom || 'K',
-        email: session.email,
+        id: user.id,
+        prenom: user.user_metadata?.full_name?.split(' ')?.[0] || 'K',
+        email: user.email,
         ville: 'Paris',
         max_distance: 25,
         age: 28,
