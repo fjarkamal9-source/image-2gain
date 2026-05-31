@@ -1,28 +1,20 @@
 ﻿import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { isSupabaseConfigured } from '../lib/supabase';
-import { setOnboarding } from '../utils/storage';
 
 export default function AuthScreen() {
-  const { signInGoogle, signInPhone } = useAuth();
+  const { signInGoogle } = useAuth();
   const navigate = useNavigate();
 
   const handleGoogle = async () => {
     try {
       await signInGoogle();
       if (!isSupabaseConfigured) {
-        setOnboarding('email', 'kamal@2gain.app');
-        setOnboarding('prenom', 'K');
         navigate('/onboarding/email');
       }
     } catch (err) {
       console.error('OAuth error:', err);
     }
-  };
-
-  const handlePhone = async () => {
-    await signInPhone();
-    navigate('/onboarding/email');
   };
 
   return (
@@ -44,14 +36,6 @@ export default function AuthScreen() {
           >
             Continuer avec Google
           </button>
-          {/* <p className="auth-screen__sep">ou</p>
-          <button
-            type="button"
-            className="auth-screen__btn auth-screen__btn--phone"
-            onClick={handlePhone}
-          >
-            Continuer avec ton numéro
-          </button> */}
           <button type="button" className="auth-screen__help">
             Problème de connexion ?
           </button>

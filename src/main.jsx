@@ -14,11 +14,11 @@ CapacitorApp.addListener('appUrlOpen', async ({ url }) => {
   const code = urlObj.searchParams.get('code');
   const hash = urlObj.hash;
   if (code) {
-    window.history.replaceState({}, '', '/auth/callback?code=' + code);
+    window.history.pushState({}, '', '/auth/callback?code=' + code);
   } else if (hash) {
-    window.history.replaceState({}, '', '/auth/callback' + hash);
+    window.history.pushState({}, '', '/auth/callback' + hash);
   }
-  window.dispatchEvent(new CustomEvent('capacitor-url-open'));
+  window.dispatchEvent(new CustomEvent('capacitor-url-open', { detail: { url } }));
 });
 
 ReactDOM.createRoot(document.getElementById('root')).render(
