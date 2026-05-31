@@ -1,5 +1,4 @@
 ﻿import { useNavigate } from 'react-router-dom';
-import Logo2Gain from '../components/ui/Logo2Gain';
 import { useAuth } from '../hooks/useAuth';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { setOnboarding } from '../utils/storage';
@@ -28,28 +27,31 @@ export default function AuthScreen() {
 
   return (
     <div className="app-frame auth-screen">
-      <img className="auth-screen__bg" src="/img/auth-bg.jpg" alt="" aria-hidden decoding="async" />
-      <div className="auth-screen__overlay" aria-hidden />
       <div className="auth-screen__content">
-        <header className="auth-screen__header">
-          <Logo2Gain />
-        </header>
+        <div className="auth-screen__spacer" aria-hidden />
+
         <p className="auth-screen__tagline">
-          <span className="auth-screen__tagline-line auth-screen__tagline-line--blue">
-            Rencontre des sportifs
-          </span>
-          <span className="auth-screen__tagline-line auth-screen__tagline-line--orange">
-            près de toi
-          </span>
+          Rencontre des sportifs
+          <br />
+          près de toi
         </p>
+
         <div className="auth-screen__actions">
-          <button type="button" className="auth-screen__btn auth-screen__btn--google" onClick={handleGoogle}>
+          <button
+            type="button"
+            className="auth-screen__btn auth-screen__btn--google"
+            onClick={handleGoogle}
+          >
             Continuer avec Google
           </button>
-          <p className="auth-screen__sep">ou</p>
-          <button type="button" className="auth-screen__btn auth-screen__btn--phone" onClick={handlePhone}>
+          {/* <p className="auth-screen__sep">ou</p>
+          <button
+            type="button"
+            className="auth-screen__btn auth-screen__btn--phone"
+            onClick={handlePhone}
+          >
             Continuer avec ton numéro
-          </button>
+          </button> */}
           <button type="button" className="auth-screen__help">
             Problème de connexion ?
           </button>

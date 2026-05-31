@@ -17,11 +17,7 @@ export function AuthProvider({ children }) {
       setLoading(false);
       return;
     }
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('Auth state:', event, session?.user?.email);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
         const next = {
           id: session.user.id,
@@ -40,19 +36,21 @@ export function AuthProvider({ children }) {
       }
       setLoading(false);
     });
-
     return () => subscription.unsubscribe();
   }, []);
 
-  const signInGoogle = useCallback(async () => {
+  const signInGoogle = useCallback(() => {
     if (isSupabaseConfigured && supabase) {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const isNative = window.location.protocol === 'capacitor:';
+      const redirectTo = isNative
+        ? 'com.deuxgain.app://auth/callback'
+        : window.location.origin + '/auth/callback';
+      supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
+        options: { redirectTo, skipBrowserRedirect: false },
+      }).then(({ error }) => {
+        if (error) console.error('OAuth error:', error);
       });
-      if (error) throw error;
       return;
     }
     setUser(MOCK_GOOGLE);
@@ -78,14 +76,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const value = useMemo(
-    () => ({
-      user,
-      loading,
-      isMock: !isSupabaseConfigured,
-      signInGoogle,
-      signInPhone,
-      signOut,
-    }),
+    () => ({ user, loading, isMock: !isSupabaseConfigured, signInGoogle, signInPhone, signOut }),
     [user, loading, signInGoogle, signInPhone, signOut]
   );
 
