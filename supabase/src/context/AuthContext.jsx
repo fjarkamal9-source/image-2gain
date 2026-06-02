@@ -56,6 +56,7 @@ export function AuthProvider({ children }) {
       const redirectTo = isNative
         ? 'com.deuxgain.app://auth/callback'
         : window.location.origin + '/auth/callback';
+      alert(`origin: ${window.location.origin}\nredirectTo: ${redirectTo}\nprotocol: ${window.location.protocol}`);
       supabase.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo, skipBrowserRedirect: false },
