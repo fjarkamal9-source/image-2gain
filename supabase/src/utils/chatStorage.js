@@ -100,7 +100,7 @@ export async function fetchChatConversations(userId) {
   const otherIds = matches.map((m) => (m.user_a === userId ? m.user_b : m.user_a));
   const matchIds = matches.map((m) => m.id);
 
-  const [{ data: profiles }, { data: messages }] = await Promise.all([
+  const [profilesRes, messagesRes] = await Promise.all([
     supabase.from('profiles').select('id, prenom, photo_url').in('id', otherIds),
     supabase
       .from('messages')
@@ -108,6 +108,18 @@ export async function fetchChatConversations(userId) {
       .in('match_id', matchIds)
       .order('created_at', { ascending: false }),
   ]);
+
+  if (profilesRes.error) {
+    console.error('fetchChatConversations profiles', profilesRes.error);
+    return [];
+  }
+  if (messagesRes.error) {
+    console.error('fetchChatConversations messages', messagesRes.error);
+    return [];
+  }
+
+  const { data: profiles } = profilesRes;
+  const { data: messages } = messagesRes;
 
   const profileById = Object.fromEntries((profiles || []).map((p) => [p.id, p]));
   const lastByMatch = {};

@@ -174,9 +174,7 @@ export async function uploadProfileAvatar(userId, file) {
 
   if (uploadError) {
     console.error('avatar upload', uploadError);
-    const dataUrl = await readFileAsDataUrl(file);
-    setProfilePhotoUrl(dataUrl);
-    return dataUrl;
+    throw new Error(uploadError.message || "Échec de l'upload de la photo");
   }
 
   const { data } = supabase.storage.from('avatars').getPublicUrl(path);

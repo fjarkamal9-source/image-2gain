@@ -26,7 +26,7 @@ export default function AuthCallback() {
     };
     window.addEventListener('capacitor-url-open', handler);
     return () => window.removeEventListener('capacitor-url-open', handler);
-  }, []);
+  }, [runCallback]);
 
   return (
     <div className="app-frame splash-screen">

@@ -3,8 +3,14 @@ import { calcAge, parseBirthDate } from './age';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
 export async function flushOnboardingToProfile() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
+  let user;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data?.user;
+  } catch {
+    return null;
+  }
+  if (!user) return null;
   const session = { id: user.id, email: user.email, prenom: user.user_metadata?.full_name?.split(' ')?.[0] || 'Sportif' };
 
   const profile = {
@@ -77,7 +83,13 @@ export async function getUserProfile() {
   } catch {
     /* ignore */
   }
-  const { data: { user } } = await supabase.auth.getUser();
+  let user;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data?.user;
+  } catch {
+    return null;
+  }
   return user
     ? {
         id: user.id,

@@ -29,6 +29,11 @@ export default function OnboardingGeolocation() {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude: lat, longitude: lng } = pos.coords;
+        if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+          console.error('Coordonnées GPS invalides :', lat, lng);
+          navigate('/onboarding/motivation-final');
+          return;
+        }
         const ville = await reverseGeocode(lat, lng);
         setOnboarding('ville', ville);
         setOnboarding('lat', lat);

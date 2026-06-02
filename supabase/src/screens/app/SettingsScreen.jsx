@@ -109,8 +109,14 @@ export default function SettingsScreen() {
     if (!window.confirm('Es-tu sûr de vouloir supprimer ton compte ?')) return;
 
     if (isSupabaseConfigured && supabase && userId) {
-      await supabase.rpc('delete_own_account');
-      await supabase.auth.signOut();
+      if (!supabase) return;
+      try {
+        await supabase.rpc('delete_own_account');
+        await supabase.auth.signOut();
+      } catch (err) {
+        console.error('delete account error:', err);
+        return;
+      }
     }
 
     localStorage.clear();

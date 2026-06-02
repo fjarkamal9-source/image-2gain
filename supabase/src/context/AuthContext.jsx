@@ -27,7 +27,7 @@ export function AuthProvider({ children }) {
         });
       }
       setLoading(false);
-    });
+    }).catch(err => console.error('getSession error:', err));
 
     const {
       data: { subscription },
