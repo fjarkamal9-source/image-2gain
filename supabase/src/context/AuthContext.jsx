@@ -50,18 +50,17 @@ export function AuthProvider({ children }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signInGoogle = useCallback(() => {
+  const signInGoogle = useCallback(async () => {
     if (isSupabaseConfigured && supabase) {
       const isNative = window.location.protocol === 'capacitor:';
       const redirectTo = isNative
         ? 'com.deuxgain.app://auth/callback'
         : window.location.origin + '/auth/callback';
-      supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo, skipBrowserRedirect: false },
-      }).then(({ error }) => {
-        if (error) console.error('OAuth error:', error);
       });
+      if (error) console.error('OAuth error:', error);
       return;
     }
     if (import.meta.env.DEV) {
