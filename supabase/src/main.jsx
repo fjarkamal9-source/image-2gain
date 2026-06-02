@@ -14,7 +14,7 @@ CapacitorApp.addListener('appUrlOpen', async ({ url }) => {
   const code = urlObj.searchParams.get('code');
   const hash = urlObj.hash;
   if (code) {
-    window.history.pushState({}, '', '/auth/callback?code=' + code);
+    window.history.pushState({}, '', '/auth/callback?code=' + encodeURIComponent(code));
   } else if (hash) {
     window.history.pushState({}, '', '/auth/callback' + hash);
   }

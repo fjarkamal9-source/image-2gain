@@ -8,16 +8,11 @@ import { isSupabaseConfigured } from '../../lib/supabase';
 import {
   fetchMatchParticipant,
   fetchMessages,
-  loadChatMessages,
-  pickAutoReply,
-  saveChatMessages,
   sendChatMessage,
   subscribeToMatchMessages,
 } from '../../utils/chatStorage';
-import { getSession } from '../../utils/storage';
-
 function getCurrentUserId(user) {
-  return user?.id || getSession()?.id || null;
+  return user?.id ?? null;
 }
 
 export default function ChatConversation() {
@@ -29,7 +24,6 @@ export default function ChatConversation() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [text, setText] = useState('');
-  const replyTimer = useRef(null);
   const bottomRef = useRef(null);
   const messageIdsRef = useRef(new Set());
 
@@ -37,22 +31,24 @@ export default function ChatConversation() {
     messageIdsRef.current = new Set(list.map((m) => m.id));
   }, []);
 
-  const loadThread = useCallback(async () => {
-    if (!matchId) return;
-    setLoading(true);
-    const [participantInfo, msgs] = await Promise.all([
-      fetchMatchParticipant(matchId, currentUserId),
-      fetchMessages(matchId, currentUserId),
-    ]);
-    setParticipant(participantInfo);
-    setMessages(msgs);
-    syncMessageIds(msgs);
-    setLoading(false);
-  }, [matchId, currentUserId, syncMessageIds]);
-
   useEffect(() => {
-    loadThread();
-  }, [loadThread]);
+    let cancelled = false;
+    const run = async () => {
+      if (!matchId) return;
+      setLoading(true);
+      const [participantInfo, msgs] = await Promise.all([
+        fetchMatchParticipant(matchId, currentUserId),
+        fetchMessages(matchId, currentUserId),
+      ]);
+      if (cancelled) return;
+      setParticipant(participantInfo);
+      setMessages(msgs);
+      syncMessageIds(msgs);
+      setLoading(false);
+    };
+    run();
+    return () => { cancelled = true; };
+  }, [matchId, currentUserId, syncMessageIds]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -70,56 +66,20 @@ export default function ChatConversation() {
     return unsubscribe;
   }, [matchId, currentUserId]);
 
-  useEffect(
-    () => () => {
-      if (replyTimer.current) clearTimeout(replyTimer.current);
-    },
-    []
-  );
-
   const send = async () => {
     const content = text.trim();
-    if (!content || !matchId) return;
+    if (!content || !matchId || !isSupabaseConfigured || !currentUserId) return;
 
     setText('');
 
-    if (isSupabaseConfigured && currentUserId) {
-      const sent = await sendChatMessage(matchId, currentUserId, content);
-      if (sent) {
-        if (!messageIdsRef.current.has(sent.id)) {
-          messageIdsRef.current.add(sent.id);
-          setMessages((prev) => [...prev, sent]);
-        }
-      }
-      return;
+    const sent = await sendChatMessage(matchId, currentUserId, content);
+    if (sent && !messageIdsRef.current.has(sent.id)) {
+      messageIdsRef.current.add(sent.id);
+      setMessages((prev) => [...prev, sent]);
     }
-
-    const myMsg = {
-      id: Date.now(),
-      sender: 'me',
-      content,
-      time: Date.now(),
-    };
-    const next = [...messages, myMsg];
-    setMessages(next);
-    saveChatMessages(matchId, next);
-    messageIdsRef.current.add(myMsg.id);
-
-    if (replyTimer.current) clearTimeout(replyTimer.current);
-    replyTimer.current = setTimeout(() => {
-      setMessages((current) => {
-        const reply = {
-          id: Date.now() + 1,
-          sender: 'other',
-          content: pickAutoReply(),
-          time: Date.now(),
-        };
-        const updated = [...current, reply];
-        saveChatMessages(matchId, updated);
-        return updated;
-      });
-    }, 1500);
   };
+
+  const chatUnavailable = !isSupabaseConfigured || !currentUserId;
 
   return (
     <div className="app-frame app-frame--fixed chat-conversation">
@@ -130,7 +90,11 @@ export default function ChatConversation() {
         <span className="chat-conv-name">{participant.prenom}</span>
       </header>
       <div className="chat-messages">
-        {loading ? (
+        {chatUnavailable ? (
+          <p className="likes-empty-sub" style={{ textAlign: 'center', padding: 24 }}>
+            Chat indisponible.
+          </p>
+        ) : loading ? (
           <p className="likes-empty-sub" style={{ textAlign: 'center', padding: 24 }}>
             Chargement…
           </p>
@@ -152,9 +116,9 @@ export default function ChatConversation() {
           onChange={(e) => setText(e.target.value)}
           placeholder="Écrire un message…"
           onKeyDown={(e) => e.key === 'Enter' && send()}
-          disabled={loading}
+          disabled={loading || chatUnavailable}
         />
-        <button type="button" onClick={send} aria-label="Envoyer" disabled={loading}>
+        <button type="button" onClick={send} aria-label="Envoyer" disabled={loading || chatUnavailable}>
           ↑
         </button>
       </div>

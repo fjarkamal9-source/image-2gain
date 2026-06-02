@@ -36,6 +36,7 @@ export default function OnboardingGeolocation() {
         }
         const ville = await reverseGeocode(lat, lng);
         setOnboarding('ville', ville);
+        // Données sensibles : lat/lng stockés en localStorage — ne pas logger ces valeurs
         setOnboarding('lat', lat);
         setOnboarding('lng', lng);
         navigate('/onboarding/motivation-final');

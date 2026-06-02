@@ -163,6 +163,16 @@ export async function uploadProfileAvatar(userId, file) {
     return dataUrl;
   }
 
+  const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp'];
+  const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
+
+  if (!ALLOWED_MIME.includes(file.type)) {
+    throw new Error(`Format non supporté : ${file.type || 'inconnu'}. Utilise JPEG, PNG ou WebP.`);
+  }
+  if (file.size > MAX_SIZE) {
+    throw new Error(`Fichier trop lourd (${(file.size / 1024 / 1024).toFixed(1)} MB). Maximum 5 MB.`);
+  }
+
   const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
   const path = `${userId}/${Date.now()}.${ext}`;
 

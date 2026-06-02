@@ -11,28 +11,23 @@ import {
   fetchUnseenLikesCount,
   markLikesAsSeen,
 } from '../utils/likesStorage';
-import { getSession } from '../utils/storage';
 import { useAuth } from '../hooks/useAuth';
 
 const LikesBadgeContext = createContext(null);
 
-function getCurrentUserId(user) {
-  return user?.id || getSession()?.id || null;
-}
-
 export function LikesBadgeProvider({ children }) {
   const { user } = useAuth();
   const [unseenCount, setUnseenCount] = useState(0);
+  const uid = user?.id ?? null;
 
   const refreshUnseenCount = useCallback(async () => {
-    const uid = getCurrentUserId(user);
     if (!uid) {
       setUnseenCount(0);
       return;
     }
     const count = await fetchUnseenLikesCount(uid);
     setUnseenCount(count);
-  }, [user]);
+  }, [uid]);
 
   const markSeen = useCallback(() => {
     markLikesAsSeen();
@@ -44,7 +39,6 @@ export function LikesBadgeProvider({ children }) {
   }, [refreshUnseenCount]);
 
   useEffect(() => {
-    const uid = getCurrentUserId(user);
     if (!isSupabaseConfigured || !supabase || !uid) return undefined;
 
     const channel = supabase
@@ -66,7 +60,7 @@ export function LikesBadgeProvider({ children }) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user, refreshUnseenCount]);
+  }, [uid, refreshUnseenCount]);
 
   const value = useMemo(
     () => ({

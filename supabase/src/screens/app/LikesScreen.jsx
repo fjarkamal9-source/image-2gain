@@ -7,10 +7,8 @@ import { useAuth } from '../../hooks/useAuth';
 import { useLikesBadge } from '../../context/LikesBadgeContext';
 import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 import { fetchLikesReceived, fetchLikesSent } from '../../utils/likesStorage';
-import { getSession } from '../../utils/storage';
-
 function getCurrentUserId(user) {
-  return user?.id || getSession()?.id || null;
+  return user?.id ?? null;
 }
 
 export default function LikesScreen() {

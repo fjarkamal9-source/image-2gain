@@ -4,7 +4,7 @@ import AppHeader from '../../components/layout/AppHeader';
 import AvatarImage from '../../components/ui/AvatarImage';
 import Tag from '../../components/ui/Tag';
 import MatchPopup from '../../components/ui/MatchPopup';
-import { getAvatarColor, MOCK_PROFILES } from '../../data/mockProfiles';
+import { getAvatarColor } from '../../data/mockProfiles';
 import { useAuth } from '../../hooks/useAuth';
 import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 import { getUserProfile } from '../../utils/completeOnboarding';
@@ -21,8 +21,6 @@ import {
   pushPassToSupabase,
   fetchExcludedProfileIds,
 } from '../../utils/likesStorage';
-import { getSession } from '../../utils/storage';
-
 const THRESHOLD = 90;
 const CARD_W = 300;
 const CARD_H = 460;
@@ -61,7 +59,7 @@ function SwipeCard({ profile, style, innerRef, onPointerDown, children }) {
 }
 
 function getCurrentUserId(user) {
-  return user?.id || getSession()?.id || null;
+  return user?.id ?? null;
 }
 
 export default function HomeSwipe() {
@@ -104,7 +102,7 @@ export default function HomeSwipe() {
       setExcludedIds(excluded);
 
       if (!isSupabaseConfigured || !supabase) {
-        setSourceProfiles(MOCK_PROFILES);
+        setSourceProfiles([]);
         setProfilesLoading(false);
         return;
       }
@@ -119,7 +117,7 @@ export default function HomeSwipe() {
 
       if (error) {
         console.error('fetch profiles', error);
-        setSourceProfiles(MOCK_PROFILES);
+        setSourceProfiles([]);
       } else {
         const meProfile = await getUserProfile();
         const mapped = (data || [])
@@ -138,7 +136,7 @@ export default function HomeSwipe() {
 
   const deck = useMemo(() => {
     return filterDiscoveryProfiles(
-      sourceProfiles.length ? sourceProfiles : MOCK_PROFILES,
+      sourceProfiles,
       getDiscoverySettings(),
       excludedIds,
       me
@@ -289,7 +287,7 @@ export default function HomeSwipe() {
         {profilesLoading ? (
           <p className="empty-deck">Chargement des profils…</p>
         ) : visible.length === 0 ? (
-          <p className="empty-deck">Plus de profils pour le moment. Reviens plus tard !</p>
+          <p className="empty-deck">Aucun profil disponible pour le moment. Reviens plus tard !</p>
         ) : (
           visible.map((p, i) => {
             const scale = 1 - i * 0.04;

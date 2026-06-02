@@ -1,26 +1,4 @@
-import { MOCK_PROFILES } from '../data/mockProfiles';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
-
-const AUTO_REPLIES = [
-  "Super ! On s'entraîne ensemble 💪",
-  'Parfait, à bientôt !',
-  'Cool ! Tu fais quelle salle ?',
-  'On se retrouve quand ?',
-  "Trop bien ! Hâte de s'entraîner !",
-];
-
-const DEFAULT_THREAD = [
-  { id: 1, sender: 'other', content: 'Salut ! Tu es dispo cette semaine ?', time: Date.now() - 3600000 },
-  { id: 2, sender: 'me', content: 'Oui, jeudi soir ça te va ?', time: Date.now() - 3500000 },
-  { id: 3, sender: 'other', content: 'Parfait, on se retrouve à la salle !', time: Date.now() - 3400000 },
-];
-
-const MOCK_CONVERSATIONS = [
-  { id: 'mock-p1', prenom: 'Sofia', photo: '', last: 'À demain 💪', time: '10:33', unread: 0 },
-  { id: 'mock-p2', prenom: 'Lucas', photo: '', last: 'Tu fais quelle salle ?', time: 'Hier', unread: 2 },
-  { id: 'mock-p3', prenom: 'Camila', photo: '', last: "Super séance aujourd'hui !", time: 'Lun', unread: 0 },
-  { id: 'mock-p4', prenom: 'Rayan', photo: '', last: 'On remet ça la semaine prochaine ?', time: 'Dim', unread: 0 },
-];
 
 function storageKey(matchId) {
   return `chat_messages_${matchId}`;
@@ -81,7 +59,7 @@ export function pickAutoReply() {
 /** Liste des conversations (match + dernier message + profil de l'autre). */
 export async function fetchChatConversations(userId) {
   if (!userId || !isSupabaseConfigured || !supabase) {
-    return MOCK_CONVERSATIONS;
+    return [];
   }
 
   const { data: matches, error: matchError } = await supabase
@@ -106,7 +84,8 @@ export async function fetchChatConversations(userId) {
       .from('messages')
       .select('match_id, body, created_at, sender_id')
       .in('match_id', matchIds)
-      .order('created_at', { ascending: false }),
+      .order('created_at', { ascending: false })
+      .limit(200),
   ]);
 
   if (profilesRes.error) {

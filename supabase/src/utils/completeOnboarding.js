@@ -50,7 +50,7 @@ export async function flushOnboardingToProfile() {
 
   if (isSupabaseConfigured && supabase) {
     try {
-      await supabase.from('profiles').upsert({
+      const { error } = await supabase.from('profiles').upsert({
         id: profile.id,
         email: profile.email,
         prenom: profile.prenom,
@@ -68,8 +68,15 @@ export async function flushOnboardingToProfile() {
         onboarding_completed: true,
         visible: true,
       });
-    } catch {
-      /* mock mode fallback */
+      if (error) {
+        console.error('flushOnboardingToProfile upsert', error);
+        throw new Error(error.message || 'Échec de la sauvegarde du profil');
+      }
+    } catch (err) {
+      if (err.message && err.message !== 'Échec de la sauvegarde du profil') {
+        console.error('flushOnboardingToProfile', err);
+      }
+      throw err;
     }
   }
 
@@ -83,6 +90,7 @@ export async function getUserProfile() {
   } catch {
     /* ignore */
   }
+  if (!isSupabaseConfigured || !supabase) return null;
   let user;
   try {
     const { data } = await supabase.auth.getUser();
@@ -93,11 +101,11 @@ export async function getUserProfile() {
   return user
     ? {
         id: user.id,
-        prenom: user.user_metadata?.full_name?.split(' ')?.[0] || 'K',
+        prenom: user.user_metadata?.full_name?.split(' ')?.[0] || '',
         email: user.email,
-        ville: 'Paris',
+        ville: '',
         max_distance: 25,
-        age: 28,
+        age: null,
         intentions: [],
         sports: [],
         photo_url: '',

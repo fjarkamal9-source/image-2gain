@@ -4,7 +4,6 @@ import BackButton from '../../components/ui/BackButton';
 import Toggle from '../../components/ui/Toggle';
 import { useAuth } from '../../hooks/useAuth';
 import { isSupabaseConfigured, supabase } from '../../lib/supabase';
-import { getSession } from '../../utils/storage';
 import {
   fetchProfileSettings,
   saveProfileSettings,
@@ -20,7 +19,7 @@ const FREQUENCES = ['1x/sem', '2x/sem', '3x/sem', '4x/sem', '5x/sem'];
 const LOOKING_FOR = ['Des hommes', 'Des femmes', 'Tout le monde'];
 
 function getUserId(user) {
-  return user?.id || getSession()?.id || null;
+  return user?.id ?? null;
 }
 
 export default function SettingsScreen() {
@@ -109,7 +108,6 @@ export default function SettingsScreen() {
     if (!window.confirm('Es-tu sûr de vouloir supprimer ton compte ?')) return;
 
     if (isSupabaseConfigured && supabase && userId) {
-      if (!supabase) return;
       try {
         await supabase.rpc('delete_own_account');
         await supabase.auth.signOut();

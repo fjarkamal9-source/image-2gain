@@ -56,7 +56,6 @@ export function AuthProvider({ children }) {
       const redirectTo = isNative
         ? 'com.deuxgain.app://auth/callback'
         : window.location.origin + '/auth/callback';
-      alert(`origin: ${window.location.origin}\nredirectTo: ${redirectTo}\nprotocol: ${window.location.protocol}`);
       supabase.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo, skipBrowserRedirect: false },
@@ -65,7 +64,11 @@ export function AuthProvider({ children }) {
       });
       return;
     }
-    setUser(MOCK_GOOGLE);
+    if (import.meta.env.DEV) {
+      setUser(MOCK_GOOGLE);
+    } else {
+      console.error('signInGoogle: Supabase non configuré');
+    }
   }, []);
 
   const signOut = useCallback(async () => {
@@ -74,6 +77,10 @@ export function AuthProvider({ children }) {
     }
     localStorage.removeItem('2gain_user_profile');
     localStorage.removeItem('2gain_profile_complete');
+    localStorage.removeItem('profile_photo_url');
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith('onboarding_'))
+      .forEach((k) => localStorage.removeItem(k));
     setUser(null);
   }, []);
 

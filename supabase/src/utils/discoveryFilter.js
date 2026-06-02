@@ -1,4 +1,3 @@
-import { MOCK_PROFILES } from '../data/mockProfiles';
 import { getOnboarding, getOnboardingJSON } from './storage';
 import { getDiscoverySettings } from './settingsStorage';
 
@@ -151,7 +150,8 @@ export function getViewerDiscoveryContext(viewer) {
 }
 
 /** Score pondéré 0–100. */
-export function computeDiscoveryScore(profile, viewer, settings = getDiscoverySettings()) {
+export function computeDiscoveryScore(profile, viewer, settings) {
+  if (!settings) settings = getDiscoverySettings();
   const ctx = getViewerDiscoveryContext(viewer);
   const maxKm = Math.min(settings.distance, ctx.max_distance ?? settings.distance);
   const profileSports = getProfileSports(profile);
@@ -172,7 +172,7 @@ export function computeDiscoveryScore(profile, viewer, settings = getDiscoverySe
 }
 
 export function filterDiscoveryProfiles(
-  profiles = MOCK_PROFILES,
+  profiles = [],
   settings = getDiscoverySettings(),
   excludedIds = new Set(),
   viewer = null

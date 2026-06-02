@@ -1,4 +1,3 @@
-import { MOCK_PROFILES } from '../data/mockProfiles';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
 const LIKES_SENT = 'likes_envoyes';
@@ -207,13 +206,14 @@ export async function fetchExcludedProfileIds(userId) {
   const now = new Date().toISOString();
 
   const [likesRes, passesRes, hidesRes] = await Promise.all([
-    supabase.from('likes').select('receiver_id').eq('sender_id', userId),
+    supabase.from('likes').select('receiver_id').eq('sender_id', userId).limit(500),
     supabase
       .from('passes')
       .select('passed_id')
       .eq('passer_id', userId)
-      .gt('expires_at', now),
-    supabase.from('hides').select('hidden_id').eq('hider_id', userId),
+      .gt('expires_at', now)
+      .limit(500),
+    supabase.from('hides').select('hidden_id').eq('hider_id', userId).limit(500),
   ]);
 
   likesRes.data?.forEach((row) => excluded.add(row.receiver_id));
@@ -267,22 +267,12 @@ function mapProfileFromJoin(row, profileKey = 'profiles') {
   };
 }
 
-function mockLikesList(ids) {
-  return MOCK_PROFILES.filter((p) => ids.includes(p.id)).map((p) => ({
-    likeId: p.id,
-    id: p.id,
-    prenom: p.prenom,
-    photo: p.photo || '',
-    created_at: null,
-  }));
-}
-
 /** Likes reçus (receiver_id = moi) + profil expéditeur. */
 export async function fetchLikesReceived(userId) {
   if (!userId) return [];
 
   if (!isSupabaseConfigured || !supabase) {
-    return mockLikesList(getLikesReceivedIds());
+    return [];
   }
 
   const { data, error } = await supabase
@@ -304,7 +294,7 @@ export async function fetchLikesReceived(userId) {
 
   if (error) {
     console.error('fetchLikesReceived', error);
-    return mockLikesList(getLikesReceivedIds());
+    return [];
   }
 
   return (data || []).map((row) => mapProfileFromJoin(row));
@@ -315,7 +305,7 @@ export async function fetchLikesSent(userId) {
   if (!userId) return [];
 
   if (!isSupabaseConfigured || !supabase) {
-    return mockLikesList(getLikesSent());
+    return [];
   }
 
   const { data, error } = await supabase
@@ -337,7 +327,7 @@ export async function fetchLikesSent(userId) {
 
   if (error) {
     console.error('fetchLikesSent', error);
-    return mockLikesList(getLikesSent());
+    return [];
   }
 
   return (data || []).map((row) => mapProfileFromJoin(row));

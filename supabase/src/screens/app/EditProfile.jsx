@@ -4,7 +4,6 @@ import BackButton from '../../components/ui/BackButton';
 import AvatarImage from '../../components/ui/AvatarImage';
 import CTAButton from '../../components/ui/CTAButton';
 import { useAuth } from '../../hooks/useAuth';
-import { getSession } from '../../utils/storage';
 import {
   fetchEditableProfile,
   saveProfileEdit,
@@ -30,7 +29,7 @@ const INTENTIONS = [
 ];
 
 function getUserId(user) {
-  return user?.id || getSession()?.id || null;
+  return user?.id ?? null;
 }
 
 export default function EditProfile() {

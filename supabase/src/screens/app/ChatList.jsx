@@ -5,10 +5,8 @@ import AvatarImage from '../../components/ui/AvatarImage';
 import { useAuth } from '../../hooks/useAuth';
 import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 import { fetchChatConversations } from '../../utils/chatStorage';
-import { getSession } from '../../utils/storage';
-
 function getCurrentUserId(user) {
-  return user?.id || getSession()?.id || null;
+  return user?.id ?? null;
 }
 
 export default function ChatList() {

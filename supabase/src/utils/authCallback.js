@@ -49,13 +49,5 @@ async function resolveRoute(session) {
     if (profile?.onboarding_completed) return '/home';
   } catch { /* ignore */ }
 
-  try {
-    const local = localStorage.getItem('2gain_user_profile');
-    if (local) {
-      const parsed = JSON.parse(local);
-      if (parsed?.prenom && parsed?.ville) return '/home';
-    }
-  } catch { /* ignore */ }
-
   return '/onboarding/email';
 }
