@@ -3,6 +3,8 @@ import { calcAge, parseBirthDate } from './age';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
 export async function flushOnboardingToProfile() {
+  if (!isSupabaseConfigured || !supabase) return null;
+
   let user;
   try {
     const { data } = await supabase.auth.getUser();

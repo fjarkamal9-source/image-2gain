@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
@@ -52,15 +53,15 @@ export function AuthProvider({ children }) {
 
   const signInGoogle = useCallback(async () => {
     if (isSupabaseConfigured && supabase) {
-      const isNative = window.location.protocol === 'capacitor:';
-      const redirectTo = isNative
+      const redirectTo = Capacitor.isNativePlatform()
         ? 'com.deuxgain.app://auth/callback'
-        : window.location.origin + '/auth/callback';
-      const { error } = await supabase.auth.signInWithOAuth({
+        : `${window.location.origin}/auth/callback`;
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo, skipBrowserRedirect: false },
+        options: { redirectTo, skipBrowserRedirect: true },
       });
-      if (error) console.error('OAuth error:', error);
+      if (error) { console.error('OAuth error:', error); return; }
+      if (data?.url) { window.location.href = data.url; }
       return;
     }
     if (import.meta.env.DEV) {

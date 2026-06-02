@@ -50,29 +50,3 @@ export function clearOnboarding() {
   }
 }
 
-export const SESSION_KEY = '2gain_dev_session';
-
-export function getSession() {
-  try {
-    const raw = localStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
-export function setSession(user) {
-  try {
-    localStorage.setItem(SESSION_KEY, JSON.stringify(user));
-  } catch {
-    /* ignore */
-  }
-}
-
-export function clearSession() {
-  try {
-    localStorage.removeItem(SESSION_KEY);
-  } catch {
-    /* ignore */
-  }
-}

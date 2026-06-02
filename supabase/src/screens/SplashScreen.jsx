@@ -1,14 +1,19 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo2Gain from '../components/ui/Logo2Gain';
-import { getSession } from '../utils/storage';
+import { isSupabaseConfigured, supabase } from '../lib/supabase';
+
 export default function SplashScreen() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      const session = getSession();
-      navigate(session ? '/home' : '/auth', { replace: true });
+    const t = setTimeout(async () => {
+      if (!isSupabaseConfigured || !supabase) {
+        navigate('/auth', { replace: true });
+        return;
+      }
+      const { data } = await supabase.auth.getSession();
+      navigate(data?.session ? '/home' : '/auth', { replace: true });
     }, 2500);
     return () => clearTimeout(t);
   }, [navigate]);

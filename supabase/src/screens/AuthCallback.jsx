@@ -25,6 +25,7 @@ export default function AuthCallback() {
 
   useEffect(() => {
     const handler = () => {
+      hasExchanged.current = false;
       runCallback();
     };
     window.addEventListener('capacitor-url-open', handler);
