@@ -62,7 +62,11 @@ export function AuthProvider({ children }) {
       });
       if (error) { console.error('OAuth error:', error); return; }
       alert('OAuth URL: ' + data?.url?.substring(0, 80));
-      if (data?.url) { window.location.href = data.url; }
+      if (data?.url) {
+        const a = document.createElement('a');
+        a.href = data.url;
+        a.click();
+      }
       return;
     }
     if (import.meta.env.DEV) {
