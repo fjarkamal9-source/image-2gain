@@ -4,7 +4,6 @@ import AppShell from './components/layout/AppShell';
 import OnboardingLayout from './components/layout/OnboardingLayout';
 import AuthScreen from './screens/AuthScreen';
 import AuthCallback from './screens/AuthCallback';
-import OnboardingEmail from './screens/onboarding/OnboardingEmail';
 import OnboardingWelcomeRules from './screens/onboarding/OnboardingWelcomeRules';
 import OnboardingFirstName from './screens/onboarding/OnboardingFirstName';
 import OnboardingWelcomePersonalized from './screens/onboarding/OnboardingWelcomePersonalized';
@@ -41,7 +40,6 @@ export default function App() {
       <Route path="/auth/callback" element={<AuthCallback />} />
 
       <Route path="/onboarding" element={<OnboardingLayout />}>
-        <Route path="email" element={<OnboardingEmail />} />
         <Route path="welcome-rules" element={<OnboardingWelcomeRules />} />
         <Route path="first-name" element={<OnboardingFirstName />} />
         <Route path="welcome-personalized" element={<OnboardingWelcomePersonalized />} />

@@ -49,5 +49,5 @@ async function resolveRoute(session) {
     if (profile?.onboarding_completed) return '/home';
   } catch { /* ignore */ }
 
-  return '/onboarding/email';
+  return '/onboarding/welcome-rules';
 }
