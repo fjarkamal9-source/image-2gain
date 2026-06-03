@@ -107,22 +107,22 @@ export default function HomeSwipe() {
         return;
       }
 
-      let query = supabase.from('profiles').select('*').limit(20);
-      if (uid) {
-        query = query.neq('id', uid);
-      }
+      const meProfile = await getUserProfile();
+      if (cancelled) return;
 
-      const { data, error } = await query;
+      const { data, error } = await supabase.rpc('get_profiles_with_distance', {
+        user_lat: meProfile?.lat ?? 48.8566,
+        user_lng: meProfile?.lng ?? 2.3522,
+      });
       if (cancelled) return;
 
       if (error) {
         console.error('fetch profiles', error);
         setSourceProfiles([]);
       } else {
-        const meProfile = await getUserProfile();
         const mapped = (data || [])
           .filter((row) => !excluded.has(row.id) && isProfileVisibleInDiscovery(row))
-          .map((row) => mapRowToSwipeProfile(row, meProfile?.lat, meProfile?.lng));
+          .map((row) => mapRowToSwipeProfile(row));
         setSourceProfiles(mapped);
       }
 

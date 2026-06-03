@@ -1,33 +1,19 @@
-import { haversineKm } from './discoveryFilter';
-
-/** Normalise une ligne `profiles` Supabase pour l’UI swipe. */
-export function mapRowToSwipeProfile(row, userLat, userLng) {
+/** Normalise une ligne retournée par get_profiles_with_distance() pour l'UI swipe. */
+export function mapRowToSwipeProfile(row) {
   const intentions = Array.isArray(row.intentions) ? row.intentions : [];
   const sports = Array.isArray(row.sports) ? row.sports : [];
 
-  let distance = 99;
-  if (
-    userLat != null &&
-    userLng != null &&
-    row.lat != null &&
-    row.lng != null
-  ) {
-    distance = Math.round(haversineKm(userLat, userLng, row.lat, row.lng) * 10) / 10;
-  }
-
   return {
     id: row.id,
-    prenom: row.prenom || 'Sportif',
-    age: row.age ?? 25,
-    ville: row.ville || '',
-    distance,
+    prenom: row.first_name || 'Sportif',
+    ville: row.city || '',
+    distance: row.distance_km ?? 99,
     objectif: intentions[0] || 'Partenaire sportif',
     sport: sports[0] || 'Sport',
     sports,
-    frequence: row.frequence || null,
+    frequence: row.frequency || null,
     niveau: row.niveau || 'Intermédiaire',
-    lat: row.lat,
-    lng: row.lng,
     photo: row.photo_url || '',
+    // lat/lng supprimés — jamais transmis au client
   };
 }
