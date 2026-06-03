@@ -53,19 +53,31 @@ export function AuthProvider({ children }) {
 
   const signInGoogle = useCallback(async () => {
     if (isSupabaseConfigured && supabase) {
-      const redirectTo = Capacitor.isNativePlatform()
+      const isNative = Capacitor.isNativePlatform();
+      const redirectTo = isNative
         ? 'com.deuxgain.app://auth/callback'
         : `${window.location.origin}/auth/callback`;
+
+      // Ouvrir la fenêtre AVANT le await (contexte synchrone)
+      const win = isNative ? null : window.open('', '_self');
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo, skipBrowserRedirect: true },
       });
-      if (error) { console.error('OAuth error:', error); return; }
-      alert('OAuth URL: ' + data?.url?.substring(0, 80));
+
+      if (error) {
+        console.error('OAuth error:', error);
+        if (win) win.close();
+        return;
+      }
+
       if (data?.url) {
-        const a = document.createElement('a');
-        a.href = data.url;
-        a.click();
+        if (win) {
+          win.location.href = data.url;
+        } else {
+          window.location.href = data.url;
+        }
       }
       return;
     }
