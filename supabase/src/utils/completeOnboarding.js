@@ -56,7 +56,6 @@ export async function flushOnboardingToProfile() {
         id: profile.id,
         email: profile.email,
         prenom: profile.prenom,
-        age: profile.age,
         gender: profile.gender,
         looking_for: profile.looking_for,
         max_distance: profile.max_distance,
