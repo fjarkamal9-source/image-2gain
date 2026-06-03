@@ -40,6 +40,14 @@ export async function resolvePostOAuthRoute() {
 async function resolveRoute(session) {
   const user = session.user;
 
+  // S'assurer que le client a bien le token avant la requête DB (race condition sessionStorage)
+  try {
+    await supabase.auth.setSession({
+      access_token: session.access_token,
+      refresh_token: session.refresh_token,
+    });
+  } catch { /* ignore */ }
+
   try {
     const { data: profile } = await supabase
       .from('profiles')

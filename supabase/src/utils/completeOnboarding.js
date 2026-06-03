@@ -5,20 +5,21 @@ import { isSupabaseConfigured, supabase } from '../lib/supabase';
 export async function flushOnboardingToProfile() {
   if (!isSupabaseConfigured || !supabase) return null;
 
-  let user;
+  let session;
   try {
-    const { data } = await supabase.auth.getUser();
-    user = data?.user;
+    const { data } = await supabase.auth.getSession();
+    session = data?.session;
   } catch {
     return null;
   }
-  if (!user) return null;
-  const session = { id: user.id, email: user.email, prenom: user.user_metadata?.full_name?.split(' ')?.[0] || 'Sportif' };
+  if (!session?.user) return null;
+  const user = session.user;
+  const userPrenom = user.user_metadata?.full_name?.split(' ')?.[0] || 'Sportif';
 
   const profile = {
-    id: session.id,
-    email: getOnboarding('email') || session.email || '',
-    prenom: getOnboarding('prenom') || session.prenom || 'Sportif',
+    id: user.id,
+    email: getOnboarding('email') || user.email || '',
+    prenom: getOnboarding('prenom') || userPrenom,
     birth_day: getOnboarding('birth_day'),
     birth_month: getOnboarding('birth_month'),
     birth_year: getOnboarding('birth_year'),
