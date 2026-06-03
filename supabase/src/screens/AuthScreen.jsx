@@ -8,7 +8,8 @@ export default function AuthScreen() {
 
   const handleGoogle = async () => {
     try {
-      await signInGoogle();
+      const result = await signInGoogle();
+      alert('signInGoogle result: ' + JSON.stringify(result));
       if (!isSupabaseConfigured) {
         navigate('/onboarding/email');
       }

@@ -61,6 +61,7 @@ export function AuthProvider({ children }) {
         options: { redirectTo, skipBrowserRedirect: true },
       });
       if (error) { console.error('OAuth error:', error); return; }
+      alert('OAuth URL: ' + data?.url?.substring(0, 80));
       if (data?.url) { window.location.href = data.url; }
       return;
     }
