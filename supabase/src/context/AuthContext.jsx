@@ -1,10 +1,17 @@
 import { Capacitor } from '@capacitor/core';
 import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
+import { submitOAuthRedirect } from '../utils/oauthRedirect';
 
 export const AuthContext = createContext(null);
 
 const MOCK_GOOGLE = { id: 'mock-u1', email: 'kamal@2gain.app', prenom: 'K' };
+
+function getOAuthRedirectTo() {
+  return Capacitor.isNativePlatform()
+    ? 'com.deuxgain.app://auth/callback'
+    : `${window.location.origin}/auth/callback`;
+}
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -51,42 +58,64 @@ export function AuthProvider({ children }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  /**
+   * Prépare l'URL OAuth (PKCE) sans naviguer.
+   * Sur le web, l'URL doit être utilisée dans un vrai <a href> pour Safari.
+   */
+  const fetchGoogleOAuthUrl = useCallback(async () => {
+    if (!isSupabaseConfigured || !supabase) return null;
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: getOAuthRedirectTo(),
+        skipBrowserRedirect: true,
+      },
+    });
+
+    if (error) {
+      console.error('OAuth URL error:', error);
+      return null;
+    }
+
+    return data?.url ?? null;
+  }, []);
+
+  /** Android/iOS : navigation programmée après récupération de l'URL. */
   const signInGoogle = useCallback(async () => {
     if (isSupabaseConfigured && supabase) {
-      const isNative = Capacitor.isNativePlatform();
-      const redirectTo = isNative
-        ? 'com.deuxgain.app://auth/callback'
-        : `${window.location.origin}/auth/callback`;
+      if (Capacitor.isNativePlatform()) {
+        const url = await fetchGoogleOAuthUrl();
+        if (url) submitOAuthRedirect(url);
+        return { url };
+      }
 
-      // Ouvrir la fenêtre AVANT le await (contexte synchrone)
-      const win = isNative ? null : window.open('', '_self');
-
+      // Web programmatique (fallback) : laisser Supabase rediriger si possible
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo, skipBrowserRedirect: true },
+        options: {
+          redirectTo: getOAuthRedirectTo(),
+          skipBrowserRedirect: false,
+        },
       });
 
       if (error) {
         console.error('OAuth error:', error);
-        if (win) win.close();
-        return;
+        return { error };
       }
 
-      if (data?.url) {
-        if (win) {
-          win.location.href = data.url;
-        } else {
-          window.location.href = data.url;
-        }
-      }
-      return;
+      if (data?.url) submitOAuthRedirect(data.url);
+      return { url: data?.url ?? null };
     }
+
     if (import.meta.env.DEV) {
       setUser(MOCK_GOOGLE);
-    } else {
-      console.error('signInGoogle: Supabase non configuré');
+      return { mock: true };
     }
-  }, []);
+
+    console.error('signInGoogle: Supabase non configuré');
+    return { error: 'not_configured' };
+  }, [fetchGoogleOAuthUrl]);
 
   const signOut = useCallback(async () => {
     if (isSupabaseConfigured && supabase) {
@@ -102,8 +131,15 @@ export function AuthProvider({ children }) {
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, isMock: !isSupabaseConfigured, signInGoogle, signOut }),
-    [user, loading, signInGoogle, signOut]
+    () => ({
+      user,
+      loading,
+      isMock: !isSupabaseConfigured,
+      signInGoogle,
+      fetchGoogleOAuthUrl,
+      signOut,
+    }),
+    [user, loading, signInGoogle, fetchGoogleOAuthUrl, signOut]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

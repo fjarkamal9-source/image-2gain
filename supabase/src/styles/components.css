@@ -362,6 +362,18 @@
   font-size: 16px;
   margin-bottom: 12px;
 }
+a.auth-screen__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+a.auth-screen__btn[aria-disabled='true'] {
+  opacity: 0.65;
+  pointer-events: none;
+}
 .auth-screen__btn--google {
   background: #ffffff;
   color: #1A3FCC;

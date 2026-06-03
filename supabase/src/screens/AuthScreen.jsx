@@ -1,22 +1,41 @@
-﻿import { useNavigate } from 'react-router-dom';
+﻿import { useEffect, useState } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { useAuth } from '../hooks/useAuth';
 import { isSupabaseConfigured } from '../lib/supabase';
 
 export default function AuthScreen() {
-  const { signInGoogle } = useAuth();
-  const navigate = useNavigate();
+  const { signInGoogle, fetchGoogleOAuthUrl } = useAuth();
+  const [googleOAuthUrl, setGoogleOAuthUrl] = useState(null);
+  const [oauthLoading, setOauthLoading] = useState(isSupabaseConfigured && !Capacitor.isNativePlatform());
 
-  const handleGoogle = async () => {
-    try {
-      const result = await signInGoogle();
-      alert('signInGoogle result: ' + JSON.stringify(result));
-      if (!isSupabaseConfigured) {
-        navigate('/onboarding/email');
+  useEffect(() => {
+    if (Capacitor.isNativePlatform() || !isSupabaseConfigured) {
+      setOauthLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    fetchGoogleOAuthUrl().then((url) => {
+      if (!cancelled) {
+        setGoogleOAuthUrl(url);
+        setOauthLoading(false);
       }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchGoogleOAuthUrl]);
+
+  const handleNativeGoogle = async () => {
+    try {
+      await signInGoogle();
     } catch (err) {
       console.error('OAuth error:', err);
     }
   };
+
+  const googleLabel = oauthLoading ? 'Chargement…' : 'Continuer avec Google';
 
   return (
     <div className="app-frame auth-screen">
@@ -30,13 +49,26 @@ export default function AuthScreen() {
         </p>
 
         <div className="auth-screen__actions">
-          <button
-            type="button"
-            className="auth-screen__btn auth-screen__btn--google"
-            onClick={handleGoogle}
-          >
-            Continuer avec Google
-          </button>
+          {Capacitor.isNativePlatform() ? (
+            <button
+              type="button"
+              className="auth-screen__btn auth-screen__btn--google"
+              onClick={handleNativeGoogle}
+            >
+              Continuer avec Google
+            </button>
+          ) : (
+            <a
+              href={googleOAuthUrl || '#'}
+              className="auth-screen__btn auth-screen__btn--google"
+              aria-disabled={oauthLoading || !googleOAuthUrl}
+              onClick={(e) => {
+                if (!googleOAuthUrl) e.preventDefault();
+              }}
+            >
+              {googleLabel}
+            </a>
+          )}
           <button type="button" className="auth-screen__help">
             Problème de connexion ?
           </button>
