@@ -163,6 +163,9 @@ export async function uploadProfileAvatar(userId, file) {
     return dataUrl;
   }
 
+  const { data: sessionData } = await supabase.auth.getSession();
+  if (!sessionData?.session) throw new Error('Session expirée, reconnecte-toi.');
+
   const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp'];
   const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
 
