@@ -76,13 +76,13 @@ export default function UserProfile() {
 
       <div className="user-profile-scroll">
         <div className="profile-hero">
-          <AvatarImage src={profile.photo_url} name={profile.prenom} size={88} />
+          <AvatarImage src={profile.photo_url} name={profile.first_name} size={88} />
           <div className="profile-hero__info">
             <p className="profile-hero__name">
-              {profile.prenom}, {profile.age} ans
+              {profile.first_name}
             </p>
             <p className="profile-hero__loc">
-              {profile.ville}
+              {profile.city}
             </p>
           </div>
         </div>

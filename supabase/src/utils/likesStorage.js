@@ -261,7 +261,7 @@ function mapProfileFromJoin(row, profileKey = 'profiles') {
   return {
     likeId: row.id,
     id: profileId,
-    prenom: profile?.prenom ?? 'Sportif',
+    prenom: profile?.first_name ?? 'Sportif',
     photo: profile?.photo_url ?? '',
     created_at: row.created_at ?? null,
   };
@@ -284,7 +284,7 @@ export async function fetchLikesReceived(userId) {
       sender_id,
       profiles!likes_sender_id_fkey (
         id,
-        prenom,
+        first_name,
         photo_url
       )
     `
@@ -317,7 +317,7 @@ export async function fetchLikesSent(userId) {
       receiver_id,
       profiles!likes_receiver_id_fkey (
         id,
-        prenom,
+        first_name,
         photo_url
       )
     `

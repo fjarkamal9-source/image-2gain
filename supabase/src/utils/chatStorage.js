@@ -79,7 +79,7 @@ export async function fetchChatConversations(userId) {
   const matchIds = matches.map((m) => m.id);
 
   const [profilesRes, messagesRes] = await Promise.all([
-    supabase.from('profiles').select('id, prenom, photo_url').in('id', otherIds),
+    supabase.from('profiles').select('id, first_name, photo_url').in('id', otherIds),
     supabase
       .from('messages')
       .select('match_id, body, created_at, sender_id')
@@ -113,7 +113,7 @@ export async function fetchChatConversations(userId) {
     return {
       id: m.id,
       otherUserId: otherId,
-      prenom: profile?.prenom ?? 'Sportif',
+      prenom: profile?.first_name ?? 'Sportif',
       photo: profile?.photo_url ?? '',
       last: last?.body ?? 'Nouveau match — dis bonjour !',
       time: formatChatTime(last?.created_at ?? m.created_at),
@@ -150,12 +150,12 @@ export async function fetchMatchParticipant(matchId, userId) {
   const otherUserId = match.user_a === userId ? match.user_b : match.user_a;
   const { data: profile } = await supabase
     .from('profiles')
-    .select('id, prenom, photo_url')
+    .select('id, first_name, photo_url')
     .eq('id', otherUserId)
     .maybeSingle();
 
   return {
-    prenom: profile?.prenom ?? 'Sportif',
+    prenom: profile?.first_name ?? 'Sportif',
     photo: profile?.photo_url ?? '',
     otherUserId,
   };

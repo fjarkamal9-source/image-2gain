@@ -44,7 +44,7 @@ export async function fetchProfileSettings(userId) {
   try {
     const { data, error } = await supabase
       .from('profiles')
-      .select('max_distance, looking_for, niveau, frequence, visible')
+      .select('distance_max, looking_for, niveau, frequency, visible')
       .eq('id', userId)
       .maybeSingle();
 
@@ -53,10 +53,10 @@ export async function fetchProfileSettings(userId) {
     }
 
     const settings = {
-      distance: data.max_distance ?? local.distance,
+      distance: data.distance_max ?? local.distance,
       looking_for: data.looking_for ?? local.looking_for,
       niveau: data.niveau ?? local.niveau,
-      frequence: data.frequence ?? local.frequence,
+      frequence: data.frequency ?? local.frequence,
       visible: data.visible !== false,
     };
 
@@ -105,7 +105,12 @@ export async function saveProfileSettings(userId, patch) {
     return { ok: true, local: true };
   }
 
-  const dbPatch = { id: userId, ...localPatch };
+  const dbPatch = { id: userId };
+  if (localPatch.max_distance != null) dbPatch.distance_max = localPatch.max_distance;
+  if (localPatch.looking_for !== undefined) dbPatch.looking_for = localPatch.looking_for;
+  if (localPatch.niveau !== undefined) dbPatch.niveau = localPatch.niveau;
+  if (localPatch.frequence !== undefined) dbPatch.frequency = localPatch.frequence;
+  if (localPatch.visible !== undefined) dbPatch.visible = localPatch.visible;
 
   try {
     const { error } = await supabase.from('profiles').upsert(dbPatch, { onConflict: 'id' });

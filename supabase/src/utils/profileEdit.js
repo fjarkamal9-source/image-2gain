@@ -4,7 +4,7 @@ import { setSettingsDistance } from './settingsStorage';
 import { getOnboarding, getOnboardingJSON, setOnboarding, setOnboardingJSON } from './storage';
 
 const PROFILE_SELECT =
-  'prenom, bio, sports, intentions, niveau, frequence, max_distance, photo_url, ville';
+  'first_name, bio, sports, intentions, niveau, frequency, distance_max, photo_url, city';
 
 function readFileAsDataUrl(file) {
   return new Promise((resolve, reject) => {
@@ -135,14 +135,14 @@ export async function fetchEditableProfile(userId) {
     }
 
     const profile = {
-      prenom: data.prenom ?? local.prenom,
-      ville: data.ville ?? local.ville,
+      prenom: data.first_name ?? local.prenom,
+      ville: data.city ?? local.ville,
       bio: data.bio ?? local.bio,
       sports: Array.isArray(data.sports) ? data.sports : local.sports,
       intentions: Array.isArray(data.intentions) ? data.intentions : local.intentions,
       niveau: data.niveau ?? local.niveau,
-      frequence: data.frequence ?? local.frequence,
-      max_distance: data.max_distance ?? local.max_distance,
+      frequence: data.frequency ?? local.frequence,
+      max_distance: data.distance_max ?? local.max_distance,
       photo_url: data.photo_url || local.photo_url,
     };
 
@@ -229,14 +229,14 @@ export async function saveProfileEdit(userId, fields) {
     const { error } = await supabase.from('profiles').upsert(
       {
         id: userId,
-        prenom: localProfile.prenom,
-        ville: localProfile.ville,
+        first_name: localProfile.prenom,
+        city: localProfile.ville,
         bio: localProfile.bio,
         sports: localProfile.sports,
         intentions: localProfile.intentions,
         niveau: localProfile.niveau,
-        frequence: localProfile.frequence,
-        max_distance: localProfile.max_distance,
+        frequency: localProfile.frequence,
+        distance_max: localProfile.max_distance,
         photo_url: localProfile.photo_url,
       },
       { onConflict: 'id' }
