@@ -54,18 +54,15 @@ export async function flushOnboardingToProfile() {
     try {
       const { error } = await supabase.from('profiles').upsert({
         id: profile.id,
-        email: profile.email,
-        prenom: profile.prenom,
+        first_name: profile.prenom,
+        city: profile.ville,
+        distance_max: profile.max_distance,
         gender: profile.gender,
         looking_for: profile.looking_for,
-        max_distance: profile.max_distance,
         intentions: profile.intentions,
         sports: profile.sports,
         photo_url: profile.photo_url,
         bio: profile.bio,
-        ville: profile.ville,
-        lat: profile.lat,
-        lng: profile.lng,
         onboarding_completed: true,
         visible: true,
       });
