@@ -179,16 +179,11 @@ export function filterDiscoveryProfiles(
 ) {
   const ctx = getViewerDiscoveryContext(viewer);
 
+  // Distance, genre, sports, niveau filtrés côté serveur (RPC SQL).
+  // Côté client : exclusion des profils déjà likés/passés/cachés + scoring.
   const filtered = profiles.filter((p) => {
     if (excludedIds.has(p.id)) return false;
-
-    const distanceKm = resolveDistanceKm(p, ctx);
-    const dist = distanceKm ?? Number(p.distance);
-    if (!Number.isNaN(dist) && dist > settings.distance) return false;
-
     if (p.age != null && (p.age < settings.ageMin || p.age > settings.ageMax)) return false;
-    if (!matchesNiveau(p.niveau, settings.niveau)) return false;
-
     return true;
   });
 

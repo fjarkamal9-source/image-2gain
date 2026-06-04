@@ -110,9 +110,14 @@ export default function HomeSwipe() {
       const meProfile = await getUserProfile();
       if (cancelled) return;
 
+      const settings = getDiscoverySettings();
       const { data, error } = await supabase.rpc('get_profiles_with_distance', {
         user_lat: meProfile?.lat ?? 48.8566,
         user_lng: meProfile?.lng ?? 2.3522,
+        user_looking_for: meProfile?.looking_for || null,
+        user_sports: meProfile?.sports?.length ? meProfile.sports : null,
+        user_niveau: settings.niveau || null,
+        max_km: settings.distance || 50,
       });
       if (cancelled) return;
 
