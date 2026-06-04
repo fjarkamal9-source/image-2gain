@@ -1,9 +1,11 @@
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import CTAButton from '../../components/ui/CTAButton';
 import AvatarImage from '../../components/ui/AvatarImage';
 import Tag from '../../components/ui/Tag';
 import { useProfile } from '../../hooks/useProfile';
-import { getLikesRecusCount, getMatchsActifsCount } from '../../utils/likesStorage';
+import { useAuth } from '../../hooks/useAuth';
+import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 import { getVenuesLiked } from '../../utils/venuesStorage';
 import { getOnboarding } from '../../utils/storage';
 import { getProfilePhotoUrl, getProfileTags } from '../../utils/profileEdit';
@@ -35,13 +37,31 @@ function ProfileTag({ type, value, placeholder }) {
 
 export default function MyProfile() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { profile, completion } = useProfile();
   const likedVenues = getVenuesLiked(venues);
   const { objectifs, sports, niveau, frequence } = getProfileTags(profile);
 
-  const likesRecus = getLikesRecusCount();
-  const matchsActifs = getMatchsActifsCount();
+  const [likesRecus, setLikesRecus] = useState(0);
+  const [matchsActifs, setMatchsActifs] = useState(0);
   const sessionsPlanif = 0;
+
+  useEffect(() => {
+    const uid = user?.id;
+    if (!uid || !isSupabaseConfigured || !supabase) return;
+
+    supabase
+      .from('likes')
+      .select('*', { count: 'exact', head: true })
+      .eq('receiver_id', uid)
+      .then(({ count }) => { if (count != null) setLikesRecus(count); });
+
+    supabase
+      .from('matches')
+      .select('*', { count: 'exact', head: true })
+      .or(`user_a.eq.${uid},user_b.eq.${uid}`)
+      .then(({ count }) => { if (count != null) setMatchsActifs(count); });
+  }, [user]);
 
   const prenom = profile?.prenom || 'K';
   const age = profile?.age || 28;
