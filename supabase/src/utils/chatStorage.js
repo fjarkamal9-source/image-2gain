@@ -41,7 +41,7 @@ export function loadChatMessages(matchId) {
   } catch {
     /* ignore */
   }
-  return DEFAULT_THREAD.map((m) => ({ ...m }));
+  return [];
 }
 
 export function saveChatMessages(matchId, messages) {
@@ -70,7 +70,7 @@ export async function fetchChatConversations(userId) {
 
   if (matchError) {
     console.error('fetchChatConversations matches', matchError);
-    return MOCK_CONVERSATIONS;
+    return [];
   }
 
   if (!matches?.length) return [];
@@ -129,10 +129,6 @@ export async function fetchMatchParticipant(matchId, userId) {
   }
 
   if (!isSupabaseConfigured || !supabase) {
-    const mock = MOCK_PROFILES.find((p) => p.id === matchId.replace('mock-', ''));
-    if (mock) {
-      return { prenom: mock.prenom, photo: mock.photo || '', otherUserId: mock.id };
-    }
     return { prenom: 'Sportif', photo: '', otherUserId: matchId };
   }
 

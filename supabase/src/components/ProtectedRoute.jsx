@@ -46,7 +46,7 @@ export default function ProtectedRoute({ children }) {
   }
 
   if (!onboardingDone) {
-    return <Navigate to="/onboarding/email" replace />;
+    return <Navigate to="/onboarding/welcome-rules" replace />;
   }
 
   return children;
