@@ -143,6 +143,15 @@ export async function checkAndCreateMatch(senderId, receiverId) {
     .maybeSingle();
 
   if (insertError) {
+    if (insertError.code === '23505') {
+      // Match déjà existant — récupérer son id
+      const { data: existing } = await supabase
+        .from('matches')
+        .select('id')
+        .or(`and(user_a.eq.${senderId},user_b.eq.${receiverId}),and(user_a.eq.${receiverId},user_b.eq.${senderId})`)
+        .single();
+      return { matched: true, matchId: existing?.id };
+    }
     console.error('checkAndCreateMatch insert', insertError);
     return { matched: true };
   }
