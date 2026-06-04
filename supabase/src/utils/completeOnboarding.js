@@ -111,32 +111,65 @@ export async function flushOnboardingToProfile() {
 }
 
 export async function getUserProfile() {
+  // Lire le cache local comme fallback uniquement
+  let localProfile = null;
   try {
     const raw = localStorage.getItem('2gain_user_profile');
-    if (raw) return JSON.parse(raw);
-  } catch {
-    /* ignore */
-  }
-  if (!isSupabaseConfigured || !supabase) return null;
-  let user;
+    if (raw) localProfile = JSON.parse(raw);
+  } catch { /* ignore */ }
+
+  // Sans Supabase → retourner le cache local
+  if (!isSupabaseConfigured || !supabase) return localProfile;
+
+  // Récupérer l'userId depuis la session (pas d'appel réseau)
+  let userId = null;
   try {
-    const { data } = await supabase.auth.getUser();
-    user = data?.user;
-  } catch {
-    return null;
-  }
-  return user
-    ? {
-        id: user.id,
-        prenom: user.user_metadata?.full_name?.split(' ')?.[0] || '',
-        email: user.email,
-        ville: '',
-        max_distance: 25,
-        age: null,
-        intentions: [],
-        sports: [],
-        photo_url: '',
-        bio: '',
-      }
-    : null;
+    const { data } = await supabase.auth.getSession();
+    userId = data?.session?.user?.id ?? null;
+  } catch { /* ignore */ }
+
+  if (!userId) return localProfile;
+
+  // Fetch Supabase en priorité
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, first_name, photo_url, bio, city, sports, intentions, niveau, frequency, distance_max, looking_for, gender, lat, lng, visible, onboarding_completed')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (!error && data) {
+      // Mapper noms colonnes prod → noms locaux
+      const profile = {
+        id: data.id,
+        prenom: data.first_name || '',
+        email: localProfile?.email || '',
+        photo_url: data.photo_url || '',
+        bio: data.bio || '',
+        ville: data.city || '',
+        sports: data.sports || [],
+        intentions: data.intentions || [],
+        niveau: data.niveau || '',
+        frequence: data.frequency || '',
+        max_distance: data.distance_max ?? 25,
+        looking_for: data.looking_for || '',
+        gender: data.gender || '',
+        lat: data.lat ?? localProfile?.lat ?? null,
+        lng: data.lng ?? localProfile?.lng ?? null,
+        visible: data.visible,
+        onboarding_completed: data.onboarding_completed,
+      };
+
+      // Mettre à jour le cache local avec les données fraîches
+      try {
+        localStorage.setItem('2gain_user_profile', JSON.stringify(profile));
+        if (profile.photo_url) localStorage.setItem('profile_photo_url', profile.photo_url);
+      } catch { /* ignore */ }
+
+      return profile;
+    }
+  } catch { /* ignore */ }
+
+  // Fallback : cache local si Supabase échoue
+  return localProfile;
 }
