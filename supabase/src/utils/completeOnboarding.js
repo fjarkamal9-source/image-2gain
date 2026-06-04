@@ -53,6 +53,32 @@ export async function flushOnboardingToProfile() {
 
   if (isSupabaseConfigured && supabase) {
     try {
+      // Upload photo base64 → Storage si nécessaire
+      let photoUrl = profile.photo_url;
+      if (photoUrl?.startsWith('data:')) {
+        try {
+          const res = await fetch(photoUrl);
+          const blob = await res.blob();
+          const path = `${profile.id}/onboarding.jpg`;
+          const { error: uploadError } = await supabase.storage
+            .from('photos')
+            .upload(path, blob, { upsert: true, contentType: 'image/jpeg' });
+          if (!uploadError) {
+            const { data: urlData } = supabase.storage.from('photos').getPublicUrl(path);
+            photoUrl = urlData.publicUrl;
+            // Mettre à jour le cache local avec l'URL publique
+            try {
+              localStorage.setItem('profile_photo_url', photoUrl);
+              setOnboarding('photo_url', photoUrl);
+            } catch { /* ignore */ }
+          } else {
+            console.error('onboarding photo upload', uploadError);
+          }
+        } catch (uploadErr) {
+          console.error('onboarding photo fetch/upload', uploadErr);
+        }
+      }
+
       const { error } = await supabase.from('profiles').upsert({
         id: profile.id,
         first_name: profile.prenom,
@@ -62,8 +88,10 @@ export async function flushOnboardingToProfile() {
         looking_for: profile.looking_for,
         intentions: profile.intentions,
         sports: profile.sports,
-        photo_url: profile.photo_url,
+        photo_url: photoUrl,
         bio: profile.bio,
+        lat: profile.lat || null,
+        lng: profile.lng || null,
         onboarding_completed: true,
         visible: true,
       });
