@@ -333,11 +333,43 @@ export default function HomeSwipe() {
         )}
       </div>
       <div className="swipe-actions">
-        <button type="button" className="swipe-btn swipe-btn--pass" onClick={passProfile} aria-label="Passer">
-          ✕
+        <button
+          type="button"
+          className="swipe-btn swipe-btn--pass"
+          onClick={passProfile}
+          aria-label="Passer"
+          style={{
+            width: 64, height: 64, borderRadius: '50%',
+            background: '#fff', border: '1.5px solid #E0E0E0',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.12)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer',
+          }}
+        >
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden>
+            <line x1="7" y1="7" x2="21" y2="21" stroke="#FF4458" strokeWidth="2.5" strokeLinecap="round" />
+            <line x1="21" y1="7" x2="7" y2="21" stroke="#FF4458" strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
         </button>
-        <button type="button" className="swipe-btn swipe-btn--like" onClick={likeProfile} aria-label="Like">
-          ♡
+        <button
+          type="button"
+          className="swipe-btn swipe-btn--like"
+          onClick={likeProfile}
+          aria-label="Like"
+          style={{
+            width: 64, height: 64, borderRadius: '50%',
+            background: '#fff', border: '1.5px solid #E0E0E0',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.12)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer',
+          }}
+        >
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden>
+            <path
+              d="M14 23s-8-5.2-8-11C6 8.3 8.7 6 11.5 6c1.7 0 3.4 1.2 2.5 2.9C14.7 7.1 16.3 6 18.5 6 21.3 6 24 8.3 24 12c0 5.8-10 11-10 11z"
+              fill="#1A3FCC"
+            />
+          </svg>
         </button>
       </div>
       {matchProfile && (
