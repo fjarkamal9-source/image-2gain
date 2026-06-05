@@ -36,7 +36,7 @@ function ProfileTag({ type, value, placeholder }) {
 export default function MyProfile() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { profile, completion } = useProfile();
+  const { profile } = useProfile();
   const likedVenues = getVenuesLiked(venues);
   const { objectifs, sports, niveau, frequence } = getProfileTags(profile);
 
@@ -118,20 +118,6 @@ export default function MyProfile() {
           </p>
         </div>
       </div>
-      {completion < 100 && (
-        <div className="profile-completion">
-          <p>
-            Profil complet à <span className="text-orange">{completion}%</span>
-          </p>
-          <div className="profile-completion-bar">
-            <div style={{ width: `${completion}%` }} />
-          </div>
-          <div className="profile-tip">
-            <span>💡 Ajoute une photo → +60% de matchs</span>
-            <Link to="/profile/edit">Compléter →</Link>
-          </div>
-        </div>
-      )}
       <div className="profile-tags-row">
         <ProfileTag type="objectif" value={objectifs[0]} placeholder="Ton objectif" />
         <ProfileTag type="sport" value={sports[0]} placeholder="Ton sport" />
