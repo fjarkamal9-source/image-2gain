@@ -2,16 +2,21 @@ import { getOnboarding, getOnboardingJSON, setOnboardingJSON } from './storage';
 import { calcAge, parseBirthDate } from './age';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
+async function waitForSession(maxAttempts = 5) {
+  for (let i = 0; i < maxAttempts; i++) {
+    try {
+      const { data } = await supabase.auth.getSession();
+      if (data?.session) return data.session;
+    } catch { /* ignore */ }
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  return null;
+}
+
 export async function flushOnboardingToProfile() {
   if (!isSupabaseConfigured || !supabase) return null;
 
-  let session;
-  try {
-    const { data } = await supabase.auth.getSession();
-    session = data?.session;
-  } catch {
-    return null;
-  }
+  const session = await waitForSession();
   if (!session?.user) return null;
   const user = session.user;
   const userPrenom = user.user_metadata?.full_name?.split(' ')?.[0] || 'Sportif';
