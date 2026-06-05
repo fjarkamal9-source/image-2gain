@@ -69,7 +69,13 @@ export default function AuthScreen() {
               {googleLabel}
             </a>
           )}
-          <button type="button" className="auth-screen__help">
+          <button
+            type="button"
+            className="auth-screen__help"
+            onClick={() => {
+              window.location.href = 'mailto:kamal1002026@outlook.fr?subject=Problème de connexion 2GAIN';
+            }}
+          >
             Problème de connexion ?
           </button>
           <p className="auth-screen__legal">
