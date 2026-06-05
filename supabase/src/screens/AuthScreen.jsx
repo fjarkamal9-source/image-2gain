@@ -2,7 +2,6 @@
 import { Capacitor } from '@capacitor/core';
 import { useAuth } from '../hooks/useAuth';
 import { isSupabaseConfigured } from '../lib/supabase';
-import { Logo2GainText } from '../components/layout/AppHeader';
 
 function GoogleIcon() {
   return (
@@ -51,60 +50,81 @@ export default function AuthScreen() {
 
   return (
     <div className="app-frame auth-screen">
-      <div className="auth-screen__content">
-        <div className="auth-screen__header">
-          <Logo2GainText size={28} />
-        </div>
+      {/* Tagline positionné sous le logo de l'image de fond */}
+      <h1
+        style={{
+          position: 'absolute',
+          top: '42%',
+          left: 0,
+          right: 0,
+          textAlign: 'center',
+          color: '#1A3FCC',
+          fontFamily: 'var(--font-title)',
+          fontSize: 28,
+          fontWeight: 900,
+          lineHeight: 1.25,
+          margin: 0,
+          zIndex: 1,
+        }}
+      >
+        Le sport est <span style={{ color: '#FF6B00' }}>meilleur</span><br />
+        à <span style={{ color: '#FF6B00' }}>plusieurs</span>
+      </h1>
 
-        <h1 className="auth-screen__tagline" style={{ color: '#1A3FCC' }}>
-          Le sport est <span style={{ color: '#FF6B00' }}>meilleur</span><br />
-          à <span style={{ color: '#FF6B00' }}>plusieurs</span>
-        </h1>
-
-        <div className="auth-screen__spacer" aria-hidden />
-
-        <div className="auth-screen__actions">
-          {Capacitor.isNativePlatform() ? (
-            <button
-              type="button"
-              className="auth-screen__btn auth-screen__btn--google"
-              onClick={handleNativeGoogle}
-            >
-              <GoogleIcon /> Continuer avec Google
-            </button>
-          ) : (
-            <a
-              href={googleOAuthUrl || '#'}
-              className="auth-screen__btn auth-screen__btn--google"
-              aria-disabled={oauthLoading || !googleOAuthUrl}
-              onClick={(e) => {
-                if (!googleOAuthUrl) e.preventDefault();
-              }}
-            >
-              <GoogleIcon /> {googleLabel}
-            </a>
-          )}
-          <div className="auth-separator">
-            <span className="auth-separator-line" />
-            <span className="auth-separator-text">OU</span>
-            <span className="auth-separator-line" />
-          </div>
-          <button type="button" className="auth-create-account">
-            Créer un compte <span>›</span>
-          </button>
+      {/* Boutons en bas */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 60,
+          left: 24,
+          right: 24,
+          zIndex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        {Capacitor.isNativePlatform() ? (
           <button
             type="button"
-            className="auth-screen__help"
-            onClick={() => {
-              window.location.href = 'mailto:kamal1002026@outlook.fr?subject=Problème de connexion 2GAIN';
+            className="auth-screen__btn auth-screen__btn--google"
+            onClick={handleNativeGoogle}
+          >
+            <GoogleIcon /> Continuer avec Google
+          </button>
+        ) : (
+          <a
+            href={googleOAuthUrl || '#'}
+            className="auth-screen__btn auth-screen__btn--google"
+            style={{ width: '100%' }}
+            aria-disabled={oauthLoading || !googleOAuthUrl}
+            onClick={(e) => {
+              if (!googleOAuthUrl) e.preventDefault();
             }}
           >
-            Problème de connexion ?
-          </button>
-          <p className="auth-screen__legal">
-            En continuant tu acceptes nos CGU et politique de confidentialité.
-          </p>
+            <GoogleIcon /> {googleLabel}
+          </a>
+        )}
+        <div className="auth-separator" style={{ width: '100%' }}>
+          <span className="auth-separator-line" />
+          <span className="auth-separator-text">OU</span>
+          <span className="auth-separator-line" />
         </div>
+        <button type="button" className="auth-create-account">
+          Créer un compte <span>›</span>
+        </button>
+        <button
+          type="button"
+          className="auth-screen__help"
+          onClick={() => {
+            window.location.href = 'mailto:kamal1002026@outlook.fr?subject=Problème de connexion 2GAIN';
+          }}
+        >
+          Problème de connexion ?
+        </button>
+        <p className="auth-screen__legal">
+          En continuant tu acceptes nos CGU et politique de confidentialité.
+        </p>
       </div>
     </div>
   );
