@@ -53,7 +53,7 @@ export default function AuthScreen() {
       <div className="auth-screen__content">
         <div className="auth-screen__spacer" aria-hidden />
 
-        <h1 className="auth-screen__tagline" style={{ color: '#1A1A2E' }}>
+        <h1 className="auth-screen__tagline" style={{ color: '#1A3FCC' }}>
           Le sport est <span style={{ color: '#FF6B00' }}>meilleur</span><br />
           à <span style={{ color: '#FF6B00' }}>plusieurs</span>
         </h1>

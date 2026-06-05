@@ -360,7 +360,7 @@
   border-radius: 50px;
   font-weight: 700;
   font-size: 16px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 a.auth-screen__btn {
   display: inline-flex;
@@ -394,7 +394,7 @@ a.auth-screen__btn[aria-disabled='true'] {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 16px 0;
+  margin: 8px 0;
 }
 .auth-separator-line {
   flex: 1;
@@ -413,7 +413,8 @@ a.auth-screen__btn[aria-disabled='true'] {
   cursor: pointer;
   text-align: center;
   width: 100%;
-  padding: 8px 0;
+  padding: 4px 0;
+  margin-top: 4px;
 }
 .auth-screen__help {
   color: #ffffff;
