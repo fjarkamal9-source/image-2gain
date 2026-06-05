@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import CTAButton from '../../components/ui/CTAButton';
-import AvatarImage from '../../components/ui/AvatarImage';
 import Tag from '../../components/ui/Tag';
 import { useProfile } from '../../hooks/useProfile';
 import { useAuth } from '../../hooks/useAuth';
@@ -81,14 +80,42 @@ export default function MyProfile() {
           <SettingsGear />
         </Link>
       </header>
-      <div className="profile-hero">
-        <AvatarImage src={photoUrl} name={prenom} size={88} />
-        <div className="profile-hero__info">
-          <p className="profile-hero__name">
-            {prenom}, {age} ans
+      <div
+        className="profile-hero"
+        style={{
+          width: '100%',
+          height: 280,
+          position: 'relative',
+          backgroundImage: photoUrl ? `url(${photoUrl})` : 'none',
+          backgroundColor: photoUrl ? 'transparent' : '#1A3FCC22',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: 120,
+            background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 16,
+            left: 16,
+            color: '#fff',
+          }}
+        >
+          <p style={{ margin: 0, fontSize: 22, fontWeight: 700 }}>
+            {prenom}{age ? `, ${age} ans` : ''}
           </p>
-          <p className="profile-hero__loc">
-            {profile?.ville || 'Paris'} · {profile?.max_distance || 25} km max
+          <p style={{ margin: '2px 0 0', fontSize: 14, opacity: 0.85 }}>
+            {profile?.ville || ''}
+            {profile?.max_distance ? ` · ${profile.max_distance} km max` : ''}
           </p>
         </div>
       </div>
