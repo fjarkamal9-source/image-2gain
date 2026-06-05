@@ -288,7 +288,7 @@
   min-height: 100vh;
   min-height: 100dvh;
   overflow: hidden;
-  background-image: url('/hero-bg.jpg');
+  background-image: url('/img/hero-bg.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
