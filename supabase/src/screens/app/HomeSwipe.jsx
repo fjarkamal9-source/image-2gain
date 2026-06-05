@@ -282,11 +282,7 @@ export default function HomeSwipe() {
   return (
     <div className="home-swipe">
       <AppHeader
-        center={
-          <span className="home-counter">
-            {count} sportifs près de toi
-          </span>
-        }
+        showAvatar={false}
       />
       <div className="card-stack">
         {profilesLoading ? (
