@@ -48,6 +48,11 @@ export default function AuthScreen() {
 
   const googleLabel = oauthLoading ? 'Chargement…' : 'Continuer avec Google';
 
+  const handleCreateAccount = () => {
+    if (!googleOAuthUrl) return;
+    window.location.href = googleOAuthUrl;
+  };
+
   return (
     <div className="app-frame auth-screen">
       {/* Tagline positionné sous le logo de l'image de fond */}
@@ -110,7 +115,7 @@ export default function AuthScreen() {
           <span className="auth-separator-text">OU</span>
           <span className="auth-separator-line" />
         </div>
-        <button type="button" className="auth-create-account">
+        <button type="button" className="auth-create-account" onClick={handleCreateAccount}>
           Créer un compte <span>›</span>
         </button>
         <button
