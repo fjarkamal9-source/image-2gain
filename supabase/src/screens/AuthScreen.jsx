@@ -16,21 +16,23 @@ function GoogleIcon() {
 export default function AuthScreen() {
   const { signInGoogle } = useAuth();
 
-  const handleGoogle = () => {
+  const triggerOAuth = (intent) => {
     if (Capacitor.isNativePlatform()) {
       signInGoogle();
       return;
     }
-    // window.open AVANT le await — fix Safari ITP
     const win = window.open('', '_self');
     supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: `${window.location.origin}/auth/callback?intent=${intent}` },
     }).then(({ data, error }) => {
       if (error || !data?.url) { if (win) win.close(); return; }
       win.location.href = data.url;
     });
   };
+
+  const handleSignIn = () => triggerOAuth('signin');
+  const handleSignUp = () => triggerOAuth('signup');
 
   return (
     <div className="app-frame auth-screen">
@@ -72,7 +74,7 @@ export default function AuthScreen() {
           type="button"
           className="auth-screen__btn auth-screen__btn--google"
           style={{ width: '100%' }}
-          onClick={handleGoogle}
+          onClick={handleSignIn}
         >
           <GoogleIcon /> Continuer avec Google
         </button>
@@ -81,7 +83,7 @@ export default function AuthScreen() {
           <span className="auth-separator-text">OU</span>
           <span className="auth-separator-line" />
         </div>
-        <button type="button" className="auth-create-account" onClick={handleGoogle}>
+        <button type="button" className="auth-create-account" onClick={handleSignUp}>
           Créer un compte <span>›</span>
         </button>
         <button
