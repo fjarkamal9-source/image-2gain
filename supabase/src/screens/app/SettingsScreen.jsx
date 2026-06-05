@@ -117,8 +117,16 @@ export default function SettingsScreen() {
       }
     }
 
-    sessionStorage.clear();
-    localStorage.clear();
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('sb-') || key.startsWith('2gain_') || key.startsWith('supabase') || key.startsWith('onboarding_') || key === 'profile_photo_url') {
+        localStorage.removeItem(key);
+      }
+    });
+    Object.keys(sessionStorage).forEach((key) => {
+      if (key.startsWith('sb-') || key.startsWith('supabase')) {
+        sessionStorage.removeItem(key);
+      }
+    });
     window.location.href = '/';
   }
 
