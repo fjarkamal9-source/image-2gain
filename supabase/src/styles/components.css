@@ -288,10 +288,17 @@
   min-height: 100vh;
   min-height: 100dvh;
   overflow: hidden;
-  background-image: url('/img/auth-bg_jpg__1_.png');
+  background-image: url('/hero-bg.jpg');
   background-size: cover;
-  background-position: top center;
+  background-position: center;
   background-repeat: no-repeat;
+}
+.auth-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 0;
 }
 .auth-screen__content {
   position: relative;
