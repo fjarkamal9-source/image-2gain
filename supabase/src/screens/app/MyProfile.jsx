@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import CTAButton from '../../components/ui/CTAButton';
 import Tag from '../../components/ui/Tag';
 import { useProfile } from '../../hooks/useProfile';
 import { useAuth } from '../../hooks/useAuth';
@@ -172,12 +171,6 @@ export default function MyProfile() {
           <p className="profile-venues-empty">Aucun lieu liké pour l&apos;instant</p>
         )}
       </section>
-      <div className="profile-actions">
-        <CTAButton onClick={() => navigate('/profile/edit')}>Modifier mon profil</CTAButton>
-        <Link to="/settings">
-          <CTAButton variant="secondary">Réglages</CTAButton>
-        </Link>
-      </div>
     </div>
   );
 }
