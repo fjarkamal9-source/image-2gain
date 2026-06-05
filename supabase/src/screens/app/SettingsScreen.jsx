@@ -117,8 +117,9 @@ export default function SettingsScreen() {
       }
     }
 
+    sessionStorage.clear();
     localStorage.clear();
-    window.location.href = '/auth';
+    window.location.href = '/';
   }
 
   return (
