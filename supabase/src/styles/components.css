@@ -335,14 +335,13 @@
 
 .auth-screen__tagline {
   flex-shrink: 0;
-  margin: 0 0 20px;
+  margin: 12px 0 0;
   text-align: center;
   font-family: var(--font-title);
   font-size: 28px;
   font-weight: 900;
   line-height: 1.25;
-  color: #ffffff;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+  color: #1A3FCC;
 }
 .auth-screen__tagline-line--blue { color: #ffffff; }
 .auth-screen__tagline-line--orange { color: #ffffff; }

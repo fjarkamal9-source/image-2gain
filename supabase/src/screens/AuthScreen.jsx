@@ -2,6 +2,7 @@
 import { Capacitor } from '@capacitor/core';
 import { useAuth } from '../hooks/useAuth';
 import { isSupabaseConfigured } from '../lib/supabase';
+import { Logo2GainText } from '../components/layout/AppHeader';
 
 function GoogleIcon() {
   return (
@@ -51,12 +52,16 @@ export default function AuthScreen() {
   return (
     <div className="app-frame auth-screen">
       <div className="auth-screen__content">
-        <div className="auth-screen__spacer" aria-hidden />
+        <div className="auth-screen__header">
+          <Logo2GainText size={28} />
+        </div>
 
         <h1 className="auth-screen__tagline" style={{ color: '#1A3FCC' }}>
           Le sport est <span style={{ color: '#FF6B00' }}>meilleur</span><br />
           à <span style={{ color: '#FF6B00' }}>plusieurs</span>
         </h1>
+
+        <div className="auth-screen__spacer" aria-hidden />
 
         <div className="auth-screen__actions">
           {Capacitor.isNativePlatform() ? (
