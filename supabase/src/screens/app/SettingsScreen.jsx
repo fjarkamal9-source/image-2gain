@@ -104,8 +104,20 @@ export default function SettingsScreen() {
     setSettingsAgeMax(v);
   };
 
+  const handleSignOut = async () => {
+    if (!window.confirm('Se déconnecter ?')) return;
+    if (isSupabaseConfigured && supabase) await supabase.auth.signOut();
+    Object.keys(localStorage).forEach((k) => {
+      if (k.startsWith('sb-') || k.startsWith('2gain_') || k.startsWith('onboarding_') || k === 'profile_photo_url') {
+        localStorage.removeItem(k);
+      }
+    });
+    window.location.href = '/';
+  };
+
   async function handleDeleteAccount() {
-    if (!window.confirm('Es-tu sûr de vouloir supprimer ton compte ?')) return;
+    if (!window.confirm('Supprimer définitivement ton compte et toutes tes données ?')) return;
+    if (!window.confirm('Cette action est irréversible. Confirmer ?')) return;
 
     if (isSupabaseConfigured && supabase && userId) {
       try {
@@ -117,16 +129,8 @@ export default function SettingsScreen() {
       }
     }
 
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith('sb-') || key.startsWith('2gain_') || key.startsWith('supabase') || key.startsWith('onboarding_') || key === 'profile_photo_url') {
-        localStorage.removeItem(key);
-      }
-    });
-    Object.keys(sessionStorage).forEach((key) => {
-      if (key.startsWith('sb-') || key.startsWith('supabase')) {
-        sessionStorage.removeItem(key);
-      }
-    });
+    localStorage.clear();
+    sessionStorage.clear();
     window.location.href = '/';
   }
 
@@ -293,7 +297,7 @@ export default function SettingsScreen() {
       <section className="settings-section">
         <h2>COMPTE</h2>
         <button
-          onClick={() => { localStorage.clear(); window.location.href = '/auth'; }}
+          onClick={handleSignOut}
           className="settings-row settings-row--danger"
         >
           Se déconnecter
