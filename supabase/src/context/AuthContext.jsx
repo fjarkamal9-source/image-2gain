@@ -6,15 +6,10 @@ export const AuthContext = createContext(null);
 
 const MOCK_GOOGLE = { id: 'mock-u1', email: 'kamal@2gain.app', prenom: 'K' };
 
-function getOAuthRedirectTo() {
-  return Capacitor.isNativePlatform()
-    ? 'com.deuxgain.app://auth/callback'
-    : `${window.location.origin}/auth/callback`;
-}
-
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [onboardingDone, setOnboardingDone] = useState(false);
 
   useEffect(() => {
     if (!isSupabaseConfigured || !supabase) {
@@ -22,42 +17,29 @@ export function AuthProvider({ children }) {
       return;
     }
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        setUser({
-          id: session.user.id,
-          email: session.user.email,
-          prenom:
-            session.user.user_metadata?.prenom ||
-            session.user.user_metadata?.full_name?.split(' ')?.[0] ||
-            'Sportif',
-        });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session?.user) {
+          setUser(session.user);
+          try {
+            const { data } = await supabase
+              .from('profiles')
+              .select('onboarding_completed')
+              .eq('id', session.user.id)
+              .maybeSingle();
+            setOnboardingDone(data?.onboarding_completed ?? false);
+          } catch { /* ignore */ }
+        } else {
+          setUser(null);
+          setOnboardingDone(false);
+        }
+        setLoading(false);
       }
-      setLoading(false);
-    }).catch(err => console.error('getSession error:', err));
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setUser({
-          id: session.user.id,
-          email: session.user.email,
-          prenom:
-            session.user.user_metadata?.prenom ||
-            session.user.user_metadata?.full_name?.split(' ')?.[0] ||
-            'Sportif',
-        });
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
+    );
 
     return () => subscription.unsubscribe();
   }, []);
 
-  /** Déclenche Google OAuth au clic — standard flow, pas de pré-fetch. */
   const signInGoogle = useCallback(async () => {
     if (!isSupabaseConfigured || !supabase) {
       if (import.meta.env.DEV) {
@@ -67,16 +49,16 @@ export function AuthProvider({ children }) {
       console.error('signInGoogle: Supabase non configuré');
       return { error: 'not_configured' };
     }
+    const APP_URL = import.meta.env.VITE_APP_URL || window.location.origin;
+    const redirectTo = Capacitor.isNativePlatform()
+      ? 'com.deuxgain.app://auth/callback'
+      : `${APP_URL}/auth/callback?intent=signin`;
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: getOAuthRedirectTo() },
+      options: { redirectTo },
     });
-
-    if (error) {
-      console.error('Google OAuth error:', error);
-      return { error };
-    }
+    if (error) console.error('Google OAuth error:', error);
   }, []);
 
   const signOut = useCallback(async () => {
@@ -90,17 +72,19 @@ export function AuthProvider({ children }) {
       .filter((k) => k.startsWith('onboarding_'))
       .forEach((k) => localStorage.removeItem(k));
     setUser(null);
+    setOnboardingDone(false);
   }, []);
 
   const value = useMemo(
     () => ({
       user,
       loading,
+      onboardingDone,
       isMock: !isSupabaseConfigured,
       signInGoogle,
       signOut,
     }),
-    [user, loading, signInGoogle, signOut]
+    [user, loading, onboardingDone, signInGoogle, signOut]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

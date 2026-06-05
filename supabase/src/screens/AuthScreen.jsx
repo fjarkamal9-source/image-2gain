@@ -16,23 +16,23 @@ function GoogleIcon() {
 export default function AuthScreen() {
   const { signInGoogle } = useAuth();
 
-  const triggerOAuth = (intent) => {
-    if (Capacitor.isNativePlatform()) {
-      signInGoogle();
-      return;
-    }
-    const win = window.open('', '_self');
-    supabase.auth.signInWithOAuth({
+  const APP_URL = import.meta.env.VITE_APP_URL || window.location.origin;
+
+  const handleSignIn = async () => {
+    if (Capacitor.isNativePlatform()) { signInGoogle(); return; }
+    await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback?intent=${intent}` },
-    }).then(({ data, error }) => {
-      if (error || !data?.url) { if (win) win.close(); return; }
-      win.location.href = data.url;
+      options: { redirectTo: `${APP_URL}/auth/callback?intent=signin` },
     });
   };
 
-  const handleSignIn = () => triggerOAuth('signin');
-  const handleSignUp = () => triggerOAuth('signup');
+  const handleSignUp = async () => {
+    if (Capacitor.isNativePlatform()) { signInGoogle(); return; }
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${APP_URL}/auth/callback?intent=signup` },
+    });
+  };
 
   return (
     <div className="app-frame auth-screen">
