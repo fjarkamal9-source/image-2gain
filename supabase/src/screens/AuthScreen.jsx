@@ -1,7 +1,6 @@
-﻿import { useEffect, useState } from 'react';
-import { Capacitor } from '@capacitor/core';
+﻿import { Capacitor } from '@capacitor/core';
 import { useAuth } from '../hooks/useAuth';
-import { isSupabaseConfigured } from '../lib/supabase';
+import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
 function GoogleIcon() {
   return (
@@ -15,42 +14,22 @@ function GoogleIcon() {
 }
 
 export default function AuthScreen() {
-  const { signInGoogle, fetchGoogleOAuthUrl } = useAuth();
-  const [googleOAuthUrl, setGoogleOAuthUrl] = useState(null);
-  const [oauthLoading, setOauthLoading] = useState(isSupabaseConfigured && !Capacitor.isNativePlatform());
+  const { signInGoogle } = useAuth();
 
-  useEffect(() => {
-    if (Capacitor.isNativePlatform() || !isSupabaseConfigured) {
-      setOauthLoading(false);
+  const handleGoogle = () => {
+    if (Capacitor.isNativePlatform()) {
+      signInGoogle();
       return;
     }
-
-    let cancelled = false;
-    fetchGoogleOAuthUrl().then((url) => {
-      if (!cancelled) {
-        setGoogleOAuthUrl(url);
-        setOauthLoading(false);
-      }
+    // window.open AVANT le await — fix Safari ITP
+    const win = window.open('', '_self');
+    supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    }).then(({ data, error }) => {
+      if (error || !data?.url) { if (win) win.close(); return; }
+      win.location.href = data.url;
     });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [fetchGoogleOAuthUrl]);
-
-  const handleNativeGoogle = async () => {
-    try {
-      await signInGoogle();
-    } catch (err) {
-      console.error('OAuth error:', err);
-    }
-  };
-
-  const googleLabel = oauthLoading ? 'Chargement…' : 'Continuer avec Google';
-
-  const handleCreateAccount = () => {
-    if (!googleOAuthUrl) return;
-    window.location.href = googleOAuthUrl;
   };
 
   return (
@@ -89,33 +68,20 @@ export default function AuthScreen() {
           alignItems: 'center',
         }}
       >
-        {Capacitor.isNativePlatform() ? (
-          <button
-            type="button"
-            className="auth-screen__btn auth-screen__btn--google"
-            onClick={handleNativeGoogle}
-          >
-            <GoogleIcon /> Continuer avec Google
-          </button>
-        ) : (
-          <a
-            href={googleOAuthUrl || '#'}
-            className="auth-screen__btn auth-screen__btn--google"
-            style={{ width: '100%' }}
-            aria-disabled={oauthLoading || !googleOAuthUrl}
-            onClick={(e) => {
-              if (!googleOAuthUrl) e.preventDefault();
-            }}
-          >
-            <GoogleIcon /> {googleLabel}
-          </a>
-        )}
+        <button
+          type="button"
+          className="auth-screen__btn auth-screen__btn--google"
+          style={{ width: '100%' }}
+          onClick={handleGoogle}
+        >
+          <GoogleIcon /> Continuer avec Google
+        </button>
         <div className="auth-separator" style={{ width: '100%' }}>
           <span className="auth-separator-line" />
           <span className="auth-separator-text">OU</span>
           <span className="auth-separator-line" />
         </div>
-        <button type="button" className="auth-create-account" onClick={handleCreateAccount}>
+        <button type="button" className="auth-create-account" onClick={handleGoogle}>
           Créer un compte <span>›</span>
         </button>
         <button
