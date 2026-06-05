@@ -57,5 +57,5 @@ async function resolveRoute(session) {
     if (profile?.onboarding_completed) return '/home';
   } catch { /* ignore */ }
 
-  return '/onboarding/welcome-rules';
+  return '/welcome-new-user';
 }
