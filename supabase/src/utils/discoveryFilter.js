@@ -8,7 +8,7 @@ const WEIGHTS = {
   niveau: 0.1,
 };
 
-const FREQUENCE_ORDER = ['1x/sem', '2x/sem', '3x/sem', '4x/sem', '5x/sem'];
+const FREQUENCE_ORDER = ['1', '2-3', '4-5', '6+', 'variable'];
 
 const NIVEAU_ORDER = ['débutant', 'debutant', 'intermédiaire', 'intermediaire', 'avancé', 'avance', 'expert'];
 
@@ -63,11 +63,19 @@ function niveauIndex(niveau) {
 
 function frequenceIndex(freq) {
   if (!freq) return -1;
-  const normalized = freq.toLowerCase().replace(/\s/g, '');
-  const idx = FREQUENCE_ORDER.findIndex((f) => f.replace(/\s/g, '') === normalized);
-  if (idx >= 0) return idx;
+  const normalized = String(freq).toLowerCase().trim();
+  const directIdx = FREQUENCE_ORDER.indexOf(normalized);
+  if (directIdx >= 0) return directIdx;
+  if (normalized === 'variable') return 2;
+  if (normalized.includes('6') || normalized.includes('7') || normalized.includes('8')) return 3;
   const match = normalized.match(/(\d+)/);
-  if (match) return Math.min(Math.max(Number(match[1]) - 1, 0), FREQUENCE_ORDER.length - 1);
+  if (match) {
+    const n = Number(match[1]);
+    if (n <= 1) return 0;
+    if (n <= 3) return 1;
+    if (n <= 5) return 2;
+    return 3;
+  }
   return -1;
 }
 
@@ -123,7 +131,7 @@ export function getViewerDiscoveryContext(viewer) {
   if (viewer) {
     return {
       sports: getProfileSports(viewer),
-      frequence: viewer.frequence ?? null,
+      frequency: viewer.frequency ?? null,
       niveau: viewer.niveau ?? null,
       lat: viewer.lat,
       lng: viewer.lng,
@@ -141,7 +149,7 @@ export function getViewerDiscoveryContext(viewer) {
   const sports = getOnboardingJSON('sports', []);
   return {
     sports: sports.length ? sports : getProfileSports(p),
-    frequence: getOnboarding('frequence') || p.frequence || null,
+    frequency: getOnboarding('frequency') || p.frequency || null,
     niveau: getOnboarding('niveau') || p.niveau || null,
     lat: p.lat,
     lng: p.lng,
@@ -158,7 +166,7 @@ export function computeDiscoveryScore(profile, viewer, settings) {
   const distanceKm = resolveDistanceKm(profile, ctx);
 
   const sports = scoreSportsCommon(ctx.sports, profileSports);
-  const frequence = scoreFrequence(ctx.frequence, profile.frequence);
+  const frequence = scoreFrequence(ctx.frequency, profile.frequency ?? profile.frequence);
   const distance = scoreDistanceKm(distanceKm, maxKm);
   const niveau = scoreNiveau(ctx.niveau, profile.niveau);
 
