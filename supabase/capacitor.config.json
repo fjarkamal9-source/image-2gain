@@ -1,5 +1,10 @@
 {
   "appId": "com.deuxgain.app",
   "appName": "2GAIN",
-  "webDir": "dist"
+  "webDir": "dist",
+  "plugins": {
+    "App": {
+      "appId": "com.deuxgain.app"
+    }
+  }
 }

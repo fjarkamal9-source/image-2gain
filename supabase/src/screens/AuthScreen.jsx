@@ -1,4 +1,5 @@
 ﻿import { Capacitor } from '@capacitor/core';
+import { Browser } from '@capacitor/browser';
 import { useAuth } from '../hooks/useAuth';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
@@ -18,21 +19,28 @@ export default function AuthScreen() {
 
   const APP_URL = import.meta.env.VITE_APP_URL || window.location.origin;
 
-  const handleSignIn = async () => {
-    if (Capacitor.isNativePlatform()) { signInGoogle(); return; }
+  const triggerOAuth = async (intent) => {
+    if (Capacitor.isNativePlatform()) {
+      // Android/iOS — Capacitor Browser (Custom Tab) + deep link
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `com.deuxgain.app://auth/callback?intent=${intent}`,
+          skipBrowserRedirect: true,
+        },
+      });
+      if (!error && data?.url) await Browser.open({ url: data.url });
+      return;
+    }
+    // Web — flow standard, Supabase redirige automatiquement
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${APP_URL}/auth/callback?intent=signin` },
+      options: { redirectTo: `${APP_URL}/auth/callback?intent=${intent}` },
     });
   };
 
-  const handleSignUp = async () => {
-    if (Capacitor.isNativePlatform()) { signInGoogle(); return; }
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${APP_URL}/auth/callback?intent=signup` },
-    });
-  };
+  const handleSignIn = () => triggerOAuth('signin');
+  const handleSignUp = () => triggerOAuth('signup');
 
   return (
     <div className="app-frame auth-screen">
