@@ -49,9 +49,10 @@ function SwipeCard({ profile, style, innerRef, onPointerDown, children }) {
           {profile.distance} km · {profile.ville}
         </p>
         <div className="swipe-card__tags">
-          <Tag type="objectif">{profile.objectif}</Tag>
-          <Tag type="sport">{profile.sport}</Tag>
-          <Tag type="niveau">{profile.niveau}</Tag>
+          {Array.isArray(profile.sports) && profile.sports.slice(0, 2).map((s) => (
+            <Tag key={s} type="sport">{s}</Tag>
+          ))}
+          {profile.niveau && <Tag type="niveau">{profile.niveau}</Tag>}
         </div>
       </div>
     </div>
@@ -112,8 +113,8 @@ export default function HomeSwipe() {
 
       const settings = getDiscoverySettings();
       const { data, error } = await supabase.rpc('get_profiles_with_distance', {
-        user_lat: meProfile?.lat ?? 48.8566,
-        user_lng: meProfile?.lng ?? 2.3522,
+        user_lat: meProfile?.lat ?? null,
+        user_lng: meProfile?.lng ?? null,
         user_looking_for: meProfile?.looking_for || null,
         user_sports: meProfile?.sports?.length ? meProfile.sports : null,
         user_niveau: settings.niveau || null,
@@ -131,6 +132,7 @@ export default function HomeSwipe() {
         setSourceProfiles(mapped);
       }
 
+      setIndex(0);
       setProfilesLoading(false);
     })();
 
@@ -202,8 +204,7 @@ export default function HomeSwipe() {
 
     setExcludedIds((prev) => new Set(prev).add(current.id));
     flyOut('right');
-    refreshDeck();
-  }, [deck, index, flyOut, user, refreshDeck]);
+  }, [deck, index, flyOut, user]);
 
   const passProfile = useCallback(async () => {
     const current = deck[index];
@@ -216,8 +217,7 @@ export default function HomeSwipe() {
 
     setExcludedIds((prev) => new Set(prev).add(current.id));
     flyOut('left');
-    refreshDeck();
-  }, [deck, index, flyOut, user, refreshDeck]);
+  }, [deck, index, flyOut, user]);
 
   const hideProfile = useCallback(async () => {
     const current = deck[index];
@@ -230,8 +230,7 @@ export default function HomeSwipe() {
 
     setExcludedIds((prev) => new Set(prev).add(current.id));
     flyOut('down');
-    refreshDeck();
-  }, [deck, index, flyOut, user, refreshDeck]);
+  }, [deck, index, flyOut, user]);
 
   const onPointerDown = (e) => {
     const el = cardRef.current;
