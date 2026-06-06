@@ -35,9 +35,11 @@ export async function flushOnboardingToProfile() {
     sports: getOnboardingJSON('sports', []),
     photo_url: getOnboarding('photo_url') || '',
     bio: getOnboarding('bio') || '',
-    ville: getOnboarding('ville') || 'Besançon',
-    lat: Number(getOnboarding('lat') || 47.2378),
-    lng: Number(getOnboarding('lng') || 6.0241),
+    ville: getOnboarding('ville') || '',
+    lat: getOnboarding('lat') ? Number(getOnboarding('lat')) : null,
+    lng: getOnboarding('lng') ? Number(getOnboarding('lng')) : null,
+    niveau: getOnboarding('niveau') || null,
+    frequency: getOnboarding('frequency') || null,
   };
 
   if (profile.birth_day && profile.birth_month && profile.birth_year) {
@@ -95,8 +97,11 @@ export async function flushOnboardingToProfile() {
         sports: profile.sports,
         photo_url: photoUrl,
         bio: profile.bio,
-        lat: profile.lat || null,
-        lng: profile.lng || null,
+        niveau: profile.niveau,
+        frequency: profile.frequency,
+        age: profile.age || null,
+        lat: profile.lat ?? null,
+        lng: profile.lng ?? null,
         onboarding_completed: true,
         visible: true,
       });

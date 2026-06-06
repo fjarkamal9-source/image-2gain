@@ -11,6 +11,8 @@ import OnboardingWelcomePersonalized from './screens/onboarding/OnboardingWelcom
 import OnboardingBirthDate from './screens/onboarding/OnboardingBirthDate';
 import OnboardingGender from './screens/onboarding/OnboardingGender';
 import OnboardingLookingForGender from './screens/onboarding/OnboardingLookingForGender';
+import OnboardingNiveau from './screens/onboarding/OnboardingNiveau';
+import OnboardingFrequency from './screens/onboarding/OnboardingFrequency';
 import OnboardingMaxDistance from './screens/onboarding/OnboardingMaxDistance';
 import OnboardingIntentions from './screens/onboarding/OnboardingIntentions';
 import OnboardingSports from './screens/onboarding/OnboardingSports';
@@ -48,14 +50,16 @@ export default function App() {
         <Route path="birth-date" element={<OnboardingBirthDate />} />
         <Route path="gender" element={<OnboardingGender />} />
         <Route path="looking-for-gender" element={<OnboardingLookingForGender />} />
+        <Route path="niveau" element={<OnboardingNiveau />} />
+        <Route path="frequency" element={<OnboardingFrequency />} />
         <Route path="max-distance" element={<OnboardingMaxDistance />} />
         <Route path="intentions" element={<OnboardingIntentions />} />
         <Route path="sports" element={<OnboardingSports />} />
         <Route path="photo" element={<OnboardingPhoto />} />
         <Route path="bio" element={<OnboardingBio />} />
         <Route path="geolocation" element={<OnboardingGeolocation />} />
+        <Route path="motivation-final" element={<OnboardingMotivationFinal />} />
       </Route>
-      <Route path="/onboarding/motivation-final" element={<OnboardingMotivationFinal />} />
 
       <Route
         element={

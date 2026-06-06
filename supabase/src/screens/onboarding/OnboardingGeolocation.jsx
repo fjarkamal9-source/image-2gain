@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CTAButton from '../../components/ui/CTAButton';
 import { setOnboarding } from '../../utils/storage';
@@ -9,29 +10,29 @@ async function reverseGeocode(lat, lng) {
       { headers: { 'Accept-Language': 'fr' } }
     );
     const data = await res.json();
-    return data.address?.city || data.address?.town || data.address?.village || 'Besançon';
+    return data.address?.city || data.address?.town || data.address?.village || '';
   } catch {
-    return 'Besançon';
+    return '';
   }
 }
 
 export default function OnboardingGeolocation() {
   const navigate = useNavigate();
+  const [showManual, setShowManual] = useState(false);
+  const [manualCity, setManualCity] = useState('');
 
   const allow = () => {
     if (!navigator.geolocation) {
-      setOnboarding('ville', 'Besançon');
-      setOnboarding('lat', 47.2378);
-      setOnboarding('lng', 6.0241);
-      navigate('/onboarding/motivation-final');
+      // Cas technique : géoloc non supportée → saisie manuelle
+      setShowManual(true);
       return;
     }
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude: lat, longitude: lng } = pos.coords;
         if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-          console.error('Coordonnées GPS invalides :', lat, lng);
-          navigate('/onboarding/motivation-final');
+          console.error('Coordonnées GPS invalides');
+          setShowManual(true);
           return;
         }
         const ville = await reverseGeocode(lat, lng);
@@ -42,20 +43,38 @@ export default function OnboardingGeolocation() {
         navigate('/onboarding/motivation-final');
       },
       () => {
-        setOnboarding('ville', 'Besançon');
-        setOnboarding('lat', 47.2378);
-        setOnboarding('lng', 6.0241);
-        navigate('/onboarding/motivation-final');
+        // Refus utilisateur → saisie manuelle
+        setShowManual(true);
       }
     );
   };
 
-  const skip = () => {
-    setOnboarding('ville', 'Besançon');
-    setOnboarding('lat', 47.2378);
-    setOnboarding('lng', 6.0241);
+  const confirmManual = () => {
+    setOnboarding('ville', manualCity.trim() || 'Non renseignée');
+    setOnboarding('lat', null);
+    setOnboarding('lng', null);
     navigate('/onboarding/motivation-final');
   };
+
+  if (showManual) {
+    return (
+      <div className="onboarding-page onboarding-page--center">
+        <h1 className="onboarding-title">Quelle est ta ville ?</h1>
+        <p className="onboarding-sub">Pour trouver des sportifs près de toi</p>
+        <input
+          type="text"
+          className="bio-textarea"
+          style={{ height: 'auto', padding: '14px 16px', fontSize: 16 }}
+          placeholder="Entrez votre ville"
+          value={manualCity}
+          onChange={(e) => setManualCity(e.target.value)}
+        />
+        <div className="onboarding-footer">
+          <CTAButton onClick={confirmManual}>Confirmer</CTAButton>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="onboarding-page onboarding-page--center">
@@ -68,8 +87,8 @@ export default function OnboardingGeolocation() {
       </div>
       <div className="onboarding-footer">
         <CTAButton onClick={allow}>Autoriser la localisation</CTAButton>
-        <button type="button" className="skip-link" onClick={skip}>
-          Passer cette étape
+        <button type="button" className="skip-link" onClick={() => setShowManual(true)}>
+          Saisir ma ville manuellement
         </button>
       </div>
     </div>

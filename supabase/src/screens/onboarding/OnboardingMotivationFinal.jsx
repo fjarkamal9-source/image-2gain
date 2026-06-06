@@ -1,13 +1,23 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CTAButton from '../../components/ui/CTAButton';
 import { flushOnboardingToProfile } from '../../utils/completeOnboarding';
 
 export default function OnboardingMotivationFinal() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const finish = async () => {
-    await flushOnboardingToProfile();
-    navigate('/home', { replace: true });
+    setLoading(true);
+    setError('');
+    try {
+      await flushOnboardingToProfile();
+      navigate('/home', { replace: true });
+    } catch {
+      setError('Une erreur est survenue. Vérifie ta connexion et réessaie.');
+      setLoading(false);
+    }
   };
 
   return (
@@ -28,7 +38,12 @@ export default function OnboardingMotivationFinal() {
         <p className="motivation-desc">
           Trouve des partenaires sportifs près de toi et atteignez vos objectifs ensemble.
         </p>
-        <CTAButton onClick={finish}>Commence à trouver</CTAButton>
+        <CTAButton disabled={loading} onClick={finish}>
+          {loading ? 'Chargement...' : 'Commence à trouver'}
+        </CTAButton>
+        {error && (
+          <p style={{ color: 'red', textAlign: 'center', marginTop: 12 }}>{error}</p>
+        )}
       </div>
     </div>
   );
