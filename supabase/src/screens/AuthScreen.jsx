@@ -95,8 +95,8 @@ export default function AuthScreen() {
           zIndex: 1,
         }}
       >
-        Le sport est <span style={{ color: '#FF6B00' }}>meilleur</span><br />
-        à <span style={{ color: '#FF6B00' }}>plusieurs</span>
+        Le sport est <span style={{ color: '#1A3FCC' }}>meilleur</span><br />
+        à <span style={{ color: '#1A3FCC' }}>plusieurs</span>
       </h1>
 
       {/* Fix 3 — Contenu en bas, lisible sur le gradient */}
