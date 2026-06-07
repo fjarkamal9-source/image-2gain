@@ -1,5 +1,4 @@
 ﻿import { Capacitor } from '@capacitor/core';
-import { Browser } from '@capacitor/browser';
 import { useAuth } from '../hooks/useAuth';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
@@ -29,7 +28,10 @@ export default function AuthScreen() {
           skipBrowserRedirect: true,
         },
       });
-      if (!error && data?.url) await Browser.open({ url: data.url });
+      if (!error && data?.url) {
+        const { Browser } = await import('@capacitor/browser');
+        await Browser.open({ url: data.url });
+      }
       return;
     }
     // Web — flow standard, Supabase redirige automatiquement

@@ -1,6 +1,5 @@
 import { Capacitor } from '@capacitor/core';
 import { App } from '@capacitor/app';
-import { Browser } from '@capacitor/browser';
 import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
@@ -25,7 +24,10 @@ export function AuthProvider({ children }) {
       if (hasExchanged.current) return;
       hasExchanged.current = true;
 
-      await Browser.close().catch(() => {});
+      if (Capacitor.isNativePlatform()) {
+        const { Browser } = await import('@capacitor/browser');
+        await Browser.close().catch(() => {});
+      }
 
       const urlObj = new URL(url.replace('com.deuxgain.app://', 'https://placeholder.com/'));
       const code = urlObj.searchParams.get('code');
