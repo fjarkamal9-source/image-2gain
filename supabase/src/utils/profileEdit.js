@@ -3,6 +3,15 @@ import { getUserProfile } from './completeOnboarding';
 import { setSettingsDistance } from './settingsStorage';
 import { getOnboarding, getOnboardingJSON, setOnboarding, setOnboardingJSON } from './storage';
 
+const INTENTION_LABELS = {
+  partner: 'Partenaire sportif',
+  romance: 'Romance sportive',
+  friendly: 'Rencontre amicale',
+  session: "Plaisir d'une séance",
+  casual: 'On verra si tu me suis',
+  events: 'Événements sportifs',
+};
+
 const PROFILE_SELECT =
   'first_name, bio, sports, intentions, niveau, frequency, distance_max, photo_url, city';
 
@@ -28,7 +37,7 @@ async function buildLocalEditableProfile() {
       ? getOnboardingJSON('intentions', [])
       : p.intentions || [],
     niveau: getOnboarding('niveau') || p.niveau || '',
-    frequence: getOnboarding('frequence') || p.frequence || '',
+    frequence: getOnboarding('frequency') || p.frequency || p.frequence || '',
     max_distance: p.max_distance ?? 25,
     photo_url: getProfilePhotoUrl(),
   };
@@ -39,7 +48,7 @@ function applyProfileToLocal(profile) {
   if (profile.ville != null) setOnboarding('ville', profile.ville);
   if (profile.bio != null) setOnboarding('bio', profile.bio);
   if (profile.niveau) setOnboarding('niveau', profile.niveau);
-  if (profile.frequence) setOnboarding('frequence', profile.frequence);
+  if (profile.frequence || profile.frequency) setOnboarding('frequency', profile.frequence || profile.frequency);
   if (Array.isArray(profile.sports)) setOnboardingJSON('sports', profile.sports);
   if (Array.isArray(profile.intentions)) setOnboardingJSON('intentions', profile.intentions);
   if (profile.photo_url) {
@@ -96,10 +105,11 @@ export function setProfilePhotoUrl(url) {
 }
 
 export function getProfileTags(profile) {
-  const objectifs = getOnboardingJSON('intentions', null) ?? profile?.intentions ?? [];
+  const rawIntentions = getOnboardingJSON('intentions', null) ?? profile?.intentions ?? [];
+  const objectifs = rawIntentions.map((s) => INTENTION_LABELS[s] || s);
   const sports = getOnboardingJSON('sports', null) ?? profile?.sports ?? [];
   const niveau = getOnboarding('niveau') || profile?.niveau || null;
-  const frequence = getOnboarding('frequence') || profile?.frequence || null;
+  const frequence = getOnboarding('frequency') || profile?.frequency || profile?.frequence || null;
   return { objectifs, sports, niveau, frequence };
 }
 

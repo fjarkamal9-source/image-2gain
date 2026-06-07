@@ -62,7 +62,7 @@ export default function MyProfile() {
   }, [user]);
 
   const prenom = profile?.prenom || 'K';
-  const age = profile?.age || 28;
+  const age = profile?.age ?? null;
   const photoUrl = getProfilePhotoUrl();
 
   const stats = [
@@ -110,7 +110,7 @@ export default function MyProfile() {
           }}
         >
           <p style={{ margin: 0, fontSize: 22, fontWeight: 700 }}>
-            {prenom}{age ? `, ${age} ans` : ''}
+            {prenom}{age != null ? `, ${age} ans` : ''}
           </p>
           <p style={{ margin: '2px 0 0', fontSize: 14, opacity: 0.85 }}>
             {profile?.ville || ''}
