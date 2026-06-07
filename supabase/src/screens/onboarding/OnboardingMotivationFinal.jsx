@@ -23,7 +23,7 @@ export default function OnboardingMotivationFinal() {
   return (
     <div className="app-frame motivation-screen">
       <div className="motivation-bg" aria-hidden>
-        <img src="/img/joggers-bg.jpg" alt="" />
+        <img src="/img/swipe-intro.png" alt="" />
       </div>
       <div className="motivation-content">
         <div className="motivation-tags">

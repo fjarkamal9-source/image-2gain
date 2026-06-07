@@ -8,11 +8,9 @@ export function mapRowToSwipeProfile(row) {
     prenom: row.first_name || 'Sportif',
     ville: row.city || '',
     distance: row.distance_km ?? 99,
-    objectif: intentions[0] || 'Partenaire sportif',
-    sport: sports[0] || 'Sport',
     sports,
-    frequence: row.frequency || null,
-    niveau: row.niveau || 'Intermédiaire',
+    frequency: row.frequency || null,
+    niveau: row.niveau || null,
     photo: row.photo_url || '',
     // lat/lng supprimés — jamais transmis au client
   };
