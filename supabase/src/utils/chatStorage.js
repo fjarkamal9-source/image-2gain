@@ -52,10 +52,6 @@ export function saveChatMessages(matchId, messages) {
   }
 }
 
-export function pickAutoReply() {
-  return AUTO_REPLIES[Math.floor(Math.random() * AUTO_REPLIES.length)];
-}
-
 /** Liste des conversations (match + dernier message + profil de l'autre). */
 export async function fetchChatConversations(userId) {
   if (!userId || !isSupabaseConfigured || !supabase) {
@@ -100,10 +96,14 @@ export async function fetchChatConversations(userId) {
   const { data: profiles } = profilesRes;
   const { data: messages } = messagesRes;
 
-  const profileById = Object.fromEntries((profiles || []).map((p) => [p.id, p]));
+  const profileById = Object.fromEntries((profilesRes.data || []).map((p) => [p.id, p]));
   const lastByMatch = {};
-  for (const msg of messages || []) {
+  const unreadByMatch = {};
+  for (const msg of messagesRes.data || []) {
     if (!lastByMatch[msg.match_id]) lastByMatch[msg.match_id] = msg;
+    if (msg.sender_id !== userId) {
+      unreadByMatch[msg.match_id] = (unreadByMatch[msg.match_id] || 0) + 1;
+    }
   }
 
   return matches.map((m) => {
@@ -117,7 +117,7 @@ export async function fetchChatConversations(userId) {
       photo: profile?.photo_url ?? '',
       last: last?.body ?? 'Nouveau match — dis bonjour !',
       time: formatChatTime(last?.created_at ?? m.created_at),
-      unread: 0,
+      unread: unreadByMatch[m.id] || 0,
     };
   });
 }
