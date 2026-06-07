@@ -35,7 +35,7 @@ export default function ChatList() {
       .channel(`chat-list-${uid}`)
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'messages' },
+        { event: 'INSERT', schema: 'public', table: 'messages', filter: `sender_id=neq.${uid}` },
         () => {
           loadConversations();
         }

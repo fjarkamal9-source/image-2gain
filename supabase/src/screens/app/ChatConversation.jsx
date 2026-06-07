@@ -73,7 +73,8 @@ export default function ChatConversation() {
     setText('');
 
     const sent = await sendChatMessage(matchId, currentUserId, content);
-    if (sent && !messageIdsRef.current.has(sent.id)) {
+    if (!sent) { setText(content); return; }
+    if (!messageIdsRef.current.has(sent.id)) {
       messageIdsRef.current.add(sent.id);
       setMessages((prev) => [...prev, sent]);
     }
