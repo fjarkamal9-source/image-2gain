@@ -70,24 +70,12 @@ export function getLikesReceivedIds() {
   return normalizeIds(getLikesReceived());
 }
 
-export function addLikeReceived(profileId) {
-  const list = normalizeIds(getLikesReceived());
-  if (!list.includes(profileId)) {
-    list.unshift(profileId);
-    write(LIKES_RECEIVED, list);
-  }
-}
-
 export function addMatch(profileId) {
   const list = getMatches();
   if (!list.includes(profileId)) {
     list.push(profileId);
     write(MATCHES, list);
   }
-}
-
-export function maybeMockMatch() {
-  return Math.random() < 0.3;
 }
 
 /** Insert un like (sender → receiver) dans Supabase. */
@@ -234,18 +222,6 @@ export async function fetchExcludedProfileIds(userId) {
 
 export function isLikeSent(profileId) {
   return getLikesSent().includes(profileId);
-}
-
-export function getLikesRecusCount() {
-  return getLikesReceived().length;
-}
-
-export function getLikesEnvoyesCount() {
-  return getLikesSent().length;
-}
-
-export function getMatchsActifsCount() {
-  return getMatches().length;
 }
 
 export function getLikesLastSeenAt() {
