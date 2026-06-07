@@ -20,6 +20,7 @@ import OnboardingPhoto from './screens/onboarding/OnboardingPhoto';
 import OnboardingBio from './screens/onboarding/OnboardingBio';
 import OnboardingGeolocation from './screens/onboarding/OnboardingGeolocation';
 import OnboardingMotivationFinal from './screens/onboarding/OnboardingMotivationFinal';
+import SwipeIntro from './screens/app/SwipeIntro';
 import HomeSwipe from './screens/app/HomeSwipe';
 import MapsScreen from './screens/app/MapsScreen';
 import LikesScreen from './screens/app/LikesScreen';
@@ -112,6 +113,15 @@ export default function App() {
         element={
           <Protected>
             <PremiumScreen />
+          </Protected>
+        }
+      />
+
+      <Route
+        path="/swipe-intro"
+        element={
+          <Protected>
+            <SwipeIntro />
           </Protected>
         }
       />

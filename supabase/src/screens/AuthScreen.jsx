@@ -43,7 +43,31 @@ export default function AuthScreen() {
   const handleSignUp = () => triggerOAuth('signup');
 
   return (
-    <div className="app-frame auth-screen">
+    <div className="app-frame auth-screen" style={{ position: 'relative', overflow: 'hidden' }}>
+      {/* Fond plein écran */}
+      <img
+        src="/img/auth-hero.png"
+        alt=""
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          zIndex: 0,
+        }}
+      />
+      {/* Overlay semi-transparente */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'rgba(255,255,255,0.82)',
+          zIndex: 1,
+        }}
+      />
       {/* Tagline positionné sous le logo de l'image de fond */}
       <h1
         style={{
@@ -58,7 +82,7 @@ export default function AuthScreen() {
           fontWeight: 900,
           lineHeight: 1.25,
           margin: 0,
-          zIndex: 1,
+          zIndex: 2,
         }}
       >
         Le sport est <span style={{ color: '#FF6B00' }}>meilleur</span><br />
@@ -72,7 +96,7 @@ export default function AuthScreen() {
           bottom: 60,
           left: 24,
           right: 24,
-          zIndex: 1,
+          zIndex: 2,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',

@@ -13,7 +13,7 @@ export default function OnboardingMotivationFinal() {
     setError('');
     try {
       await flushOnboardingToProfile();
-      navigate('/home', { replace: true });
+      navigate('/swipe-intro', { replace: true });
     } catch {
       setError('Une erreur est survenue. Vérifie ta connexion et réessaie.');
       setLoading(false);
