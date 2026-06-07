@@ -7,6 +7,10 @@
 }
 
 :root {
+  --sat: env(safe-area-inset-top);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
+  --sar: env(safe-area-inset-right);
   --orange: #ff6b00;
   --blue: #1a3fcc;
   --white: #ffffff;
@@ -38,6 +42,8 @@ body {
   font-weight: 400;
   color: var(--black);
   -webkit-font-smoothing: antialiased;
+  padding-top: var(--sat);
+  padding-bottom: var(--sab);
 }
 
 /* Shell mobile centré — fond transparent, dégradé sur le body */

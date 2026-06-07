@@ -109,7 +109,10 @@ export default function AuthScreen() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'flex-end',
-          padding: '0 24px 48px',
+          paddingTop: 'env(safe-area-inset-top)',
+          paddingBottom: 'calc(env(safe-area-inset-bottom) + 48px)',
+          paddingLeft: 24,
+          paddingRight: 24,
         }}
       >
         {/* Bouton Google — fond blanc, texte bleu */}

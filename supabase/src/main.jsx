@@ -2,7 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { App as CapacitorApp } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
 import App from './App';
+
+if (Capacitor.isNativePlatform()) {
+  import('@capacitor/status-bar').then(({ StatusBar, Style }) => {
+    StatusBar.setOverlaysWebView({ overlay: true });
+    StatusBar.setStyle({ style: Style.Dark });
+  }).catch(() => {});
+}
 import { AuthProvider } from './context/AuthContext';
 import { LikesBadgeProvider } from './context/LikesBadgeContext';
 import 'leaflet/dist/leaflet.css';
