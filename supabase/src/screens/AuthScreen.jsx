@@ -46,31 +46,39 @@ export default function AuthScreen() {
 
   return (
     <div className="app-frame auth-screen" style={{ position: 'relative', overflow: 'hidden' }}>
-      {/* Fond plein écran */}
+      {/* Fix 2 — Image de fond plein écran, calée en haut */}
       <img
         src="/img/auth-hero.png"
         alt=""
         aria-hidden
         style={{
-          position: 'absolute',
-          inset: 0,
+          position: 'fixed',
+          top: 0,
+          left: 0,
           width: '100%',
           height: '100%',
           objectFit: 'cover',
+          objectPosition: 'center top',
           zIndex: 0,
         }}
       />
-      {/* Overlay semi-transparente */}
+
+      {/* Fix 4 — Gradient sombre en bas pour lisibilité */}
       <div
         aria-hidden
         style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'rgba(255,255,255,0.82)',
-          zIndex: 1,
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          width: '100%',
+          height: '60%',
+          background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.75))',
+          zIndex: 0,
+          pointerEvents: 'none',
         }}
       />
-      {/* Tagline positionné sous le logo de l'image de fond */}
+
+      {/* Fix 5 — Tagline en blanc */}
       <h1
         style={{
           position: 'absolute',
@@ -78,32 +86,33 @@ export default function AuthScreen() {
           left: 0,
           right: 0,
           textAlign: 'center',
-          color: '#1A3FCC',
+          color: '#fff',
           fontFamily: 'var(--font-title)',
           fontSize: 28,
           fontWeight: 900,
           lineHeight: 1.25,
           margin: 0,
-          zIndex: 2,
+          zIndex: 1,
         }}
       >
         Le sport est <span style={{ color: '#FF6B00' }}>meilleur</span><br />
         à <span style={{ color: '#FF6B00' }}>plusieurs</span>
       </h1>
 
-      {/* Boutons en bas */}
+      {/* Fix 3 — Contenu en bas, lisible sur le gradient */}
       <div
         style={{
-          position: 'absolute',
-          bottom: 60,
-          left: 24,
-          right: 24,
-          zIndex: 2,
+          position: 'relative',
+          zIndex: 1,
+          minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
+          justifyContent: 'flex-end',
+          padding: '0 24px 48px',
         }}
       >
+        {/* Bouton Google — fond blanc, texte bleu */}
         <button
           type="button"
           className="auth-screen__btn auth-screen__btn--google"
@@ -112,24 +121,38 @@ export default function AuthScreen() {
         >
           <GoogleIcon /> Continuer avec Google
         </button>
+
+        {/* OU en blanc */}
         <div className="auth-separator" style={{ width: '100%' }}>
-          <span className="auth-separator-line" />
-          <span className="auth-separator-text">OU</span>
-          <span className="auth-separator-line" />
+          <span className="auth-separator-line" style={{ background: 'rgba(255,255,255,0.4)' }} />
+          <span className="auth-separator-text" style={{ color: 'rgba(255,255,255,0.8)' }}>OU</span>
+          <span className="auth-separator-line" style={{ background: 'rgba(255,255,255,0.4)' }} />
         </div>
-        <button type="button" className="auth-create-account" onClick={handleSignUp}>
+
+        {/* Créer un compte en blanc */}
+        <button
+          type="button"
+          className="auth-create-account"
+          style={{ color: 'rgba(255,255,255,0.9)' }}
+          onClick={handleSignUp}
+        >
           Créer un compte <span>›</span>
         </button>
+
+        {/* Problème de connexion en blanc */}
         <button
           type="button"
           className="auth-screen__help"
+          style={{ color: 'rgba(255,255,255,0.8)' }}
           onClick={() => {
             window.location.href = 'mailto:kamal1002026@outlook.fr?subject=Problème de connexion 2GAIN';
           }}
         >
           Problème de connexion ?
         </button>
-        <p className="auth-screen__legal">
+
+        {/* CGU en blanc opacity 0.7 */}
+        <p className="auth-screen__legal" style={{ color: 'rgba(255,255,255,0.7)' }}>
           En continuant tu acceptes nos CGU et politique de confidentialité.
         </p>
       </div>
