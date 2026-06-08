@@ -2,18 +2,24 @@ import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
 export async function resolvePostOAuthRoute() {
   if (!isSupabaseConfigured || !supabase) return '/auth';
-
   const intent = new URLSearchParams(window.location.search).get('intent') ?? 'signin';
 
-  // Avec detectSessionInUrl: true, Supabase échange le code automatiquement.
-  // On attend que la session soit disponible (retry si race condition).
+  // Tente d'échanger le code manuellement si présent dans l'URL
+  const code = new URLSearchParams(window.location.search).get('code');
+  if (code) {
+    try {
+      await supabase.auth.exchangeCodeForSession(code);
+    } catch { /* ignore — detectSessionInUrl peut déjà l'avoir fait */ }
+  }
+
+  // Attend la session avec plus de tentatives (10 × 600ms = 6 secondes max)
   let session = null;
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 10; i++) {
     try {
       const { data } = await supabase.auth.getSession();
       if (data?.session) { session = data.session; break; }
     } catch { /* ignore */ }
-    await new Promise((r) => setTimeout(r, 500));
+    await new Promise((r) => setTimeout(r, 600));
   }
 
   if (!session) return '/auth';
