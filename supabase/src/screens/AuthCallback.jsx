@@ -1,40 +1,66 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { resolvePostOAuthRoute } from '../utils/authCallback';
+import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
 export default function AuthCallback() {
   const navigate = useNavigate();
-  const [error, setError] = useState('');
-  const hasExchanged = useRef(false);
+  const hasNavigated = useRef(false);
 
-  const runCallback = useCallback(async () => {
-    if (hasExchanged.current) return;
-    hasExchanged.current = true;
-    try {
-      const route = await resolvePostOAuthRoute();
-      navigate(route, { replace: true });
-    } catch {
-      setError('Connexion impossible. Réessayez.');
-      setTimeout(() => navigate('/auth', { replace: true }), 2000);
+  useEffect(() => {
+    if (!isSupabaseConfigured || !supabase) {
+      navigate('/auth', { replace: true });
+      return;
     }
-  }, [navigate]);
 
-  useEffect(() => {
-    runCallback();
-  }, [runCallback]);
+    const intent = new URLSearchParams(window.location.search).get('intent') ?? 'signin';
 
-  useEffect(() => {
-    const handler = () => {
-      hasExchanged.current = false;
-      runCallback();
+    // Écoute onAuthStateChange — source de vérité unique
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (hasNavigated.current) return;
+        if (!session) return;
+
+        hasNavigated.current = true;
+        subscription.unsubscribe();
+
+        try {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('onboarding_completed')
+            .eq('id', session.user.id)
+            .maybeSingle();
+
+          if (profile?.onboarding_completed) {
+            navigate('/home', { replace: true });
+          } else if (intent === 'signup') {
+            navigate('/onboarding/welcome-rules', { replace: true });
+          } else {
+            navigate('/welcome-new-user', { replace: true });
+          }
+        } catch {
+          navigate('/welcome-new-user', { replace: true });
+        }
+      }
+    );
+
+    // Timeout fallback 15 secondes
+    const timeout = setTimeout(() => {
+      if (!hasNavigated.current) {
+        hasNavigated.current = true;
+        subscription.unsubscribe();
+        navigate('/auth', { replace: true });
+      }
+    }, 15000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
     };
-    window.addEventListener('capacitor-url-open', handler);
-    return () => window.removeEventListener('capacitor-url-open', handler);
-  }, [runCallback]);
+  }, [navigate]);
 
   return (
     <div className="app-frame splash-screen">
-      <p>{error || 'Connexion en cours…'}</p>
+      <p>Connexion en cours…</p>
     </div>
   );
 }
