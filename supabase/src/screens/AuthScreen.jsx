@@ -37,7 +37,13 @@ export default function AuthScreen() {
     // Web — flow standard, Supabase redirige automatiquement
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${APP_URL}/auth/callback?intent=${intent}` },
+      options: {
+        redirectTo: `${APP_URL}/auth/callback?intent=${intent}`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'select_account',
+        },
+      },
     });
   };
 
