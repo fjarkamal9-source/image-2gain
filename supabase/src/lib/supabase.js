@@ -9,10 +9,9 @@ export const supabase = isSupabaseConfigured
   ? createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         flowType: 'pkce',
-        storage: window.sessionStorage,
         autoRefreshToken: true,
         persistSession: true,
-        detectSessionInUrl: true, // échange le code PKCE automatiquement
+        detectSessionInUrl: false,
       },
     })
   : null;

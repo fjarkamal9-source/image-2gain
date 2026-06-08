@@ -13,49 +13,54 @@ export default function AuthCallback() {
     }
 
     const intent = new URLSearchParams(window.location.search).get('intent') ?? 'signin';
+    const code = new URLSearchParams(window.location.search).get('code');
 
-    // Écoute onAuthStateChange — source de vérité unique
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (hasNavigated.current) return;
-        if (!session) return;
+    if (!code) {
+      navigate('/auth', { replace: true });
+      return;
+    }
 
-        hasNavigated.current = true;
-        subscription.unsubscribe();
+    const handleAuth = async () => {
+      if (hasNavigated.current) return;
 
-        try {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('onboarding_completed')
-            .eq('id', session.user.id)
-            .maybeSingle();
+      try {
+        const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
-          if (profile?.onboarding_completed) {
-            navigate('/home', { replace: true });
-          } else if (intent === 'signup') {
-            navigate('/onboarding/welcome-rules', { replace: true });
-          } else {
-            navigate('/welcome-new-user', { replace: true });
+        if (error || !data?.session) {
+          console.error('OAuth callback error:', error?.message);
+          if (!hasNavigated.current) {
+            hasNavigated.current = true;
+            navigate('/auth', { replace: true });
           }
-        } catch {
+          return;
+        }
+
+        const session = data.session;
+        hasNavigated.current = true;
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('onboarding_completed')
+          .eq('id', session.user.id)
+          .maybeSingle();
+
+        if (profile?.onboarding_completed) {
+          navigate('/home', { replace: true });
+        } else if (intent === 'signup') {
+          navigate('/onboarding/welcome-rules', { replace: true });
+        } else {
           navigate('/welcome-new-user', { replace: true });
         }
+      } catch (err) {
+        console.error('Auth callback exception:', err);
+        if (!hasNavigated.current) {
+          hasNavigated.current = true;
+          navigate('/auth', { replace: true });
+        }
       }
-    );
-
-    // Timeout fallback 15 secondes
-    const timeout = setTimeout(() => {
-      if (!hasNavigated.current) {
-        hasNavigated.current = true;
-        subscription.unsubscribe();
-        navigate('/auth', { replace: true });
-      }
-    }, 15000);
-
-    return () => {
-      subscription.unsubscribe();
-      clearTimeout(timeout);
     };
+
+    handleAuth();
   }, [navigate]);
 
   return (
