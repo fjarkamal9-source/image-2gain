@@ -4,15 +4,8 @@ export async function resolvePostOAuthRoute() {
   if (!isSupabaseConfigured || !supabase) return '/auth';
   const intent = new URLSearchParams(window.location.search).get('intent') ?? 'signin';
 
-  // Tente d'échanger le code manuellement si présent dans l'URL
-  const code = new URLSearchParams(window.location.search).get('code');
-  if (code) {
-    try {
-      await supabase.auth.exchangeCodeForSession(code);
-    } catch { /* ignore — detectSessionInUrl peut déjà l'avoir fait */ }
-  }
-
-  // Attend la session avec plus de tentatives (10 × 600ms = 6 secondes max)
+  // Attend la session — detectSessionInUrl gère l'échange PKCE automatiquement
+  // Ne jamais appeler exchangeCodeForSession manuellement ici
   let session = null;
   for (let i = 0; i < 10; i++) {
     try {
