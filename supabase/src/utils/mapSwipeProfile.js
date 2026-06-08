@@ -8,6 +8,8 @@ export function mapRowToSwipeProfile(row) {
     prenom: row.first_name || 'Sportif',
     ville: row.city || '',
     distance: row.distance_km ?? 99,
+    age: row.age ?? null,
+    intentions,
     sports,
     frequency: row.frequency || null,
     niveau: row.niveau || null,
