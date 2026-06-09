@@ -20,7 +20,7 @@ export default function OnboardingLayout() {
       overflow: 'hidden',
       backgroundImage: 'url(/img/ecran-b.png)',
       backgroundSize: 'cover',
-      backgroundPosition: 'center',
+      backgroundPosition: 'top center',
     }}>
       <div style={{
         position: 'relative',
