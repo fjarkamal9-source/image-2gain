@@ -18,6 +18,7 @@ export default function OnboardingLayout() {
       position: 'relative',
       minHeight: '100vh',
       overflow: 'hidden',
+      zIndex: 0,
     }}>
       <img
         src="/img/ecran-b.png"
@@ -31,7 +32,7 @@ export default function OnboardingLayout() {
           height: '100%',
           objectFit: 'cover',
           objectPosition: 'center',
-          zIndex: 0,
+          zIndex: -1,
         }}
       />
       <div style={{
