@@ -459,15 +459,17 @@ a.auth-screen__btn[aria-disabled='true'] {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: transparent;
 }
 .onboarding-back {
   padding: 4px 8px 0;
 }
 .onboarding-page {
+  background: transparent !important;
+  padding: 24px;
   flex: 1;
-  padding: 8px 20px 120px;
-  background: #fff;
+  display: flex;
+  flex-direction: column;
   overflow-y: auto;
 }
 .onboarding-page--center {
@@ -476,57 +478,42 @@ a.auth-screen__btn[aria-disabled='true'] {
   align-items: stretch;
 }
 .onboarding-title {
-  font-family: var(--font-title);
+  color: #111 !important;
+  font-family: Arial Black, Arial, sans-serif;
   font-size: 26px;
   font-weight: 900;
-  line-height: 1.2;
   margin-bottom: 8px;
-  color: #000;
+  line-height: 1.2;
 }
 .onboarding-sub {
+  color: #333 !important;
   font-size: 15px;
-  color: #333;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   line-height: 1.4;
-}
-
-.onboarding-page .choice-card,
-.onboarding-page .sport-tag,
-.onboarding-page .intention-card,
-.onboarding-page .bio-textarea,
-.onboarding-page input,
-.onboarding-page select,
-.onboarding-page .birth-select {
-  background: rgba(255, 255, 255, 0.88) !important;
-}
-
-.onboarding-page .onboarding-title,
-.onboarding-page .onboarding-sub {
-  color: #111 !important;
 }
 .onboarding-input {
   width: 100%;
   height: 52px;
-  border: 1.5px solid #ddd;
   border-radius: 12px;
   padding: 0 16px;
   font-size: 16px;
-  background: #fff;
   margin-top: 8px;
 }
 .onboarding-input:focus {
   outline: none;
   border-color: var(--blue);
 }
+input.onboarding-input,
+.onboarding-page input[type="text"] {
+  background: rgba(255, 255, 255, 0.6) !important;
+  border: 2px solid #1A3FCC !important;
+  border-radius: 12px;
+  color: #111 !important;
+}
 .onboarding-footer {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 16px 20px max(24px, env(safe-area-inset-bottom));
-  background: #fff;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
-  z-index: 10;
+  margin-top: auto;
+  padding: 16px 0;
+  background: transparent !important;
 }
 
 .rules-list {
@@ -585,20 +572,23 @@ a.auth-screen__btn[aria-disabled='true'] {
   margin-top: 8px;
 }
 .choice-card {
+  background: transparent !important;
+  border: 2px solid #1A3FCC !important;
+  color: #111 !important;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  cursor: pointer;
   width: 100%;
-  padding: 18px 16px;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 14px;
-  background: #fff;
-  font-weight: 700;
-  font-size: 16px;
-  text-align: center;
-  color: #000;
+  text-align: left;
   transition: border-color 0.15s, background 0.15s;
 }
 .choice-card--selected {
-  border-color: var(--orange);
-  background: #fff8f0;
+  background: rgba(255, 107, 0, 0.15) !important;
+  border: 2px solid #FF6B00 !important;
+  color: #FF6B00 !important;
+  font-weight: 700;
 }
 
 .birth-selects {
@@ -609,11 +599,12 @@ a.auth-screen__btn[aria-disabled='true'] {
 .birth-select {
   flex: 1;
   height: 52px;
-  border: 1.5px solid #ddd;
-  border-radius: 12px;
   padding: 0 8px;
   font-size: 16px;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.6) !important;
+  border: 2px solid #1A3FCC !important;
+  border-radius: 8px;
+  color: #111 !important;
 }
 .error-text {
   color: var(--error);
@@ -644,9 +635,10 @@ a.auth-screen__btn[aria-disabled='true'] {
 }
 .intention-card {
   padding: 16px 12px;
-  border: 1.5px solid #e8e8e8;
-  border-radius: 14px;
-  background: #fafafa;
+  background: transparent !important;
+  border: 2px solid #1A3FCC !important;
+  color: #111 !important;
+  border-radius: 12px;
   text-align: center;
   font-size: 13px;
   font-weight: 600;
@@ -654,8 +646,9 @@ a.auth-screen__btn[aria-disabled='true'] {
   transition: border-color 0.15s, background 0.15s;
 }
 .intention-card--selected {
-  border-color: var(--orange);
-  background: #fff8f0;
+  background: rgba(255, 107, 0, 0.15) !important;
+  border: 2px solid #FF6B00 !important;
+  color: #FF6B00 !important;
 }
 .intention-emoji {
   display: block;
@@ -673,18 +666,20 @@ a.auth-screen__btn[aria-disabled='true'] {
   margin-bottom: 16px;
 }
 .sport-tag {
-  padding: 10px 16px;
-  border-radius: 24px;
-  background: #f0f0f0;
-  border: 1.5px solid transparent;
+  background: transparent !important;
+  border: 2px solid #1A3FCC !important;
+  color: #111 !important;
+  border-radius: 20px;
+  padding: 8px 16px;
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  cursor: pointer;
 }
 .sport-tag--selected {
-  background: #fff8f0;
-  border-color: var(--orange);
-  color: var(--orange);
+  background: rgba(255, 107, 0, 0.15) !important;
+  border: 2px solid #FF6B00 !important;
+  color: #FF6B00 !important;
+  font-weight: 700;
 }
 
 .photo-zone {
@@ -692,7 +687,6 @@ a.auth-screen__btn[aria-disabled='true'] {
   max-width: 280px;
   height: 280px;
   margin: 24px auto;
-  border: 2px dashed #ccc;
   border-radius: 16px;
   display: flex;
   flex-direction: column;
@@ -701,7 +695,8 @@ a.auth-screen__btn[aria-disabled='true'] {
   gap: 8px;
   cursor: pointer;
   overflow: hidden;
-  background: #fafafa;
+  background: transparent !important;
+  border: 2px dashed #1A3FCC !important;
 }
 .photo-preview {
   width: 100%;
@@ -721,13 +716,14 @@ a.auth-screen__btn[aria-disabled='true'] {
 .bio-textarea {
   width: 100%;
   min-height: 140px;
-  border: none;
   border-radius: 12px;
-  background: #f0f0f0;
   padding: 16px;
   font-size: 15px;
   resize: vertical;
   margin-top: 8px;
+  background: rgba(255, 255, 255, 0.6) !important;
+  border: 2px solid #1A3FCC !important;
+  color: #111 !important;
 }
 .bio-textarea:focus {
   outline: 2px solid var(--blue);

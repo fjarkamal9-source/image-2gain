@@ -1,36 +1,24 @@
-import { Outlet, useLocation } from 'react-router-dom';
-import ProgressBar from '../ui/ProgressBar';
-import BackButton from '../ui/BackButton';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 
 const STEPS = [
-  'email',
-  'welcome-rules',
-  'first-name',
-  'welcome-personalized',
-  'birth-date',
-  'gender',
-  'looking-for-gender',
-  'max-distance',
-  'intentions',
-  'sports',
-  'photo',
-  'bio',
-  'geolocation',
-  'motivation-final',
+  'welcome-rules', 'first-name', 'welcome-personalized', 'birth-date',
+  'gender', 'looking-for-gender', 'niveau', 'frequency', 'max-distance',
+  'intentions', 'sports', 'photo', 'bio', 'geolocation',
 ];
 
 export default function OnboardingLayout() {
-  const { pathname } = useLocation();
-  const slug = pathname.split('/').pop();
-  const idx = STEPS.indexOf(slug);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const current = location.pathname.split('/').pop();
+  const idx = STEPS.indexOf(current);
   const progress = idx >= 0 ? ((idx + 1) / STEPS.length) * 100 : 0;
-  const hideBack = slug === 'motivation-final';
 
   return (
-    <div
-      className="app-frame onboarding-frame"
-      style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}
-    >
+    <div style={{
+      position: 'relative',
+      minHeight: '100vh',
+      overflow: 'hidden',
+    }}>
       <img
         src="/img/ecran-b.png"
         alt=""
@@ -44,16 +32,48 @@ export default function OnboardingLayout() {
           objectFit: 'cover',
           objectPosition: 'center',
           zIndex: 0,
-          opacity: 0.12,
         }}
       />
-      <div style={{ position: 'relative', zIndex: 1 }}>
-        <ProgressBar value={progress} />
-        {!hideBack && (
-          <div className="onboarding-back">
-            <BackButton />
+      <div style={{
+        position: 'relative',
+        zIndex: 1,
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+      }}>
+        <div style={{ padding: '0 24px', paddingTop: 'env(safe-area-inset-top, 16px)' }}>
+          <div style={{
+            height: 3,
+            background: 'rgba(255,255,255,0.3)',
+            borderRadius: 2,
+            marginTop: 12,
+          }}>
+            <div style={{
+              width: `${progress}%`,
+              height: '100%',
+              background: '#FF6B00',
+              borderRadius: 2,
+              transition: 'width 0.3s ease',
+            }} />
           </div>
-        )}
+          {idx > 0 && (
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                fontSize: 22,
+                color: '#1A3FCC',
+                cursor: 'pointer',
+                padding: '12px 0',
+                fontWeight: 700,
+              }}
+            >
+              &lt;
+            </button>
+          )}
+        </div>
         <Outlet />
       </div>
     </div>
