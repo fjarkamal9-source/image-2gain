@@ -460,7 +460,7 @@ a.auth-screen__btn[aria-disabled='true'] {
 .onboarding-page {
   position: relative;
   background: transparent !important;
-  padding: 0 16px 24px;
+  padding: 0 20px 24px;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -516,6 +516,9 @@ a.auth-screen__btn[aria-disabled='true'] {
   font-weight: 800 !important;
   letter-spacing: 0.3px;
   border-radius: 14px !important;
+  width: 100%;
+  height: 54px;
+  border: 2px solid #FF6B00 !important;
 }
 
 .onboarding-footer .cta-button {
@@ -543,7 +546,7 @@ input.onboarding-input,
 }
 .onboarding-footer {
   margin-top: auto;
-  padding: 16px 0;
+  padding: 16px 0 max(env(safe-area-inset-bottom), 24px);
   background: transparent !important;
 }
 
@@ -608,9 +611,9 @@ input.onboarding-input,
 .choice-card {
   background: transparent !important;
   border: 2px solid #1A3FCC !important;
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 14px 16px;
-  margin-bottom: 10px;
+  min-height: 56px;
   font-family: Arial, sans-serif !important;
   font-size: 16px !important;
   font-weight: 600 !important;
@@ -627,7 +630,7 @@ input.onboarding-input,
   font-family: Arial, sans-serif !important;
   font-size: 14px !important;
   font-weight: 400 !important;
-  color: rgba(0, 0, 0, 0.6) !important;
+  color: #444444 !important;
   line-height: 1.4;
 }
 
@@ -660,17 +663,17 @@ input.onboarding-input,
 }
 
 .distance-value {
-  font-family: var(--font-title);
-  font-size: 48px;
+  font-family: 'Arial Black', Arial, sans-serif;
+  font-size: 32px;
   font-weight: 900;
-  color: var(--orange);
+  color: #FF6B00;
   text-align: center;
   margin: 32px 0 24px;
 }
 .distance-slider {
   width: 100%;
   margin: 0 0 24px;
-  accent-color: var(--orange);
+  accent-color: #FF6B00;
   height: 6px;
 }
 
@@ -684,7 +687,8 @@ input.onboarding-input,
   padding: 16px 12px;
   background: transparent !important;
   border: 2px solid #1A3FCC !important;
-  border-radius: 12px;
+  border-radius: 14px;
+  min-height: 56px;
   text-align: center;
   font-family: Arial, sans-serif !important;
   font-size: 15px !important;
@@ -707,7 +711,7 @@ input.onboarding-input,
 .sports-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   max-height: 320px;
   overflow-y: auto;
   padding-right: 4px;
@@ -716,8 +720,9 @@ input.onboarding-input,
 .sport-tag {
   background: transparent !important;
   border: 2px solid #1A3FCC !important;
-  border-radius: 20px;
+  border-radius: 24px;
   padding: 8px 16px;
+  min-height: 40px;
   font-family: Arial, sans-serif !important;
   font-size: 15px !important;
   font-weight: 600 !important;
@@ -753,15 +758,15 @@ input.onboarding-input,
   object-fit: cover;
 }
 .photo-plus {
-  font-size: 48px;
-  color: rgba(0, 0, 0, 0.55);
+  font-size: 32px;
+  color: #1A3FCC;
   line-height: 1;
 }
 .photo-label {
   font-family: Arial, sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
-  color: rgba(0, 0, 0, 0.65);
+  color: #444444;
 }
 
 .bio-textarea {
@@ -782,9 +787,9 @@ input.onboarding-input,
 .bio-counter {
   text-align: right;
   font-family: Arial, sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  color: rgba(0, 0, 0, 0.55);
+  color: #888888;
   margin-top: 6px;
 }
 
@@ -801,8 +806,8 @@ input.onboarding-input,
 }
 .geo-info-card {
   background: transparent !important;
-  border: 2px solid rgba(26, 63, 204, 0.4) !important;
-  border-radius: 12px;
+  border: 2px solid #1A3FCC !important;
+  border-radius: 14px;
   padding: 16px;
   text-align: center;
   font-family: Arial, sans-serif;
@@ -828,7 +833,7 @@ input.onboarding-input,
   font-family: Arial, sans-serif !important;
   font-size: 15px !important;
   font-weight: 600 !important;
-  color: rgba(0, 0, 0, 0.55) !important;
+  color: #1A3FCC !important;
 }
 
 .motivation-screen {
