@@ -12,8 +12,6 @@ export default function AuthCallback() {
       return;
     }
 
-    const intent = new URLSearchParams(window.location.search).get('intent') ?? 'signin';
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (hasNavigated.current) return;
@@ -25,15 +23,18 @@ export default function AuthCallback() {
         try {
           const { data: profile } = await supabase
             .from('profiles')
-            .select('onboarding_completed')
+            .select('onboarding_completed, first_name')
             .eq('id', session.user.id)
             .maybeSingle();
 
           if (profile?.onboarding_completed) {
+            // Compte existant + onboarding complété → home
             navigate('/home', { replace: true });
-          } else if (intent === 'signup') {
+          } else if (profile?.first_name) {
+            // Compte existant + onboarding non complété → reprendre l'onboarding
             navigate('/onboarding/welcome-rules', { replace: true });
           } else {
+            // Nouveau compte → modal bienvenue
             navigate('/welcome-new-user', { replace: true });
           }
         } catch {
