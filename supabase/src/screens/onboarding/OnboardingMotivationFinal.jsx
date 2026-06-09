@@ -18,7 +18,6 @@ export default function OnboardingMotivationFinal() {
         setLoading(false);
         return;
       }
-      localStorage.setItem('onboarding_completed', 'true');
       navigate('/swipe-intro', { replace: true });
     } catch (err) {
       console.error('flush error:', err);

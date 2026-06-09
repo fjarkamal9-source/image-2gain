@@ -1,6 +1,5 @@
 ﻿import { Capacitor } from '@capacitor/core';
-import { useAuth } from '../hooks/useAuth';
-import { isSupabaseConfigured, supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 
 function GoogleIcon() {
   return (
@@ -14,8 +13,6 @@ function GoogleIcon() {
 }
 
 export default function AuthScreen() {
-  const { signInGoogle } = useAuth();
-
   const APP_URL = import.meta.env.VITE_APP_URL || window.location.origin;
 
   const triggerOAuth = async (intent) => {

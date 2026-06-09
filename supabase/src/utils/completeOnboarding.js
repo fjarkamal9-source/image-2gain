@@ -1,4 +1,4 @@
-import { getOnboarding, getOnboardingJSON, setOnboardingJSON } from './storage';
+import { getOnboarding, getOnboardingJSON, setOnboarding, setOnboardingJSON } from './storage';
 import { calcAge, parseBirthDate } from './age';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
