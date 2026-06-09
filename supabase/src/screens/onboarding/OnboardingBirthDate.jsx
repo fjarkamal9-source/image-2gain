@@ -18,8 +18,8 @@ export default function OnboardingBirthDate() {
 
   return (
     <div className="onboarding-page">
-      <h1 className="onboarding-title">Quelle est ta date de naissance ?</h1>
-      <p className="onboarding-sub">Tu dois avoir au moins 18 ans</p>
+      <h1 className="onboarding-title" style={{ color: '#111111' }}>Quelle est ta date de naissance ?</h1>
+      <p className="onboarding-sub" style={{ color: '#111111' }}>Tu dois avoir au moins 18 ans</p>
       <div className="birth-selects">
         <select value={day} onChange={(e) => setDay(e.target.value)} className="birth-select">
           <option value="">Jour</option>

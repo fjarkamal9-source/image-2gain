@@ -11,13 +11,14 @@ export default function OnboardingLookingForGender() {
 
   return (
     <div className="onboarding-page">
-      <h1 className="onboarding-title">Tu veux rencontrer ?</h1>
+      <h1 className="onboarding-title" style={{ color: '#111111' }}>Tu veux rencontrer ?</h1>
       <div className="choice-list">
         {OPTIONS.map((opt) => (
           <button
             key={opt}
             type="button"
             className={`choice-card ${selected === opt ? 'choice-card--selected' : ''}`}
+            style={selected === opt ? undefined : { color: '#111111' }}
             onClick={() => setSelected(opt)}
           >
             {opt}

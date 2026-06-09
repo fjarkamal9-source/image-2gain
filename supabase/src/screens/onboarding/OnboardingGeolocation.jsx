@@ -59,8 +59,8 @@ export default function OnboardingGeolocation() {
   if (showManual) {
     return (
       <div className="onboarding-page onboarding-page--center">
-        <h1 className="onboarding-title">Quelle est ta ville ?</h1>
-        <p className="onboarding-sub">Pour trouver des sportifs près de toi</p>
+        <h1 className="onboarding-title" style={{ color: '#111111' }}>Quelle est ta ville ?</h1>
+        <p className="onboarding-sub" style={{ color: '#111111' }}>Pour trouver des sportifs près de toi</p>
         <input
           type="text"
           className="bio-textarea"
@@ -78,16 +78,16 @@ export default function OnboardingGeolocation() {
 
   return (
     <div className="onboarding-page onboarding-page--center">
-      <h1 className="onboarding-title">Active ta localisation</h1>
-      <p className="onboarding-sub">Pour trouver des sportifs autour de toi</p>
+      <h1 className="onboarding-title" style={{ color: '#111111' }}>Active ta localisation</h1>
+      <p className="onboarding-sub" style={{ color: '#111111' }}>Pour trouver des sportifs autour de toi</p>
       <div className="geo-pin-circle">📍</div>
       <div className="geo-info-card">
-        <p>2GAIN utilise ta position uniquement pour calculer les distances.</p>
-        <p className="geo-muted">Jamais partagée.</p>
+        <p style={{ color: '#111111' }}>2GAIN utilise ta position uniquement pour calculer les distances.</p>
+        <p className="geo-muted" style={{ color: '#111111' }}>Jamais partagée.</p>
       </div>
       <div className="onboarding-footer">
         <CTAButton variant="outline" onClick={allow}>Autoriser la localisation</CTAButton>
-        <button type="button" className="skip-link" onClick={() => setShowManual(true)}>
+        <button type="button" className="skip-link" style={{ color: '#1A3FCC' }} onClick={() => setShowManual(true)}>
           Saisir ma ville manuellement
         </button>
       </div>
