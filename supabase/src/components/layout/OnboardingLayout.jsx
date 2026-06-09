@@ -29,7 +29,13 @@ export default function OnboardingLayout() {
         display: 'flex',
         flexDirection: 'column',
       }}>
-        <div style={{ padding: '0 16px', paddingTop: 'env(safe-area-inset-top, 16px)' }}>
+        <div style={{
+          padding: '0 16px',
+          paddingTop: 'env(safe-area-inset-top, 16px)',
+          background: 'rgba(255,255,255,0.75)',
+          backdropFilter: 'blur(4px)',
+          WebkitBackdropFilter: 'blur(4px)',
+        }}>
           <div style={{
             height: 3,
             background: 'rgba(255,255,255,0.3)',
