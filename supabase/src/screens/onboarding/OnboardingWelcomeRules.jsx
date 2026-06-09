@@ -25,7 +25,7 @@ export default function OnboardingWelcomeRules() {
       </ul>
       <div className="rules-illustration">🏋️</div>
       <div className="onboarding-footer">
-        <CTAButton onClick={() => navigate('/onboarding/first-name')}>
+        <CTAButton variant="outline" onClick={() => navigate('/onboarding/first-name')}>
           J&apos;accepte et je continue
         </CTAButton>
       </div>

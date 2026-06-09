@@ -44,7 +44,7 @@ export default function OnboardingBirthDate() {
         <p className="error-text">Tu dois avoir au moins 18 ans pour utiliser 2GAIN.</p>
       )}
       <div className="onboarding-footer">
-        <CTAButton
+        <CTAButton variant="outline"
           disabled={!valid18}
           onClick={() => {
             setOnboarding('birth_day', day);

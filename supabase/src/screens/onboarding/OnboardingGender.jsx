@@ -25,7 +25,7 @@ export default function OnboardingGender() {
         ))}
       </div>
       <div className="onboarding-footer">
-        <CTAButton
+        <CTAButton variant="outline"
           disabled={!selected}
           onClick={() => {
             setOnboarding('gender', selected);

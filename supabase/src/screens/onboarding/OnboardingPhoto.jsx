@@ -45,7 +45,7 @@ export default function OnboardingPhoto() {
         onChange={(e) => handleFile(e.target.files?.[0])}
       />
       <div className="onboarding-footer">
-        <CTAButton onClick={() => navigate('/onboarding/bio')}>Continuer</CTAButton>
+        <CTAButton variant="outline" onClick={() => navigate('/onboarding/bio')}>Continuer</CTAButton>
         <button type="button" className="skip-link" onClick={() => navigate('/onboarding/bio')}>
           Passer cette étape
         </button>

@@ -19,7 +19,7 @@ export default function OnboardingFirstName() {
         maxLength={30}
       />
       <div className="onboarding-footer">
-        <CTAButton
+        <CTAButton variant="outline"
           disabled={!valid}
           onClick={() => {
             setOnboarding('prenom', prenom.trim());

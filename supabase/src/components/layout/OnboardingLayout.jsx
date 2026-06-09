@@ -27,14 +27,35 @@ export default function OnboardingLayout() {
   const hideBack = slug === 'motivation-final';
 
   return (
-    <div className="app-frame onboarding-frame">
-      <ProgressBar value={progress} />
-      {!hideBack && (
-        <div className="onboarding-back">
-          <BackButton />
-        </div>
-      )}
-      <Outlet />
+    <div
+      className="app-frame onboarding-frame"
+      style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}
+    >
+      <img
+        src="/img/ecran-b.png"
+        alt=""
+        aria-hidden
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          objectPosition: 'center',
+          zIndex: 0,
+          opacity: 0.12,
+        }}
+      />
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <ProgressBar value={progress} />
+        {!hideBack && (
+          <div className="onboarding-back">
+            <BackButton />
+          </div>
+        )}
+        <Outlet />
+      </div>
     </div>
   );
 }

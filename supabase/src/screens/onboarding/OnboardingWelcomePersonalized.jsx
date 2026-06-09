@@ -13,7 +13,7 @@ export default function OnboardingWelcomePersonalized() {
       <p className="onboarding-sub">La motivation, c&apos;est mieux à plusieurs !</p>
       <p className="onboarding-sub">Ensemble on va plus loin !</p>
       <div className="onboarding-footer">
-        <CTAButton onClick={() => navigate('/onboarding/birth-date')}>
+        <CTAButton variant="outline" onClick={() => navigate('/onboarding/birth-date')}>
           C&apos;est parti !
         </CTAButton>
       </div>

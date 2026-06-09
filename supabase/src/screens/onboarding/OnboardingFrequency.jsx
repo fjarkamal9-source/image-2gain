@@ -32,7 +32,7 @@ export default function OnboardingFrequency() {
         ))}
       </div>
       <div className="onboarding-footer">
-        <CTAButton
+        <CTAButton variant="outline"
           disabled={!selected}
           onClick={() => {
             setOnboarding('frequency', selected);

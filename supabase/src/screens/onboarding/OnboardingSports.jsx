@@ -40,7 +40,7 @@ export default function OnboardingSports() {
         ))}
       </div>
       <div className="onboarding-footer">
-        <CTAButton
+        <CTAButton variant="outline"
           disabled={!valid}
           onClick={() => {
             setOnboardingJSON('sports', selected);

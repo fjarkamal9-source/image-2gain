@@ -32,7 +32,7 @@ export default function OnboardingNiveau() {
         ))}
       </div>
       <div className="onboarding-footer">
-        <CTAButton
+        <CTAButton variant="outline"
           disabled={!selected}
           onClick={() => {
             setOnboarding('niveau', selected);

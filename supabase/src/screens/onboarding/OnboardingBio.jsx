@@ -20,7 +20,7 @@ export default function OnboardingBio() {
       />
       <p className="bio-counter">{bio.length}/150</p>
       <div className="onboarding-footer">
-        <CTAButton
+        <CTAButton variant="outline"
           onClick={() => {
             setOnboarding('bio', bio);
             navigate('/onboarding/geolocation');

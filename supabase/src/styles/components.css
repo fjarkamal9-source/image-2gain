@@ -489,6 +489,21 @@ a.auth-screen__btn[aria-disabled='true'] {
   margin-bottom: 20px;
   line-height: 1.4;
 }
+
+.onboarding-page .choice-card,
+.onboarding-page .sport-tag,
+.onboarding-page .intention-card,
+.onboarding-page .bio-textarea,
+.onboarding-page input,
+.onboarding-page select,
+.onboarding-page .birth-select {
+  background: rgba(255, 255, 255, 0.88) !important;
+}
+
+.onboarding-page .onboarding-title,
+.onboarding-page .onboarding-sub {
+  color: #111 !important;
+}
 .onboarding-input {
   width: 100%;
   height: 52px;

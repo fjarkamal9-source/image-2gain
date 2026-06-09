@@ -42,7 +42,7 @@ export default function OnboardingIntentions() {
         ))}
       </div>
       <div className="onboarding-footer">
-        <CTAButton
+        <CTAButton variant="outline"
           disabled={selected.length === 0}
           onClick={() => {
             setOnboardingJSON('intentions', selected);

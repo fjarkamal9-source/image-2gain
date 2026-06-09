@@ -21,7 +21,7 @@ export default function OnboardingMaxDistance() {
         className="distance-slider"
       />
       <div className="onboarding-footer">
-        <CTAButton
+        <CTAButton variant="outline"
           onClick={() => {
             setOnboarding('max_distance', km);
             navigate('/onboarding/intentions');

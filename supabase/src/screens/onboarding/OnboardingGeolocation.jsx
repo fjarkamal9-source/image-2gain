@@ -70,7 +70,7 @@ export default function OnboardingGeolocation() {
           onChange={(e) => setManualCity(e.target.value)}
         />
         <div className="onboarding-footer">
-          <CTAButton onClick={confirmManual}>Confirmer</CTAButton>
+          <CTAButton variant="outline" onClick={confirmManual}>Confirmer</CTAButton>
         </div>
       </div>
     );
@@ -86,7 +86,7 @@ export default function OnboardingGeolocation() {
         <p className="geo-muted">Jamais partagée.</p>
       </div>
       <div className="onboarding-footer">
-        <CTAButton onClick={allow}>Autoriser la localisation</CTAButton>
+        <CTAButton variant="outline" onClick={allow}>Autoriser la localisation</CTAButton>
         <button type="button" className="skip-link" onClick={() => setShowManual(true)}>
           Saisir ma ville manuellement
         </button>
