@@ -480,6 +480,57 @@ a.auth-screen__btn[aria-disabled='true'] {
   position: relative;
   z-index: 1;
 }
+
+/* Tout le texte onboarding en noir sauf exceptions */
+.onboarding-page,
+.onboarding-page * {
+  color: #111111;
+}
+
+/* Exceptions autorisées */
+.onboarding-page .onboarding-sub {
+  color: #444444 !important;
+}
+
+.onboarding-page .choice-card--selected,
+.onboarding-page .sport-tag--selected,
+.onboarding-page .intention-card--selected {
+  color: #FF6B00 !important;
+}
+
+.onboarding-page .distance-value {
+  color: #FF6B00 !important;
+}
+
+.onboarding-page .rules-check {
+  color: #ffffff !important;
+}
+
+.onboarding-page .photo-plus {
+  color: #1A3FCC !important;
+}
+
+.onboarding-page .skip-link {
+  color: #1A3FCC !important;
+}
+
+.onboarding-page .bio-counter {
+  color: #888888 !important;
+}
+
+.onboarding-page .cta-button {
+  color: #C2410C !important;
+}
+
+.onboarding-page .error-text {
+  color: #CC0000 !important;
+}
+
+.onboarding-page input::placeholder,
+.onboarding-page textarea::placeholder {
+  color: rgba(0, 0, 0, 0.4) !important;
+}
+
 .onboarding-page--center {
   display: flex;
   flex-direction: column;
@@ -489,7 +540,6 @@ a.auth-screen__btn[aria-disabled='true'] {
   font-family: 'Arial Black', Arial, sans-serif !important;
   font-size: 28px !important;
   font-weight: 900 !important;
-  color: #111111 !important;
   line-height: 1.2 !important;
   margin-bottom: 8px !important;
   letter-spacing: -0.5px;
@@ -499,7 +549,6 @@ a.auth-screen__btn[aria-disabled='true'] {
   font-family: Arial, sans-serif !important;
   font-size: 16px !important;
   font-weight: 400 !important;
-  color: #444444 !important;
   line-height: 1.5 !important;
   margin-bottom: 20px !important;
 }
@@ -507,7 +556,6 @@ a.auth-screen__btn[aria-disabled='true'] {
 .onboarding-page label {
   font-family: Arial, sans-serif !important;
   font-weight: 600 !important;
-  color: #111111 !important;
 }
 
 .cta-button {
@@ -522,7 +570,6 @@ a.auth-screen__btn[aria-disabled='true'] {
 }
 
 .onboarding-footer .cta-button {
-  color: #C2410C !important;
   border-color: #FF6B00 !important;
 }
 .onboarding-input {
@@ -542,7 +589,6 @@ input.onboarding-input,
   background: rgba(255, 255, 255, 0.6) !important;
   border: 2px solid #1A3FCC !important;
   border-radius: 12px;
-  color: #111 !important;
 }
 .onboarding-footer {
   margin-top: auto;
@@ -562,7 +608,6 @@ input.onboarding-input,
   font-family: Arial, sans-serif !important;
   font-size: 16px !important;
   font-weight: 500 !important;
-  color: #111111 !important;
   line-height: 1.5;
 }
 .rules-check {
@@ -571,7 +616,6 @@ input.onboarding-input,
   height: 24px;
   border-radius: 50%;
   background: var(--success);
-  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -617,7 +661,6 @@ input.onboarding-input,
   font-family: Arial, sans-serif !important;
   font-size: 16px !important;
   font-weight: 600 !important;
-  color: #111111 !important;
   cursor: pointer;
   width: 100%;
   text-align: left;
@@ -630,14 +673,12 @@ input.onboarding-input,
   font-family: Arial, sans-serif !important;
   font-size: 14px !important;
   font-weight: 400 !important;
-  color: #444444 !important;
   line-height: 1.4;
 }
 
 .choice-card--selected {
   background: rgba(255, 107, 0, 0.15) !important;
   border: 2px solid #FF6B00 !important;
-  color: #FF6B00 !important;
   font-weight: 700;
 }
 
@@ -654,10 +695,8 @@ input.onboarding-input,
   background: rgba(255, 255, 255, 0.6) !important;
   border: 2px solid #1A3FCC !important;
   border-radius: 8px;
-  color: #111 !important;
 }
 .error-text {
-  color: var(--error);
   font-size: 13px;
   margin-top: 8px;
 }
@@ -666,7 +705,6 @@ input.onboarding-input,
   font-family: 'Arial Black', Arial, sans-serif;
   font-size: 32px;
   font-weight: 900;
-  color: #FF6B00;
   text-align: center;
   margin: 32px 0 24px;
 }
@@ -693,14 +731,12 @@ input.onboarding-input,
   font-family: Arial, sans-serif !important;
   font-size: 15px !important;
   font-weight: 600 !important;
-  color: #111111 !important;
   line-height: 1.3;
   transition: border-color 0.15s, background 0.15s;
 }
 .intention-card--selected {
   background: rgba(255, 107, 0, 0.15) !important;
   border: 2px solid #FF6B00 !important;
-  color: #FF6B00 !important;
 }
 .intention-emoji {
   display: block;
@@ -726,13 +762,11 @@ input.onboarding-input,
   font-family: Arial, sans-serif !important;
   font-size: 15px !important;
   font-weight: 600 !important;
-  color: #111111 !important;
   cursor: pointer;
 }
 .sport-tag--selected {
   background: rgba(255, 107, 0, 0.15) !important;
   border: 2px solid #FF6B00 !important;
-  color: #FF6B00 !important;
   font-weight: 700;
 }
 
@@ -759,14 +793,12 @@ input.onboarding-input,
 }
 .photo-plus {
   font-size: 32px;
-  color: #1A3FCC;
   line-height: 1;
 }
 .photo-label {
   font-family: Arial, sans-serif;
   font-size: 14px;
   font-weight: 600;
-  color: #444444;
 }
 
 .bio-textarea {
@@ -779,7 +811,6 @@ input.onboarding-input,
   margin-top: 8px;
   background: rgba(255, 255, 255, 0.6) !important;
   border: 2px solid #1A3FCC !important;
-  color: #111 !important;
 }
 .bio-textarea:focus {
   outline: 2px solid var(--blue);
@@ -789,7 +820,6 @@ input.onboarding-input,
   font-family: Arial, sans-serif;
   font-size: 13px;
   font-weight: 500;
-  color: #888888;
   margin-top: 6px;
 }
 
@@ -813,19 +843,14 @@ input.onboarding-input,
   font-family: Arial, sans-serif;
   font-size: 15px;
   font-weight: 500;
-  color: #111111;
   line-height: 1.5;
   margin-bottom: 24px;
 }
 
-.geo-info-card p {
-  color: #111111 !important;
-}
 .geo-muted {
   font-family: Arial, sans-serif;
   font-size: 14px;
   font-weight: 400;
-  color: rgba(0, 0, 0, 0.55) !important;
   margin-top: 6px;
 }
 
@@ -833,7 +858,6 @@ input.onboarding-input,
   font-family: Arial, sans-serif !important;
   font-size: 15px !important;
   font-weight: 600 !important;
-  color: #1A3FCC !important;
 }
 
 .motivation-screen {
