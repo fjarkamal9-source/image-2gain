@@ -32,8 +32,12 @@ import SettingsScreen from './screens/app/SettingsScreen';
 import EditProfile from './screens/app/EditProfile';
 import PremiumScreen from './screens/app/PremiumScreen';
 
-function Protected({ children }) {
-  return <ProtectedRoute>{children}</ProtectedRoute>;
+function Protected({ children, requireOnboarding = false }) {
+  return (
+    <ProtectedRoute requireOnboarding={requireOnboarding}>
+      {children}
+    </ProtectedRoute>
+  );
 }
 
 export default function App() {
@@ -64,7 +68,7 @@ export default function App() {
 
       <Route
         element={
-          <Protected>
+          <Protected requireOnboarding>
             <AppShell />
           </Protected>
         }
@@ -120,7 +124,7 @@ export default function App() {
       <Route
         path="/swipe-intro"
         element={
-          <Protected>
+          <Protected requireOnboarding>
             <SwipeIntro />
           </Protected>
         }

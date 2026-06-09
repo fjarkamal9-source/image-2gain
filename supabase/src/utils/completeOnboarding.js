@@ -109,6 +109,9 @@ export async function flushOnboardingToProfile() {
         console.error('flushOnboardingToProfile upsert', error);
         throw new Error(error.message || 'Échec de la sauvegarde du profil');
       }
+      try {
+        localStorage.setItem('onboarding_completed', 'true');
+      } catch { /* ignore */ }
     } catch (err) {
       if (err.message && err.message !== 'Échec de la sauvegarde du profil') {
         console.error('flushOnboardingToProfile', err);
