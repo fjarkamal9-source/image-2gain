@@ -2,13 +2,13 @@ import { getOnboarding, getOnboardingJSON, setOnboardingJSON } from './storage';
 import { calcAge, parseBirthDate } from './age';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
-async function waitForSession(maxAttempts = 5) {
+async function waitForSession(maxAttempts = 10) {
   for (let i = 0; i < maxAttempts; i++) {
     try {
       const { data } = await supabase.auth.getSession();
       if (data?.session) return data.session;
     } catch { /* ignore */ }
-    await new Promise((r) => setTimeout(r, 500));
+    await new Promise((r) => setTimeout(r, 600));
   }
   return null;
 }

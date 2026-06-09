@@ -12,10 +12,17 @@ export default function OnboardingMotivationFinal() {
     setLoading(true);
     setError('');
     try {
-      await flushOnboardingToProfile();
+      const result = await flushOnboardingToProfile();
+      if (!result) {
+        setError('Erreur de sauvegarde. Vérifie ta connexion et réessaie.');
+        setLoading(false);
+        return;
+      }
+      localStorage.setItem('onboarding_completed', 'true');
       navigate('/swipe-intro', { replace: true });
-    } catch {
-      setError('Une erreur est survenue. Vérifie ta connexion et réessaie.');
+    } catch (err) {
+      console.error('flush error:', err);
+      setError('Erreur de sauvegarde. Vérifie ta connexion et réessaie.');
       setLoading(false);
     }
   };

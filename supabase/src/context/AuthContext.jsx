@@ -76,7 +76,8 @@ export function AuthProvider({ children }) {
               .select('onboarding_completed')
               .eq('id', session.user.id)
               .maybeSingle();
-            setOnboardingDone(data?.onboarding_completed ?? false);
+            const localDone = localStorage.getItem('onboarding_completed') === 'true';
+            setOnboardingDone(data?.onboarding_completed ?? localDone);
           } catch { /* ignore */ }
         } else {
           setUser(null);
