@@ -481,17 +481,31 @@ a.auth-screen__btn[aria-disabled='true'] {
   z-index: 1;
 }
 
-/* Tout le texte onboarding en noir sauf exceptions */
-.onboarding-page,
-.onboarding-page * {
-  color: #111111;
-}
+/* Texte onboarding — règles individuelles !important */
+.onboarding-title { color: #111111 !important; }
+.onboarding-sub { color: #111111 !important; }
+.choice-card { color: #111111 !important; }
+.choice-card__desc { color: #111111 !important; }
+.sport-tag { color: #111111 !important; }
+.intention-card { color: #111111 !important; }
+.photo-label { color: #111111 !important; }
+.geo-muted { color: #111111 !important; }
+.geo-info-card p { color: #111111 !important; }
+.geo-info-card { color: #111111 !important; }
+.rules-list li { color: #111111 !important; }
+.rules-list { color: #111111 !important; }
+.welcome-text { color: #111111 !important; }
+.distance-label { color: #111111 !important; }
+.birth-selects label { color: #111111 !important; }
+.onboarding-page p { color: #111111 !important; }
+.onboarding-page span { color: #111111 !important; }
+.onboarding-page li { color: #111111 !important; }
+.onboarding-page label { color: #111111 !important; }
+.onboarding-page h1 { color: #111111 !important; }
+.onboarding-page h2 { color: #111111 !important; }
+.onboarding-page h3 { color: #111111 !important; }
 
 /* Exceptions autorisées */
-.onboarding-page .onboarding-sub {
-  color: #444444 !important;
-}
-
 .onboarding-page .choice-card--selected,
 .onboarding-page .sport-tag--selected,
 .onboarding-page .intention-card--selected {
@@ -556,6 +570,7 @@ a.auth-screen__btn[aria-disabled='true'] {
 .onboarding-page label {
   font-family: Arial, sans-serif !important;
   font-weight: 600 !important;
+  color: #111111 !important;
 }
 
 .cta-button {
