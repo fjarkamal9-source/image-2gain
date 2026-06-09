@@ -10,7 +10,7 @@ export default function OnboardingFirstName() {
 
   return (
     <div className="onboarding-page">
-      <h1 className="onboarding-title" style={{ color: '#111111' }}>Comment tu t&apos;appelles ?</h1>
+      <h1 className="onboarding-title" style={{ color: '#111111', fontWeight: '900' }}>Comment tu t&apos;appelles ?</h1>
       <input
         className="onboarding-input"
         placeholder="Ton prénom"

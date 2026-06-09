@@ -21,8 +21,8 @@ export default function OnboardingPhoto() {
 
   return (
     <div className="onboarding-page onboarding-page--center">
-      <h1 className="onboarding-title" style={{ color: '#111111' }}>Ajoute ta meilleure photo</h1>
-      <p className="onboarding-sub" style={{ color: '#111111' }}>Les profils avec photo ont 10x plus de matchs</p>
+      <h1 className="onboarding-title" style={{ color: '#111111', fontWeight: '900' }}>Ajoute ta meilleure photo</h1>
+      <p className="onboarding-sub" style={{ color: '#111111', fontWeight: '700' }}>Les profils avec photo ont 10x plus de matchs</p>
       <button
         type="button"
         className="photo-zone"
@@ -33,7 +33,7 @@ export default function OnboardingPhoto() {
         ) : (
           <>
             <span className="photo-plus">+</span>
-            <span className="photo-label" style={{ color: '#111111' }}>Ajouter une photo</span>
+            <span className="photo-label" style={{ color: '#111111', fontWeight: '600' }}>Ajouter une photo</span>
           </>
         )}
       </button>
@@ -46,7 +46,7 @@ export default function OnboardingPhoto() {
       />
       <div className="onboarding-footer">
         <CTAButton variant="outline" onClick={() => navigate('/onboarding/bio')}>Continuer</CTAButton>
-        <button type="button" className="skip-link" style={{ color: '#1A3FCC' }} onClick={() => navigate('/onboarding/bio')}>
+        <button type="button" className="skip-link" style={{ color: '#1A3FCC', fontWeight: '600' }} onClick={() => navigate('/onboarding/bio')}>
           Passer cette étape
         </button>
       </div>

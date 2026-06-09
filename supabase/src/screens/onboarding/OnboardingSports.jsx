@@ -25,15 +25,15 @@ export default function OnboardingSports() {
 
   return (
     <div className="onboarding-page">
-      <h1 className="onboarding-title" style={{ color: '#111111' }}>Quels sports tu pratiques ?</h1>
-      <p className="onboarding-sub" style={{ color: '#111111' }}>Sélectionne au moins 1 sport (3 max recommandés)</p>
+      <h1 className="onboarding-title" style={{ color: '#111111', fontWeight: '900' }}>Quels sports tu pratiques ?</h1>
+      <p className="onboarding-sub" style={{ color: '#111111', fontWeight: '700' }}>Sélectionne au moins 1 sport (3 max recommandés)</p>
       <div className="sports-tags">
         {SPORTS.map((sport) => (
           <button
             key={sport}
             type="button"
             className={`sport-tag ${selected.includes(sport) ? 'sport-tag--selected' : ''}`}
-            style={selected.includes(sport) ? undefined : { color: '#111111' }}
+            style={selected.includes(sport) ? undefined : { color: '#111111', fontWeight: '700' }}
             onClick={() => toggle(sport)}
           >
             {sport}

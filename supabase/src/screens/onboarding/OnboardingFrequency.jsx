@@ -17,15 +17,15 @@ export default function OnboardingFrequency() {
 
   return (
     <div className="onboarding-page">
-      <h1 className="onboarding-title" style={{ color: '#111111' }}>Tu t'entraînes combien de fois par semaine ?</h1>
-      <p className="onboarding-sub" style={{ color: '#111111' }}>Pour trouver des partenaires avec le même rythme</p>
+      <h1 className="onboarding-title" style={{ color: '#111111', fontWeight: '900' }}>Tu t'entraînes combien de fois par semaine ?</h1>
+      <p className="onboarding-sub" style={{ color: '#111111', fontWeight: '700' }}>Pour trouver des partenaires avec le même rythme</p>
       <div className="choice-list">
         {OPTIONS.map(({ value, label }) => (
           <button
             key={value}
             type="button"
             className={`choice-card ${selected === value ? 'choice-card--selected' : ''}`}
-            style={selected === value ? undefined : { color: '#111111' }}
+            style={selected === value ? undefined : { color: '#111111', fontWeight: '700' }}
             onClick={() => setSelected(value)}
           >
             {label}

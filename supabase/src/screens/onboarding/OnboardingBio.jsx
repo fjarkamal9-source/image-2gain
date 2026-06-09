@@ -9,8 +9,8 @@ export default function OnboardingBio() {
 
   return (
     <div className="onboarding-page">
-      <h1 className="onboarding-title" style={{ color: '#111111' }}>Parle-nous de toi</h1>
-      <p className="onboarding-sub" style={{ color: '#111111' }}>Une bio sympa attire plus de partenaires</p>
+      <h1 className="onboarding-title" style={{ color: '#111111', fontWeight: '900' }}>Parle-nous de toi</h1>
+      <p className="onboarding-sub" style={{ color: '#111111', fontWeight: '700' }}>Une bio sympa attire plus de partenaires</p>
       <textarea
         className="bio-textarea"
         maxLength={150}
@@ -31,7 +31,7 @@ export default function OnboardingBio() {
         <button
           type="button"
           className="skip-link"
-          style={{ color: '#1A3FCC' }}
+          style={{ color: '#1A3FCC', fontWeight: '600' }}
           onClick={() => navigate('/onboarding/geolocation')}
         >
           Passer cette étape

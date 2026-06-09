@@ -13,11 +13,11 @@ export default function OnboardingWelcomeRules() {
 
   return (
     <div className="onboarding-page">
-      <h1 className="onboarding-title" style={{ color: '#111111' }}>Bienvenue sur 2GAIN 🎉</h1>
-      <p className="onboarding-sub" style={{ color: '#111111' }}>Avant de commencer, quelques règles</p>
+      <h1 className="onboarding-title" style={{ color: '#111111', fontWeight: '900' }}>Bienvenue sur 2GAIN 🎉</h1>
+      <p className="onboarding-sub" style={{ color: '#111111', fontWeight: '700' }}>Avant de commencer, quelques règles</p>
       <ul className="rules-list">
         {RULES.map((r) => (
-          <li key={r} style={{ color: '#111111' }}>
+          <li key={r} style={{ color: '#111111', fontWeight: '600' }}>
             <span className="rules-check">✓</span>
             {r}
           </li>

@@ -26,19 +26,19 @@ export default function OnboardingIntentions() {
 
   return (
     <div className="onboarding-page">
-      <h1 className="onboarding-title" style={{ color: '#111111' }}>Tu cherches quoi ?</h1>
-      <p className="onboarding-sub" style={{ color: '#111111' }}>Sélectionne jusqu'à 3 intentions</p>
+      <h1 className="onboarding-title" style={{ color: '#111111', fontWeight: '900' }}>Tu cherches quoi ?</h1>
+      <p className="onboarding-sub" style={{ color: '#111111', fontWeight: '700' }}>Sélectionne jusqu'à 3 intentions</p>
       <div className="intentions-grid">
         {OPTIONS.map(({ value, label, emoji }) => (
           <button
             key={value}
             type="button"
             className={`intention-card ${selected.includes(value) ? 'intention-card--selected' : ''}`}
-            style={selected.includes(value) ? undefined : { color: '#111111' }}
+            style={selected.includes(value) ? undefined : { color: '#111111', fontWeight: '700' }}
             onClick={() => toggle(value)}
           >
             <span className="intention-emoji">{emoji}</span>
-            <span style={selected.includes(value) ? undefined : { color: '#111111' }}>{label}</span>
+            <span style={selected.includes(value) ? undefined : { color: '#111111', fontWeight: '700' }}>{label}</span>
           </button>
         ))}
       </div>

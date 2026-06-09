@@ -16,19 +16,19 @@ export default function OnboardingNiveau() {
 
   return (
     <div className="onboarding-page">
-      <h1 className="onboarding-title" style={{ color: '#111111' }}>Quel est ton niveau ?</h1>
-      <p className="onboarding-sub" style={{ color: '#111111' }}>Pour des matchs équilibrés</p>
+      <h1 className="onboarding-title" style={{ color: '#111111', fontWeight: '900' }}>Quel est ton niveau ?</h1>
+      <p className="onboarding-sub" style={{ color: '#111111', fontWeight: '700' }}>Pour des matchs équilibrés</p>
       <div className="choice-list">
         {OPTIONS.map(({ value, label, desc }) => (
           <button
             key={value}
             type="button"
             className={`choice-card ${selected === value ? 'choice-card--selected' : ''}`}
-            style={selected === value ? undefined : { color: '#111111' }}
+            style={selected === value ? undefined : { color: '#111111', fontWeight: '700' }}
             onClick={() => setSelected(value)}
           >
-            <span style={selected === value ? undefined : { color: '#111111' }}>{label}</span>
-            <span className="choice-card__desc" style={selected === value ? undefined : { color: '#111111' }}>{desc}</span>
+            <span style={selected === value ? undefined : { color: '#111111', fontWeight: '700' }}>{label}</span>
+            <span className="choice-card__desc" style={selected === value ? undefined : { color: '#111111', fontWeight: '700' }}>{desc}</span>
           </button>
         ))}
       </div>
