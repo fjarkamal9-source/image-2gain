@@ -29,7 +29,7 @@ export default function CTAButton({
       style={{
         background: isOutline ? 'transparent' : '#FF6B00',
         border: isOutline ? '2px solid #FF6B00' : 'none',
-        color: isOutline ? '#FF6B00' : '#fff',
+        color: isOutline ? '#C2410C' : '#fff',
         opacity: disabled ? 0.5 : 1,
       }}
     >
