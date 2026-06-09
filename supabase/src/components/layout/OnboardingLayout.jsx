@@ -18,23 +18,10 @@ export default function OnboardingLayout() {
       position: 'relative',
       minHeight: '100vh',
       overflow: 'hidden',
-      zIndex: 0,
+      backgroundImage: 'url(/img/ecran-b.png)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
     }}>
-      <img
-        src="/img/ecran-b.png"
-        alt=""
-        aria-hidden
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          objectPosition: 'center',
-          zIndex: -1,
-        }}
-      />
       <div style={{
         position: 'relative',
         zIndex: 1,

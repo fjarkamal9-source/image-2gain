@@ -458,12 +458,27 @@ a.auth-screen__btn[aria-disabled='true'] {
   padding: 4px 8px 0;
 }
 .onboarding-page {
+  position: relative;
   background: transparent !important;
   padding: 0 16px 24px;
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+}
+
+.onboarding-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.55);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.onboarding-page > * {
+  position: relative;
+  z-index: 1;
 }
 .onboarding-page--center {
   display: flex;
