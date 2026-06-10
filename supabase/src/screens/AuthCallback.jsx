@@ -79,21 +79,15 @@ export default function AuthCallback() {
       alignItems: 'center',
       justifyContent: 'center',
     }}>
-      <svg width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <radialGradient id="sphereGrad" cx="38%" cy="32%" r="65%">
-            <stop offset="0%" stopColor="#FF6B00" />
-            <stop offset="55%" stopColor="#FF6B00" stopOpacity="0.85" />
-            <stop offset="100%" stopColor="#1A3FCC" />
-          </radialGradient>
-          <radialGradient id="shine" cx="33%" cy="27%" r="38%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.5" />
-            <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-        <circle cx="110" cy="110" r="100" fill="url(#sphereGrad)" />
-        <circle cx="110" cy="110" r="100" fill="url(#shine)" />
-      </svg>
+      <div style={{
+        width: 48,
+        height: 48,
+        border: '4px solid #F0F0F0',
+        borderTop: '4px solid #FF6B00',
+        borderRadius: '50%',
+        animation: 'spin 0.8s linear infinite',
+      }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
