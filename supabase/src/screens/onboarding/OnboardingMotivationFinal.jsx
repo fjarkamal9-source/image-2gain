@@ -30,9 +30,11 @@ export default function OnboardingMotivationFinal() {
     <div
       className="app-frame motivation-screen"
       style={{
+        position: 'relative',
+        overflow: 'hidden',
         backgroundImage: 'url(/img/swipe-intro.png)',
         backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundPosition: 'center 42%',
         backgroundRepeat: 'no-repeat',
       }}
     >
@@ -44,7 +46,7 @@ export default function OnboardingMotivationFinal() {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'rgba(0,0,0,0.45)',
+          background: 'rgba(0,0,0,0.25)',
           zIndex: 0,
         }}
       />
