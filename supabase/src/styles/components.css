@@ -827,15 +827,6 @@ input.onboarding-input,
   background: rgba(0, 0, 0, 0.12);
 }
 
-.sports-scroll-hint {
-  text-align: center;
-  font-family: Arial, sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  color: #888888 !important;
-  margin: 8px 0 16px;
-}
-
 .onboarding-page--sports .sports-tags {
   max-height: none;
   overflow: visible;
