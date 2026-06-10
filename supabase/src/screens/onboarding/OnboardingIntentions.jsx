@@ -5,7 +5,7 @@ import { getOnboardingJSON, setOnboardingJSON } from '../../utils/storage';
 
 const OPTIONS = [
   { value: 'partner', emoji: '🏋️', label: 'Partenaire sportif', desc: "S'entraîner ensemble régulièrement" },
-  { value: 'romance', emoji: '🧡', label: 'Romance sportive', desc: 'Rencontrer quelqu\'un qui partage ta passion' },
+  { value: 'romance', emoji: '🧡', label: 'Rencontre sportive', desc: 'Trouver quelqu\'un qui partage ta passion' },
   { value: 'friendly', emoji: '🤝', label: 'Rencontre amicale', desc: 'Agrandir ton cercle sportif' },
   { value: 'session', emoji: '🔥', label: "Plaisir d'une séance", desc: 'Une session sympa sans prise de tête' },
   { value: 'casual', emoji: '🎯', label: 'On verra si tu me suis', desc: 'Pas de pression, on verra bien' },

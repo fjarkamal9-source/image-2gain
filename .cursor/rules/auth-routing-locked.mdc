@@ -1,0 +1,18 @@
+---
+description: Route auth 2GAIN verrouillée (commit fed5615) — ne pas modifier sans autorisation explicite
+alwaysApply: true
+---
+
+# Auth routing 2GAIN — zone verrouillée
+
+Le flux `/auth` → OAuth → callback → onboarding → `/home` est validé et testé (commit `fed5615`).
+
+**Ne jamais modifier ces fichiers sans autorisation explicite de l'utilisateur :**
+
+- `supabase/src/lib/supabase.js` (`flowType: 'implicit'`, `detectSessionInUrl: true`)
+- `supabase/src/screens/AuthCallback.jsx` (`getSession` fallback + `onAuthStateChange` + `resolve()`)
+- `supabase/src/components/ProtectedRoute.jsx` (prop `requireOnboarding`)
+- `supabase/src/App.jsx` (`requireOnboarding` sur AppShell + swipe-intro)
+- `supabase/src/utils/completeOnboarding.js` (`localStorage onboarding_completed` + upsert)
+
+Toute modification de ces fichiers doit être approuvée explicitement avant implémentation.

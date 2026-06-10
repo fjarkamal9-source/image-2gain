@@ -21,7 +21,7 @@ const FREQUENCES = ['1x/sem', '2x/sem', '3x/sem', '4x/sem', '5x/sem'];
 
 const INTENTIONS = [
   { emoji: '🏋️', label: 'Partenaire sportif' },
-  { emoji: '🧡', label: 'Romance sportive' },
+  { emoji: '🧡', label: 'Rencontre sportive' },
   { emoji: '🤝', label: 'Rencontre amicale' },
   { emoji: '🔥', label: "Le plaisir d'une séance" },
   { emoji: '🎯', label: 'On verra si tu me suis' },

@@ -18,7 +18,7 @@ export const MOCK_PROFILES = [
   { id: 'p8', prenom: 'Jordan', age: 26, ville: 'Paris 18e', distance: 2.0, objectif: 'Prise de masse', sport: 'CrossFit', niveau: 'Expert', lat: 48.89, lng: 2.35, photo: '' },
   { id: 'p9', prenom: 'Marie', age: 31, ville: 'Paris 20e', distance: 4.1, objectif: 'Partenaire sportif', sport: 'Natation', niveau: 'Intermédiaire', lat: 48.86, lng: 2.40, photo: '' },
   { id: 'p10', prenom: 'Thomas', age: 33, ville: 'Paris 14e', distance: 3.5, objectif: 'On verra si tu me suis', sport: 'Running', niveau: 'Avancée', lat: 48.83, lng: 2.33, photo: '' },
-  { id: 'p11', prenom: 'Emma', age: 23, ville: 'Paris 15e', distance: 2.3, objectif: 'Romance sportive', sport: 'Danse', niveau: 'Débutante', lat: 48.84, lng: 2.30, photo: '' },
+  { id: 'p11', prenom: 'Emma', age: 23, ville: 'Paris 15e', distance: 2.3, objectif: 'Rencontre sportive', sport: 'Danse', niveau: 'Débutante', lat: 48.84, lng: 2.30, photo: '' },
   { id: 'p12', prenom: 'Maxime', age: 31, ville: 'Montreuil', distance: 5.0, objectif: 'Partenaire sportif', sport: 'Escalade', niveau: 'Intermédiaire', lat: 48.86, lng: 2.44, photo: '' },
   { id: 'p13', prenom: 'Chloé', age: 27, ville: 'Vincennes', distance: 6.2, objectif: 'Rencontre amicale', sport: 'Randonnée', niveau: 'Débutante', lat: 48.85, lng: 2.44, photo: '' },
   { id: 'p14', prenom: 'Amine', age: 29, ville: 'Paris 10e', distance: 1.5, objectif: "Le plaisir d'une séance", sport: 'Tennis', niveau: 'Avancée', lat: 48.87, lng: 2.36, photo: '' },

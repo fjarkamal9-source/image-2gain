@@ -5,7 +5,7 @@ import { getOnboarding, getOnboardingJSON, setOnboarding, setOnboardingJSON } fr
 
 const INTENTION_LABELS = {
   partner: 'Partenaire sportif',
-  romance: 'Romance sportive',
+  romance: 'Rencontre sportive',
   friendly: 'Rencontre amicale',
   session: "Plaisir d'une séance",
   casual: 'On verra si tu me suis',
