@@ -6,9 +6,6 @@ export default function WelcomeNewUser() {
   return (
     <div style={{
       position: 'fixed', inset: 0,
-      backgroundImage: 'url(/img/auth-hero.png)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: '24px',
     }}>
