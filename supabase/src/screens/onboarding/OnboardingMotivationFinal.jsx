@@ -1,8 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { flushOnboardingToProfile } from '../../utils/completeOnboarding';
 
 export default function OnboardingMotivationFinal() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
+  const finish = async () => {
+    setLoading(true);
+    try {
+      await flushOnboardingToProfile();
+      navigate('/swipe-intro');
+    } catch (err) {
+      console.error('flush error:', err);
+      setLoading(false);
+    }
+  };
+
   return (
     <div style={{
       width: '100%',
@@ -66,7 +80,9 @@ export default function OnboardingMotivationFinal() {
           Trouve des partenaires sportifs près de toi et atteignez vos objectifs ensemble.
         </p>
         <button
-          onClick={() => navigate('/swipe-intro')}
+          type="button"
+          onClick={finish}
+          disabled={loading}
           style={{
             background: '#FF6B00',
             color: '#ffffff',
@@ -75,8 +91,9 @@ export default function OnboardingMotivationFinal() {
             padding: '16px 0',
             fontSize: 18,
             fontWeight: 700,
-            cursor: 'pointer',
+            cursor: loading ? 'not-allowed' : 'pointer',
             width: '100%',
+            opacity: loading ? 0.7 : 1,
           }}
         >
           Commence à trouver
