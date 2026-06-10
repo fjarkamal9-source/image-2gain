@@ -47,7 +47,7 @@ export default function OnboardingIntentions() {
               <span className="intention-card-stack__text">
                 <span
                   className="intention-card-stack__label"
-                  style={isSelected ? { color: '#FF6B00', fontWeight: 500 } : { color: '#111111', fontWeight: 500 }}
+                  style={isSelected ? { color: '#FF6B00', fontWeight: '700', fontSize: 16 } : { color: '#111111', fontWeight: '700', fontSize: 16 }}
                 >
                   {label}
                 </span>
