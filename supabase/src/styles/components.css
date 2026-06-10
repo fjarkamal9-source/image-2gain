@@ -1127,12 +1127,18 @@ input.onboarding-input,
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  background-image: url(/img/swipe-intro.png);
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
 }
 .motivation-bg {
   position: absolute;
   inset: 0;
+  background-image: url(/img/swipe-intro.png);
   background-size: cover;
-  background-position: center;
+  background-position: center bottom;
+  background-repeat: no-repeat;
 }
 .motivation-bg img {
   width: 100%;
