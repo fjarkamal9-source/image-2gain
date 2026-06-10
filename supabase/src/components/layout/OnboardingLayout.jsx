@@ -12,13 +12,15 @@ export default function OnboardingLayout() {
   const current = location.pathname.split('/').pop();
   const idx = STEPS.indexOf(current);
   const progress = idx >= 0 ? ((idx + 1) / STEPS.length) * 100 : 0;
+  const isMotivationFinal = current === 'motivation-final' || location.pathname.includes('motivation-final');
 
   return (
     <div style={{
       position: 'relative',
       minHeight: '100vh',
       overflow: 'hidden',
-      backgroundImage: 'url(/img/ecran-b.png)',
+      background: isMotivationFinal ? 'transparent' : undefined,
+      backgroundImage: isMotivationFinal ? 'none' : 'url(/img/ecran-b.png)',
       backgroundSize: 'cover',
       backgroundPosition: 'top center',
     }}>
