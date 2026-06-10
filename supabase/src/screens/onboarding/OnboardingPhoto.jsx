@@ -22,7 +22,7 @@ export default function OnboardingPhoto() {
   return (
     <div className="onboarding-page onboarding-page--center">
       <h1 className="onboarding-title" style={{ color: '#111111', fontWeight: '900' }}>Ajoute ta meilleure photo</h1>
-      <p className="onboarding-sub" style={{ color: '#111111', fontWeight: '700' }}>Les profils avec photo ont 10x plus de matchs</p>
+      <p className="onboarding-sub" style={{ color: '#111111', fontWeight: '700' }}>Augmente tes chances avec une belle photo !</p>
       <button
         type="button"
         className="photo-zone"
