@@ -48,24 +48,17 @@ export default function AuthScreen() {
   const handleSignUp = () => triggerOAuth('signup');
 
   return (
-    <div className="app-frame auth-screen" style={{ position: 'relative', overflow: 'hidden' }}>
-      {/* Fix 2 — Image de fond plein écran, calée en haut */}
-      <img
-        src="/img/auth-hero.png"
-        alt=""
-        aria-hidden
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          objectPosition: 'center top',
-          zIndex: 0,
-        }}
-      />
-
+    <div
+      className="app-frame auth-screen"
+      style={{
+        position: 'relative',
+        overflow: 'hidden',
+        backgroundImage: 'url(/img/ecran-a.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
       {/* Fix 4 — Gradient sombre en bas pour lisibilité */}
       <div
         aria-hidden
