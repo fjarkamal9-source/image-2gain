@@ -59,8 +59,6 @@ export default function OnboardingSports() {
         ))}
       </div>
 
-      <p className="sports-scroll-hint">↓ Fais défiler pour voir tous les sports</p>
-
       <div className="onboarding-footer">
         <CTAButton
           variant="outline"

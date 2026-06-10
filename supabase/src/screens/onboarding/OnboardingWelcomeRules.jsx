@@ -17,7 +17,7 @@ export default function OnboardingWelcomeRules() {
       <p className="onboarding-sub" style={{ color: '#111111', fontWeight: '700' }}>Avant de commencer, quelques règles</p>
       <ul className="rules-list">
         {RULES.map((r) => (
-          <li key={r} style={{ color: '#111111', fontWeight: '600' }}>
+          <li key={r} style={{ color: '#111111', fontWeight: '700', fontSize: 16 }}>
             <span className="rules-check">✓</span>
             {r}
           </li>

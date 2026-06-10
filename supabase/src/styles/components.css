@@ -622,7 +622,7 @@ input.onboarding-input,
   margin-bottom: 14px;
   font-family: Arial, sans-serif !important;
   font-size: 16px !important;
-  font-weight: 500 !important;
+  font-weight: 700 !important;
   line-height: 1.5;
 }
 .rules-check {
@@ -906,25 +906,47 @@ input.onboarding-input,
   font-weight: 700;
 }
 
+.onboarding-page--frequency {
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.onboarding-page--frequency .onboarding-sub {
+  margin-bottom: 12px !important;
+}
+
+.onboarding-page--frequency .frequency-summary {
+  margin-bottom: 6px;
+}
+
+.onboarding-page--frequency .frequency-note {
+  margin-bottom: 8px;
+}
+
 .training-days-row {
   display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   justify-content: space-between;
-  gap: 6px;
-  margin: 16px 0 20px;
+  width: 100%;
+  gap: 4px;
+  margin: 12px 0 16px;
+  overflow-x: hidden;
 }
 
 .day-circle {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
   border: 1.5px solid var(--color-border-secondary);
   background: transparent;
   font-family: Arial, sans-serif;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   color: #888888;
   cursor: pointer;
-  flex-shrink: 0;
+  flex-shrink: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;

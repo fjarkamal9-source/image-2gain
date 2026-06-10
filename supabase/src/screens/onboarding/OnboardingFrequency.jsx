@@ -43,7 +43,7 @@ export default function OnboardingFrequency() {
   const valid = count > 0;
 
   return (
-    <div className="onboarding-page">
+    <div className="onboarding-page onboarding-page--frequency">
       <h1 className="onboarding-title" style={{ color: '#111111', fontWeight: '900' }}>
         Quels jours tu t&apos;entraînes ?
       </h1>
