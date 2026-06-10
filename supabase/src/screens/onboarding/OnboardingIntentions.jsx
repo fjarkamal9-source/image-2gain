@@ -4,12 +4,12 @@ import CTAButton from '../../components/ui/CTAButton';
 import { getOnboardingJSON, setOnboardingJSON } from '../../utils/storage';
 
 const OPTIONS = [
-  { value: 'partner', label: 'Partenaire sportif', emoji: '🏋️' },
-  { value: 'romance', label: 'Romance sportive', emoji: '🧡' },
-  { value: 'friendly', label: 'Rencontre amicale', emoji: '🤝' },
-  { value: 'session', label: "Le plaisir d'une séance", emoji: '🔥' },
-  { value: 'casual', label: 'On verra si tu me suis', emoji: '🎯' },
-  { value: 'events', label: 'Événements sportifs', emoji: '📅' },
+  { value: 'partner', emoji: '🏋️', label: 'Partenaire sportif', desc: "S'entraîner ensemble régulièrement" },
+  { value: 'romance', emoji: '🧡', label: 'Romance sportive', desc: 'Rencontrer quelqu\'un qui partage ta passion' },
+  { value: 'friendly', emoji: '🤝', label: 'Rencontre amicale', desc: 'Agrandir ton cercle sportif' },
+  { value: 'session', emoji: '🔥', label: "Plaisir d'une séance", desc: 'Une session sympa sans prise de tête' },
+  { value: 'casual', emoji: '🎯', label: 'On verra si tu me suis', desc: 'Pas de pression, on verra bien' },
+  { value: 'events', emoji: '📅', label: 'Événements sportifs', desc: 'Courses, compétitions, sorties collectives' },
 ];
 
 export default function OnboardingIntentions() {
@@ -26,28 +26,45 @@ export default function OnboardingIntentions() {
 
   return (
     <div className="onboarding-page">
-      <h1 className="onboarding-title" style={{ color: '#111111', fontWeight: '900' }}>Tu cherches quoi ?</h1>
-      <p className="onboarding-sub" style={{ color: '#111111', fontWeight: '700' }}>Sélectionne jusqu'à 3 intentions</p>
-      <div className="intentions-grid">
-        {OPTIONS.map(({ value, label, emoji }) => (
-          <button
-            key={value}
-            type="button"
-            className={`intention-card ${selected.includes(value) ? 'intention-card--selected' : ''}`}
-            style={selected.includes(value) ? undefined : { color: '#111111', fontWeight: '700' }}
-            onClick={() => toggle(value)}
-          >
-            <span className="intention-emoji">{emoji}</span>
-            <span style={selected.includes(value) ? undefined : { color: '#111111', fontWeight: '700' }}>{label}</span>
-          </button>
-        ))}
+      <h1 className="onboarding-title" style={{ color: '#111111', fontWeight: '900' }}>
+        Tu cherches quoi ?
+      </h1>
+      <p className="onboarding-sub" style={{ color: '#111111', fontWeight: '700' }}>
+        Jusqu&apos;à 3 intentions
+      </p>
+
+      <div className="intention-list">
+        {OPTIONS.map(({ value, emoji, label, desc }) => {
+          const isSelected = selected.includes(value);
+          return (
+            <button
+              key={value}
+              type="button"
+              className={`intention-card-stack ${isSelected ? 'intention-card-stack--selected' : ''}`}
+              onClick={() => toggle(value)}
+            >
+              <span className="intention-card-stack__emoji">{emoji}</span>
+              <span className="intention-card-stack__text">
+                <span
+                  className="intention-card-stack__label"
+                  style={isSelected ? { color: '#FF6B00', fontWeight: 500 } : { color: '#111111', fontWeight: 500 }}
+                >
+                  {label}
+                </span>
+                <span className="intention-card-stack__desc">{desc}</span>
+              </span>
+            </button>
+          );
+        })}
       </div>
+
       <div className="onboarding-footer">
-        <CTAButton variant="outline"
+        <CTAButton
+          variant="outline"
           disabled={selected.length === 0}
           onClick={() => {
             setOnboardingJSON('intentions', selected);
-            navigate('/onboarding/sports');
+            navigate('/onboarding/photo');
           }}
         >
           Continuer

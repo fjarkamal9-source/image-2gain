@@ -2,8 +2,8 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 
 const STEPS = [
   'welcome-rules', 'first-name', 'welcome-personalized', 'birth-date',
-  'gender', 'looking-for-gender', 'niveau', 'frequency', 'max-distance',
-  'intentions', 'sports', 'photo', 'bio', 'geolocation', 'motivation-final',
+  'gender', 'looking-for-gender', 'sports', 'niveau', 'frequency',
+  'max-distance', 'intentions', 'photo', 'bio', 'geolocation', 'motivation-final',
 ];
 
 export default function OnboardingLayout() {

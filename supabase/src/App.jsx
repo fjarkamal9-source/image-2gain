@@ -55,11 +55,11 @@ export default function App() {
         <Route path="birth-date" element={<OnboardingBirthDate />} />
         <Route path="gender" element={<OnboardingGender />} />
         <Route path="looking-for-gender" element={<OnboardingLookingForGender />} />
+        <Route path="sports" element={<OnboardingSports />} />
         <Route path="niveau" element={<OnboardingNiveau />} />
         <Route path="frequency" element={<OnboardingFrequency />} />
         <Route path="max-distance" element={<OnboardingMaxDistance />} />
         <Route path="intentions" element={<OnboardingIntentions />} />
-        <Route path="sports" element={<OnboardingSports />} />
         <Route path="photo" element={<OnboardingPhoto />} />
         <Route path="bio" element={<OnboardingBio />} />
         <Route path="geolocation" element={<OnboardingGeolocation />} />

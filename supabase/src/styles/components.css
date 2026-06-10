@@ -780,9 +780,231 @@ input.onboarding-input,
   cursor: pointer;
 }
 .sport-tag--selected {
-  background: rgba(255, 107, 0, 0.15) !important;
-  border: 2px solid #FF6B00 !important;
+  background: rgba(255, 107, 0, 0.1) !important;
+  border: 1.5px solid #FF6B00 !important;
   font-weight: 700;
+}
+
+.onboarding-page--sports {
+  padding-bottom: 8px;
+}
+
+.sports-counter {
+  text-align: right;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #FF6B00 !important;
+  margin-bottom: 16px;
+}
+
+.sports-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 12px;
+}
+
+.sports-category-separator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.sports-category-label {
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #888888 !important;
+  white-space: nowrap;
+}
+
+.sports-category-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.sports-scroll-hint {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #888888 !important;
+  margin: 8px 0 16px;
+}
+
+.onboarding-page--sports .sports-tags {
+  max-height: none;
+  overflow: visible;
+  margin-bottom: 0;
+}
+
+.onboarding-page--sports .sport-tag {
+  border: 1.5px solid #1A3FCC !important;
+}
+
+.niveau-sport-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.niveau-sport-card {
+  border: 1.5px solid var(--color-border-secondary);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: transparent;
+}
+
+.niveau-sport-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.niveau-sport-emoji {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.niveau-sport-name {
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+}
+
+.niveau-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.niveau-pill {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 6px;
+  border-radius: 20px;
+  border: 1.5px solid var(--color-border-secondary);
+  background: transparent;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #111111;
+  cursor: pointer;
+}
+
+.niveau-pill--selected {
+  border-color: #FF6B00;
+  background: rgba(255, 107, 0, 0.1);
+  color: #FF6B00;
+  font-weight: 700;
+}
+
+.training-days-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  margin: 16px 0 20px;
+}
+
+.day-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-border-secondary);
+  background: transparent;
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #888888;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.day-circle--selected {
+  background: #FF6B00;
+  border-color: #FF6B00;
+  color: #ffffff !important;
+}
+
+.frequency-summary {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #FF6B00 !important;
+  margin-bottom: 8px;
+}
+
+.frequency-note {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #888888 !important;
+  margin-bottom: 16px;
+}
+
+.intention-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.intention-card-stack {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1.5px solid #1A3FCC;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.intention-card-stack--selected {
+  border-color: #FF6B00;
+  background: rgba(255, 107, 0, 0.08);
+}
+
+.intention-card-stack__emoji {
+  font-size: 20px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.intention-card-stack__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.intention-card-stack__label {
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.intention-card-stack__desc {
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: #888888 !important;
 }
 
 .photo-zone {

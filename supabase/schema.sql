@@ -122,6 +122,8 @@ create policy "fcm_tokens own" on fcm_tokens
 -- alter table profiles add column if not exists niveau text;
 -- alter table profiles add column if not exists frequence text;
 -- alter table profiles add column if not exists visible boolean default true;
+-- alter table profiles add column if not exists niveau_par_sport jsonb default '{}';
+-- alter table profiles add column if not exists training_days jsonb default '[]';
 -- create table fcm_tokens … (voir définition ci-dessus) si migration manuelle
 
 insert into storage.buckets (id, name, public) values ('photos', 'photos', true)

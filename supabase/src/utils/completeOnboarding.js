@@ -40,6 +40,8 @@ export async function flushOnboardingToProfile() {
     lng: getOnboarding('lng') ? Number(getOnboarding('lng')) : null,
     niveau: getOnboarding('niveau') || null,
     frequency: getOnboarding('frequency') || null,
+    niveaux_par_sport: getOnboardingJSON('niveaux_par_sport', {}),
+    training_days: getOnboardingJSON('training_days', []),
   };
 
   if (profile.birth_day && profile.birth_month && profile.birth_year) {
@@ -99,6 +101,8 @@ export async function flushOnboardingToProfile() {
         bio: profile.bio,
         niveau: profile.niveau,
         frequency: profile.frequency,
+        niveau_par_sport: profile.niveaux_par_sport,
+        training_days: profile.training_days,
         age: profile.age || null,
         lat: profile.lat ?? null,
         lng: profile.lng ?? null,

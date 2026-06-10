@@ -30,7 +30,7 @@ export default function OnboardingLookingForGender() {
           disabled={!selected}
           onClick={() => {
             setOnboarding('looking_for', selected);
-            navigate('/onboarding/niveau');
+            navigate('/onboarding/sports');
           }}
         >
           Continuer

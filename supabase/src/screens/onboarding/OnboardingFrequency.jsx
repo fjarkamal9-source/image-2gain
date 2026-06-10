@@ -1,42 +1,83 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CTAButton from '../../components/ui/CTAButton';
-import { getOnboarding, setOnboarding } from '../../utils/storage';
+import { getOnboardingJSON, setOnboarding, setOnboardingJSON } from '../../utils/storage';
 
-const OPTIONS = [
-  { value: '1', label: '1 fois' },
-  { value: '2-3', label: '2 à 3 fois' },
-  { value: '4-5', label: '4 à 5 fois' },
-  { value: '6+', label: '6 fois ou plus' },
-  { value: 'variable', label: 'Ça varie' },
+const DAYS = [
+  { key: 'lundi', label: 'L' },
+  { key: 'mardi', label: 'M' },
+  { key: 'mercredi', label: 'M' },
+  { key: 'jeudi', label: 'J' },
+  { key: 'vendredi', label: 'V' },
+  { key: 'samedi', label: 'S' },
+  { key: 'dimanche', label: 'D' },
 ];
+
+function frequencyLabel(count) {
+  if (count === 0) return 'Sélectionne au moins 1 jour';
+  if (count === 1) return '1 jour par semaine';
+  if (count <= 3) return '2 à 3 jours par semaine';
+  if (count <= 5) return '4 à 5 jours par semaine';
+  return '6 à 7 jours par semaine';
+}
+
+function frequencySlug(count) {
+  if (count === 0) return 'variable';
+  if (count === 1) return '1';
+  if (count <= 3) return '2-3';
+  if (count <= 5) return '4-5';
+  return '6+';
+}
 
 export default function OnboardingFrequency() {
   const navigate = useNavigate();
-  const [selected, setSelected] = useState(getOnboarding('frequency', ''));
+  const [selectedDays, setSelectedDays] = useState(getOnboardingJSON('training_days', []));
+
+  const toggle = (key) => {
+    setSelectedDays((prev) =>
+      prev.includes(key) ? prev.filter((d) => d !== key) : [...prev, key]
+    );
+  };
+
+  const count = selectedDays.length;
+  const valid = count > 0;
 
   return (
     <div className="onboarding-page">
-      <h1 className="onboarding-title" style={{ color: '#111111', fontWeight: '900' }}>Tu t'entraînes combien de fois par semaine ?</h1>
-      <p className="onboarding-sub" style={{ color: '#111111', fontWeight: '700' }}>Pour trouver des partenaires avec le même rythme</p>
-      <div className="choice-list">
-        {OPTIONS.map(({ value, label }) => (
-          <button
-            key={value}
-            type="button"
-            className={`choice-card ${selected === value ? 'choice-card--selected' : ''}`}
-            style={selected === value ? undefined : { color: '#111111', fontWeight: '700' }}
-            onClick={() => setSelected(value)}
-          >
-            {label}
-          </button>
-        ))}
+      <h1 className="onboarding-title" style={{ color: '#111111', fontWeight: '900' }}>
+        Quels jours tu t&apos;entraînes ?
+      </h1>
+      <p className="onboarding-sub" style={{ color: '#111111', fontWeight: '700' }}>
+        Sélectionne tes jours habituels
+      </p>
+
+      <div className="training-days-row">
+        {DAYS.map(({ key, label }) => {
+          const isSelected = selectedDays.includes(key);
+          return (
+            <button
+              key={key}
+              type="button"
+              className={`day-circle ${isSelected ? 'day-circle--selected' : ''}`}
+              onClick={() => toggle(key)}
+              aria-label={key}
+            >
+              {label}
+            </button>
+          );
+        })}
       </div>
+
+      <p className="frequency-summary">{frequencyLabel(count)}</p>
+      <p className="frequency-note">C&apos;est juste une indication, ça peut varier</p>
+
       <div className="onboarding-footer">
-        <CTAButton variant="outline"
-          disabled={!selected}
+        <CTAButton
+          variant="outline"
+          disabled={!valid}
           onClick={() => {
-            setOnboarding('frequency', selected);
+            setOnboardingJSON('training_days', selectedDays);
+            setOnboarding('frequency', frequencySlug(count));
             navigate('/onboarding/max-distance');
           }}
         >
