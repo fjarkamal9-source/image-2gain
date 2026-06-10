@@ -34,7 +34,7 @@ body,
   padding: 0;
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(180deg, #4AB3F4 0%, #F5C87A 45%, #FF6B00 100%);
+  background: #ffffff;
   overflow-x: hidden;
 }
 
