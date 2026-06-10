@@ -27,21 +27,18 @@ export default function OnboardingMotivationFinal() {
   };
 
   return (
-    <div className="app-frame motivation-screen">
-      <div className="motivation-bg" aria-hidden>
-        <img src="/img/swipe-intro.png" alt="" />
-      </div>
-      <div className="motivation-content">
+    <div className="app-frame motivation-screen" style={{ background: '#ffffff' }}>
+      <div className="motivation-content" style={{ background: 'transparent' }}>
         <div className="motivation-tags">
-          <span className="motivation-tag motivation-tag--blue">🏃 Jogging</span>
-          <span className="motivation-tag motivation-tag--orange">🤝 Rencontre amicale</span>
+          <span className="motivation-tag motivation-tag--blue" style={{ color: '#111111' }}>🏃 Jogging</span>
+          <span className="motivation-tag motivation-tag--orange" style={{ color: '#111111' }}>🤝 Rencontre amicale</span>
         </div>
-        <h1 className="motivation-slogan">
+        <h1 className="motivation-slogan" style={{ color: '#111111' }}>
           <span>Qui se ressemble,</span>
           <span className="motivation-accent">s&apos;entraîne</span>
           <span>ensemble</span>
         </h1>
-        <p className="motivation-desc">
+        <p className="motivation-desc" style={{ color: '#111111' }}>
           Trouve des partenaires sportifs près de toi et atteignez vos objectifs ensemble.
         </p>
         <CTAButton disabled={loading} onClick={finish}>
