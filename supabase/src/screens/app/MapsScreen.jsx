@@ -330,41 +330,59 @@ export default function MapsScreen() {
       const communes = ['Dijon', 'Besançon', 'Dole'];
       const results = await Promise.all(communes.map(loadCommune));
       const all = results.flat().map(normalizeItem);
-      const placed = new Set();
-      let n = 0;
-
       const pinCache = {
         '#1A3FCC': makePulsePin('#1A3FCC'),
         '#FF6B00': makePulsePin('#FF6B00'),
         '#AAAAAA': makePulsePin('#AAAAAA'),
       };
 
+      const venueMap = new Map();
+
       all.forEach((item) => {
         if (cancelled) return;
         if (!item.coordonnees?.lat || !item.coordonnees?.lon) return;
-        const key = `${(+item.coordonnees.lat).toFixed(4)},${(+item.coordonnees.lon).toFixed(4)}`;
-        if (placed.has(key)) return;
-        placed.add(key);
-        n++;
 
-        const color = getSportColor(item.activites);
+        const key = `${(+item.coordonnees.lat).toFixed(2)},${(+item.coordonnees.lon).toFixed(2)}`;
+
+        if (venueMap.has(key)) {
+          const existing = venueMap.get(key);
+          if (item.activites) {
+            existing.activites = existing.activites
+              ? `${existing.activites}, ${item.activites}`
+              : item.activites;
+          }
+        } else {
+          venueMap.set(key, {
+            lat: +item.coordonnees.lat,
+            lng: +item.coordonnees.lon,
+            nom: item.nom_install || 'Lieu sportif',
+            commune: item.lib_bdv || '',
+            activites: item.activites || '',
+          });
+        }
+      });
+
+      venueMap.forEach((venue) => {
+        if (cancelled) return;
+
+        const color = getSportColor(venue.activites);
         const marker = L.marker(
-          [+item.coordonnees.lat, +item.coordonnees.lon],
+          [venue.lat, venue.lng],
           { icon: pinCache[color] }
         ).addTo(clusterGroup);
 
         marker.on('click', () => {
           setSelectedVenue({
-            nom: item.nom_install || 'Lieu sportif',
-            commune: item.lib_bdv || '',
-            activites: item.activites || '',
+            nom: venue.nom,
+            commune: venue.commune,
+            activites: venue.activites,
             color,
           });
         });
       });
 
       if (!cancelled) {
-        setCount(n);
+        setCount(venueMap.size);
         setLoading(false);
       }
     }
