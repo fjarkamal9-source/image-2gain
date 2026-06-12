@@ -179,12 +179,18 @@ const SPORT_MAP = [
 
 function getSportDominant(activites) {
   if (!activites) return { color: '#AAAAAA', svg: DEFAULT_PIN_SVG };
-  const a = activites.toLowerCase();
-  for (const s of SPORT_MAP) {
-    if (s.keys.some((k) => a.includes(k))) {
-      return { color: s.color, svg: s.svg.replace(/COLOR/g, s.color) };
+
+  const activitesList = activites.toLowerCase().split(',');
+
+  for (const activite of activitesList) {
+    const trimmed = activite.trim();
+    for (const s of SPORT_MAP) {
+      if (s.keys.some((k) => trimmed.includes(k))) {
+        return { color: s.color, svg: s.svg.replace(/COLOR/g, s.color) };
+      }
     }
   }
+
   return { color: '#AAAAAA', svg: DEFAULT_PIN_SVG };
 }
 
@@ -248,6 +254,8 @@ export default function MapsScreen() {
   useEffect(() => {
     if (mapInstanceRef.current) return;
 
+    let cancelled = false;
+
     const map = L.map(mapRef.current, {
       zoomControl: true,
       attributionControl: false,
@@ -296,6 +304,24 @@ export default function MapsScreen() {
     mapInstanceRef.current = map;
     clusterGroupRef.current = clusterGroup;
 
+    const markerData = [];
+    let lastPinMode = map.getZoom() >= 13 ? 'icon' : 'point';
+
+    const onZoomEnd = () => {
+      if (cancelled) return;
+      const zoom = map.getZoom();
+      const newMode = zoom >= 13 ? 'icon' : 'point';
+      if (newMode === lastPinMode) return;
+      lastPinMode = newMode;
+      markerData.forEach(({ marker, sport }) => {
+        marker.setIcon(
+          newMode === 'icon' ? makeIconPin(sport) : makePointPin(sport.color)
+        );
+      });
+    };
+
+    map.on('zoomend', onZoomEnd);
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -309,8 +335,6 @@ export default function MapsScreen() {
     } else {
       L.marker([47.322, 5.041], { icon: userIcon, zIndexOffset: 9999 }).addTo(map);
     }
-
-    let cancelled = false;
 
     async function loadCommune(commune) {
       const allResults = [];
@@ -348,7 +372,6 @@ export default function MapsScreen() {
       const results = await Promise.all(communes.map(loadCommune));
       const all = results.flat().map(normalizeItem);
       const placed = new Set();
-      const markerData = [];
       let n = 0;
 
       all.forEach((item) => {
@@ -389,14 +412,6 @@ export default function MapsScreen() {
       });
 
       if (!cancelled) {
-        map.on('zoomend', () => {
-          if (cancelled) return;
-          const zoom = map.getZoom();
-          markerData.forEach(({ marker, sport }) => {
-            marker.setIcon(zoom >= 13 ? makeIconPin(sport) : makePointPin(sport.color));
-          });
-        });
-
         setCount(n);
         setLoading(false);
       }
@@ -414,10 +429,13 @@ export default function MapsScreen() {
 
     return () => {
       cancelled = true;
-      clusterGroupRef.current = null;
+      map.off('zoomend', onZoomEnd);
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
+      }
+      if (clusterGroupRef.current) {
+        clusterGroupRef.current = null;
       }
     };
   }, []);
