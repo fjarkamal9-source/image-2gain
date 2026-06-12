@@ -103,6 +103,77 @@ function makePulsePin(color) {
   });
 }
 
+const SPORT_PHOTOS = {
+  '#1A3FCC': [
+    'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400&q=80',
+    'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&q=80',
+    'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&q=80',
+  ],
+  '#FF6B00': [
+    'https://images.unsplash.com/photo-1530549387789-4c1017266635?w=400&q=80',
+    'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=400&q=80',
+    'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=80',
+  ],
+  '#AAAAAA': [
+    'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=400&q=80',
+  ],
+};
+
+function getPhotoUrl(color, nom) {
+  const photos = SPORT_PHOTOS[color] || SPORT_PHOTOS['#AAAAAA'];
+  const index = (nom || '').length % photos.length;
+  return photos[index];
+}
+
+function getActivityTags(activites) {
+  if (!activites) return [];
+  const mapping = {
+    football: 'Football',
+    handball: 'Handball',
+    basket: 'Basketball',
+    natation: 'Natation',
+    aquagym: 'Aquagym',
+    'water-polo': 'Water-Polo',
+    baignade: 'Baignade',
+    fitness: 'Fitness',
+    musculation: 'Musculation',
+    tennis: 'Tennis',
+    badminton: 'Badminton',
+    volley: 'Volley',
+    rugby: 'Rugby',
+    judo: 'Judo',
+    karaté: 'Karaté',
+    boxe: 'Boxe',
+    yoga: 'Yoga',
+    danse: 'Danse',
+    cyclisme: 'Cyclisme',
+    escalade: 'Escalade',
+    golf: 'Golf',
+    athlét: 'Athlétisme',
+    course: 'Course',
+    ski: 'Ski',
+    patinage: 'Patinage',
+    kayak: 'Kayak',
+    tir: "Tir à l arc",
+    padel: 'Padel',
+    squash: 'Squash',
+    pétanque: 'Pétanque',
+  };
+  const tags = [];
+  const seen = new Set();
+  activites.split(',').forEach((a) => {
+    const lower = a.toLowerCase().trim();
+    for (const [key, label] of Object.entries(mapping)) {
+      if (lower.includes(key) && !seen.has(label)) {
+        seen.add(label);
+        tags.push(label);
+        break;
+      }
+    }
+  });
+  return tags.slice(0, 6);
+}
+
 const userIcon = L.divIcon({
   html: `
     <div style="
@@ -137,6 +208,7 @@ export default function MapsScreen() {
   const clusterGroupRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [count, setCount] = useState(0);
+  const [selectedVenue, setSelectedVenue] = useState(null);
 
   useEffect(() => {
     if (mapInstanceRef.current) return;
@@ -263,38 +335,14 @@ export default function MapsScreen() {
           { icon: pinCache[color] }
         ).addTo(clusterGroup);
 
-        marker.bindPopup(
-          `
-    <div style="
-      padding:12px;
-      min-width:180px;
-      font-family:Arial,sans-serif;
-    ">
-      <div style="
-        display:flex;align-items:center;gap:8px;
-        margin-bottom:6px;
-      ">
-        <div style="
-          width:10px;height:10px;
-          border-radius:50%;
-          background:${color};
-          flex-shrink:0;
-        "></div>
-        <div style="
-          font-weight:700;font-size:13px;color:#111;
-        ">${item.nom_install || 'Lieu sportif'}</div>
-      </div>
-      <div style="font-size:11px;color:#888;margin-bottom:4px;">
-        ${item.lib_bdv || ''}
-      </div>
-      <div style="font-size:10px;color:#bbb;line-height:1.5;">
-        ${(item.activites || '').slice(0, 100)}
-        ${(item.activites || '').length > 100 ? '…' : ''}
-      </div>
-    </div>
-  `,
-          { maxWidth: 220 }
-        );
+        marker.on('click', () => {
+          setSelectedVenue({
+            nom: item.nom_install || 'Lieu sportif',
+            commune: item.lib_bdv || '',
+            activites: item.activites || '',
+            color,
+          });
+        });
       });
 
       if (!cancelled) {
@@ -367,6 +415,204 @@ export default function MapsScreen() {
         </div>
       )}
       <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
+
+      {selectedVenue && (
+        <>
+          <div
+            onClick={() => setSelectedVenue(null)}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0,0,0,0.15)',
+              zIndex: 1000,
+            }}
+          />
+
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              background: '#ffffff',
+              borderRadius: '20px 20px 0 0',
+              boxShadow: '0 -4px 24px rgba(0,0,0,0.12)',
+              zIndex: 1001,
+              maxHeight: '72vh',
+              overflowY: 'auto',
+              animation: 'slideUp 0.3s ease-out',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                paddingTop: 12,
+                paddingBottom: 4,
+              }}
+            >
+              <div
+                style={{
+                  width: 36,
+                  height: 4,
+                  borderRadius: 2,
+                  background: '#E0E0E0',
+                }}
+              />
+            </div>
+
+            <div
+              style={{
+                height: 180,
+                margin: '8px 0 0',
+                overflow: 'hidden',
+              }}
+            >
+              <img
+                src={getPhotoUrl(selectedVenue.color, selectedVenue.nom)}
+                alt={selectedVenue.nom}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                }}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.parentNode.style.background = selectedVenue.color;
+                }}
+              />
+            </div>
+
+            <div style={{ padding: '16px 20px 24px' }}>
+              <h2
+                style={{
+                  margin: '0 0 4px',
+                  fontSize: 20,
+                  fontWeight: 900,
+                  fontFamily: 'Arial Black,Arial,sans-serif',
+                  color: '#111111',
+                  lineHeight: 1.2,
+                }}
+              >
+                {selectedVenue.nom}
+              </h2>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  marginBottom: 16,
+                }}
+              >
+                <div
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    background: selectedVenue.color,
+                    flexShrink: 0,
+                  }}
+                />
+                <span style={{ fontSize: 13, color: '#888888' }}>
+                  {selectedVenue.commune}
+                </span>
+              </div>
+
+              {getActivityTags(selectedVenue.activites).length > 0 && (
+                <div style={{ marginBottom: 20 }}>
+                  <p
+                    style={{
+                      margin: '0 0 8px',
+                      fontSize: 11,
+                      color: '#AAAAAA',
+                      textTransform: 'uppercase',
+                      letterSpacing: 1,
+                      fontWeight: 600,
+                    }}
+                  >
+                    Activités
+                  </p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {getActivityTags(selectedVenue.activites).map((tag, i) => (
+                      <span
+                        key={i}
+                        style={{
+                          padding: '5px 12px',
+                          borderRadius: 20,
+                          background: 'rgba(26,63,204,0.07)',
+                          color: '#1A3FCC',
+                          fontSize: 13,
+                          fontWeight: 600,
+                          border: '1px solid rgba(26,63,204,0.15)',
+                        }}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-around',
+                  paddingTop: 16,
+                  borderTop: '1px solid #F0F0F0',
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => console.log('like', selectedVenue.nom)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: '8px 16px',
+                  }}
+                >
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="#1A3FCC">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                  </svg>
+                  <span style={{ fontSize: 16, fontWeight: 700, color: '#1A3FCC' }}>
+                    24
+                  </span>
+                </button>
+
+                <div style={{ width: 1, height: 32, background: '#E0E0E0' }} />
+
+                <button
+                  type="button"
+                  onClick={() => console.log('follow', selectedVenue.nom)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: '8px 16px',
+                  }}
+                >
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="#FF6B00">
+                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
+                  </svg>
+                  <span style={{ fontSize: 16, fontWeight: 700, color: '#FF6B00' }}>
+                    Suivre
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

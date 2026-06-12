@@ -2207,17 +2207,6 @@ input.onboarding-input,
 .leaflet-control-attribution {
   display: none !important;
 }
-.leaflet-popup-content-wrapper {
-  border-radius: 12px !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
-  padding: 0 !important;
-}
-.leaflet-popup-tip {
-  display: none !important;
-}
-.leaflet-popup-content {
-  margin: 0 !important;
-}
 .leaflet-cluster-anim .leaflet-marker-icon,
 .leaflet-cluster-anim .leaflet-marker-shadow {
   transition: transform 0.3s ease-out, opacity 0.3s ease-in;
@@ -2251,4 +2240,9 @@ input.onboarding-input,
   0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.4; }
   70% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
   100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
