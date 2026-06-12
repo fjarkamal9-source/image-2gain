@@ -1,90 +1,215 @@
 import { useEffect, useRef, useState } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 import L from 'leaflet';
-import {
-  IconBallFootball,
-  IconBallBasketball,
-  IconBallTennis,
-  IconBallVolleyball,
-  IconSwimming,
-  IconBarbell,
-  IconRun,
-  IconBike,
-  IconYoga,
-  IconMusic,
-  IconShield,
-  IconHandStop,
-  IconMountain,
-  IconFlag,
-  IconSailboat,
-  IconTarget,
-  IconSnowflake,
-  IconMapPin,
-} from '@tabler/icons-react';
 import 'leaflet/dist/leaflet.css';
 
+const DEFAULT_PIN_SVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#AAAAAA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+
 const SPORT_MAP = [
-  { keys: ['football', 'foot', 'futsal', 'handball', 'rugby'], Icon: IconBallFootball, color: '#1A3FCC' },
-  { keys: ['basket'], Icon: IconBallBasketball, color: '#FF6B00' },
-  { keys: ['tennis', 'padel', 'squash', 'badminton'], Icon: IconBallTennis, color: '#1A3FCC' },
-  { keys: ['natation', 'piscine', 'nage', 'aqua'], Icon: IconSwimming, color: '#FF6B00' },
-  { keys: ['fitness', 'musculation', 'gym', 'crossfit', 'haltéro'], Icon: IconBarbell, color: '#1A3FCC' },
-  { keys: ['athlét', 'course', 'running', 'piste'], Icon: IconRun, color: '#FF6B00' },
-  { keys: ['cycl', 'vélo', 'vtt'], Icon: IconBike, color: '#1A3FCC' },
-  { keys: ['yoga', 'pilates', 'méditat'], Icon: IconYoga, color: '#FF6B00' },
-  { keys: ['danse', 'hip-hop', 'zumba'], Icon: IconMusic, color: '#FF6B00' },
-  { keys: ['judo', 'karaté', 'aikido', 'arts martiaux', 'krav'], Icon: IconShield, color: '#1A3FCC' },
-  { keys: ['boxe', 'muay'], Icon: IconHandStop, color: '#FF6B00' },
-  { keys: ['escalade', 'grimpe', 'bloc'], Icon: IconMountain, color: '#FF6B00' },
-  { keys: ['volley'], Icon: IconBallVolleyball, color: '#1A3FCC' },
-  { keys: ['golf'], Icon: IconFlag, color: '#1A3FCC' },
-  { keys: ['voile', 'aviron'], Icon: IconSailboat, color: '#1A3FCC' },
-  { keys: ['kayak', 'canoe'], Icon: IconTarget, color: '#FF6B00' },
-  { keys: ['tir'], Icon: IconTarget, color: '#FF6B00' },
-  { keys: ['ski', 'glisse', 'patinage', 'snowboard'], Icon: IconSnowflake, color: '#1A3FCC' },
+  {
+    keys: ['football', 'foot', 'futsal', 'handball', 'rugby'],
+    color: '#1A3FCC',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
+    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
+    stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z"/>
+    <path d="M2 12h20"/></svg>`,
+  },
+  {
+    keys: ['basket'],
+    color: '#FF6B00',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
+    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
+    stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10"/>
+    <path d="M2 12h20"/>
+    <path d="M12 2a15 15 0 0 0-4 10 15 15 0 0 0 4 10"/></svg>`,
+  },
+  {
+    keys: ['tennis', 'padel', 'squash', 'badminton'],
+    color: '#1A3FCC',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
+    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
+    stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M12 2a15 15 0 0 1 3 10 15 15 0 0 1-3 10"/>
+    <path d="M2 12h20"/>
+    <path d="M12 2a15 15 0 0 0-3 10 15 15 0 0 0 3 10"/></svg>`,
+  },
+  {
+    keys: ['natation', 'piscine', 'nage', 'aqua'],
+    color: '#FF6B00',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
+    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M2 12h2a2 2 0 0 0 2-2 2 2 0 0 1 2-2 2 2 0 0 1 2 2 2 2 0 0 0 2 2h1a2 2 0 0 0 2-2 2 2 0 0 1 2-2 2 2 0 0 1 2 2"/>
+    <path d="M2 19h2a2 2 0 0 0 2-2 2 2 0 0 1 2-2 2 2 0 0 1 2 2 2 2 0 0 0 2 2h1a2 2 0 0 0 2-2 2 2 0 0 1 2-2 2 2 0 0 1 2 2"/>
+    <circle cx="12" cy="5" r="2"/></svg>`,
+  },
+  {
+    keys: ['fitness', 'musculation', 'gym', 'crossfit', 'haltéro'],
+    color: '#1A3FCC',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
+    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 5v14M18 5v14M2 9v6M22 9v6M6 12h12M3 9h3M18 9h3M3 15h3M18 15h3"/>
+    </svg>`,
+  },
+  {
+    keys: ['athlét', 'course', 'running', 'piste'],
+    color: '#FF6B00',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
+    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
+    stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="13" cy="4" r="2"/>
+    <path d="M7 21l3-6 3 2 3-4"/>
+    <path d="M17 10l-5 1-1 3"/></svg>`,
+  },
+  {
+    keys: ['cycl', 'vélo', 'vtt'],
+    color: '#1A3FCC',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
+    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
+    stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="5" cy="17" r="3"/>
+    <circle cx="19" cy="17" r="3"/>
+    <path d="M5 17L9 5h6l2 6h3"/>
+    <path d="M9 5l4 12"/></svg>`,
+  },
+  {
+    keys: ['yoga', 'pilates', 'méditat'],
+    color: '#FF6B00',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
+    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
+    stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="4" r="2"/>
+    <path d="M12 6v6l-4 4M12 12l4 4M8 20h8"/></svg>`,
+  },
+  {
+    keys: ['danse', 'hip-hop', 'zumba'],
+    color: '#FF6B00',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
+    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 18l6-10M9 18c0 2 1 3 3 3s3-1 3-3M9 8c-2 0-3-1-3-2s1-2 2-2 2 1 2 2"/></svg>`,
+  },
+  {
+    keys: ['judo', 'karaté', 'aikido', 'arts martiaux', 'krav'],
+    color: '#1A3FCC',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
+    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+  },
+  {
+    keys: ['boxe', 'muay'],
+    color: '#FF6B00',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
+    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M8 12v-2a4 4 0 0 1 8 0v6a4 4 0 0 1-8 0"/>
+    <path d="M8 12h8M6 10H4a2 2 0 0 0 0 4h2"/></svg>`,
+  },
+  {
+    keys: ['escalade', 'grimpe', 'bloc'],
+    color: '#FF6B00',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
+    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 20l5-10 4 5 3-7 6 12H3z"/></svg>`,
+  },
+  {
+    keys: ['volley'],
+    color: '#1A3FCC',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
+    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
+    stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M12 2c3 4 3 16 0 20"/>
+    <path d="M2 12h20"/></svg>`,
+  },
+  {
+    keys: ['golf'],
+    color: '#1A3FCC',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
+    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 21h14M12 3v12M16 6l-4-3-4 3"/></svg>`,
+  },
+  {
+    keys: ['voile', 'aviron'],
+    color: '#1A3FCC',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
+    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M2 20h20M5 20V10l7-7v17"/></svg>`,
+  },
+  {
+    keys: ['kayak', 'canoe'],
+    color: '#FF6B00',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
+    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M2 12h20M12 2v20M6 7l-4 5 4 5M18 7l4 5-4 5"/></svg>`,
+  },
+  {
+    keys: ['tir'],
+    color: '#FF6B00',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
+    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
+    stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <circle cx="12" cy="12" r="6"/>
+    <circle cx="12" cy="12" r="2"/></svg>`,
+  },
+  {
+    keys: ['ski', 'glisse', 'patinage', 'snowboard'],
+    color: '#1A3FCC',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
+    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 2v20M4.93 4.93l14.14 14.14M2 12h20M4.93 19.07L19.07 4.93"/></svg>`,
+  },
 ];
 
 function getIcons(activites) {
-  if (!activites) return [{ Icon: IconMapPin, color: '#AAAAAA' }];
+  if (!activites) return [{ color: '#AAAAAA', svg: DEFAULT_PIN_SVG }];
   const a = activites.toLowerCase();
   const found = [];
   const seen = new Set();
   for (const s of SPORT_MAP) {
-    if (s.keys.some((k) => a.includes(k)) && !seen.has(s.Icon)) {
-      seen.add(s.Icon);
-      found.push({ Icon: s.Icon, color: s.color });
+    if (s.keys.some((k) => a.includes(k)) && !seen.has(s.svg)) {
+      seen.add(s.svg);
+      found.push({ color: s.color, svg: s.svg.replace(/COLOR/g, s.color) });
       if (found.length >= 4) break;
     }
   }
-  return found.length ? found : [{ Icon: IconMapPin, color: '#AAAAAA' }];
+  return found.length ? found : [{ color: '#AAAAAA', svg: DEFAULT_PIN_SVG }];
 }
 
 function makePin(icons) {
   const sz = 36;
   const off = 13;
   const w = sz + (icons.length - 1) * off;
-  const html = `<div style="position:relative;width:${w}px;height:${sz}px;">
-    ${icons
-      .map((ic, i) => {
-        const IconComponent = ic.Icon;
-        return `
-      <div style="
-        position:absolute;left:${i * off}px;top:0;
-        width:${sz}px;height:${sz}px;
-        border-radius:50%;
-        background:#ffffff;
-        border:2.5px solid ${ic.color};
-        display:flex;align-items:center;justify-content:center;
-        box-shadow:0 2px 8px rgba(0,0,0,0.12);
-      ">
-        ${renderToStaticMarkup(<IconComponent size={18} color={ic.color} stroke={1.8} />)}
-      </div>
-    `;
-      })
-      .join('')}
-  </div>`;
+  const circles = icons
+    .map(
+      (ic, i) => `
+    <div style="
+      position:absolute;left:${i * off}px;top:0;
+      width:${sz}px;height:${sz}px;
+      border-radius:50%;
+      background:#ffffff;
+      border:2.5px solid ${ic.color};
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 2px 8px rgba(0,0,0,0.12);
+    ">${ic.svg}</div>
+  `
+    )
+    .join('');
   return L.divIcon({
-    html,
+    html: `<div style="position:relative;width:${w}px;height:${sz}px;">${circles}</div>`,
     className: '',
     iconSize: [w, sz],
     iconAnchor: [w / 2, sz / 2],
