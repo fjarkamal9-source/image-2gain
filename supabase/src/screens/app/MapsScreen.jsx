@@ -154,10 +154,28 @@ function getActivityTags(activites) {
     ski: 'Ski',
     patinage: 'Patinage',
     kayak: 'Kayak',
+    'tir à l': 'Tir à l arc',
     tir: "Tir à l arc",
     padel: 'Padel',
     squash: 'Squash',
     pétanque: 'Pétanque',
+    petanque: 'Pétanque',
+    cycl: 'Cyclisme',
+    vélo: 'Cyclisme',
+    velo: 'Cyclisme',
+    vtt: 'VTT',
+    running: 'Running',
+    piscine: 'Natation',
+    nage: 'Natation',
+    aqua: 'Aquagym',
+    'arts martiaux': 'Arts martiaux',
+    aikido: 'Aïkido',
+    taekwondo: 'Taekwondo',
+    mma: 'MMA',
+    cross: 'CrossFit',
+    halterophi: 'Haltérophilie',
+    voile: 'Voile',
+    aviron: 'Aviron',
   };
   const tags = [];
   const seen = new Set();
@@ -373,6 +391,8 @@ export default function MapsScreen() {
     };
   }, []);
 
+  const tags = selectedVenue ? getActivityTags(selectedVenue.activites) : [];
+
   return (
     <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
       {loading && (
@@ -521,7 +541,7 @@ export default function MapsScreen() {
                 </span>
               </div>
 
-              {getActivityTags(selectedVenue.activites).length > 0 && (
+              {tags.length > 0 && (
                 <div style={{ marginBottom: 20 }}>
                   <p
                     style={{
@@ -536,17 +556,21 @@ export default function MapsScreen() {
                     Activités
                   </p>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                    {getActivityTags(selectedVenue.activites).map((tag, i) => (
+                    {tags.map((tag, i) => (
                       <span
                         key={i}
                         style={{
                           padding: '5px 12px',
                           borderRadius: 20,
-                          background: 'rgba(26,63,204,0.07)',
-                          color: '#1A3FCC',
+                          background: selectedVenue.color === '#1A3FCC'
+                            ? 'rgba(26,63,204,0.07)'
+                            : selectedVenue.color === '#FF6B00'
+                              ? 'rgba(255,107,0,0.07)'
+                              : 'rgba(170,170,170,0.07)',
+                          color: selectedVenue.color,
                           fontSize: 13,
                           fontWeight: 600,
-                          border: '1px solid rgba(26,63,204,0.15)',
+                          border: `1px solid ${selectedVenue.color}25`,
                         }}
                       >
                         {tag}
