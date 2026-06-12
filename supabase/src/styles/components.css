@@ -1375,7 +1375,6 @@ input.onboarding-input,
   font-weight: 600;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
-.venue-pin { background: transparent !important; border: none !important; }
 .map-sheet {
   position: absolute;
   bottom: 0;

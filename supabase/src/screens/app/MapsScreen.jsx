@@ -5,248 +5,144 @@ import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import 'leaflet.markercluster';
 
-const DEFAULT_PIN_SVG =
-  '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#AAAAAA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+function getSportColor(activites) {
+  if (!activites) return '#AAAAAA';
+  const a = activites.toLowerCase().split(',')[0].trim();
 
-const SPORT_MAP = [
-  {
-    keys: ['football', 'foot', 'futsal', 'handball', 'rugby'],
-    color: '#1A3FCC',
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
-    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
-    stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="10"/>
-    <path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z"/>
-    <path d="M2 12h20"/></svg>`,
-  },
-  {
-    keys: ['basket'],
-    color: '#FF6B00',
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
-    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
-    stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="10"/>
-    <path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10"/>
-    <path d="M2 12h20"/>
-    <path d="M12 2a15 15 0 0 0-4 10 15 15 0 0 0 4 10"/></svg>`,
-  },
-  {
-    keys: ['tennis', 'padel', 'squash', 'badminton'],
-    color: '#1A3FCC',
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
-    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
-    stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="10"/>
-    <path d="M12 2a15 15 0 0 1 3 10 15 15 0 0 1-3 10"/>
-    <path d="M2 12h20"/>
-    <path d="M12 2a15 15 0 0 0-3 10 15 15 0 0 0 3 10"/></svg>`,
-  },
-  {
-    keys: ['natation', 'piscine', 'nage', 'aqua'],
-    color: '#FF6B00',
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
-    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
-    stroke-linecap="round" stroke-linejoin="round">
-    <path d="M2 12h2a2 2 0 0 0 2-2 2 2 0 0 1 2-2 2 2 0 0 1 2 2 2 2 0 0 0 2 2h1a2 2 0 0 0 2-2 2 2 0 0 1 2-2 2 2 0 0 1 2 2"/>
-    <path d="M2 19h2a2 2 0 0 0 2-2 2 2 0 0 1 2-2 2 2 0 0 1 2 2 2 2 0 0 0 2 2h1a2 2 0 0 0 2-2 2 2 0 0 1 2-2 2 2 0 0 1 2 2"/>
-    <circle cx="12" cy="5" r="2"/></svg>`,
-  },
-  {
-    keys: ['fitness', 'musculation', 'gym', 'crossfit', 'haltéro'],
-    color: '#1A3FCC',
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
-    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
-    stroke-linecap="round" stroke-linejoin="round">
-    <path d="M6 5v14M18 5v14M2 9v6M22 9v6M6 12h12M3 9h3M18 9h3M3 15h3M18 15h3"/>
-    </svg>`,
-  },
-  {
-    keys: ['athlét', 'course', 'running', 'piste'],
-    color: '#FF6B00',
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
-    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
-    stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="13" cy="4" r="2"/>
-    <path d="M7 21l3-6 3 2 3-4"/>
-    <path d="M17 10l-5 1-1 3"/></svg>`,
-  },
-  {
-    keys: ['cycl', 'vélo', 'vtt'],
-    color: '#1A3FCC',
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
-    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
-    stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="5" cy="17" r="3"/>
-    <circle cx="19" cy="17" r="3"/>
-    <path d="M5 17L9 5h6l2 6h3"/>
-    <path d="M9 5l4 12"/></svg>`,
-  },
-  {
-    keys: ['yoga', 'pilates', 'méditat'],
-    color: '#FF6B00',
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
-    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
-    stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="4" r="2"/>
-    <path d="M12 6v6l-4 4M12 12l4 4M8 20h8"/></svg>`,
-  },
-  {
-    keys: ['danse', 'hip-hop', 'zumba'],
-    color: '#FF6B00',
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
-    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
-    stroke-linecap="round" stroke-linejoin="round">
-    <path d="M9 18l6-10M9 18c0 2 1 3 3 3s3-1 3-3M9 8c-2 0-3-1-3-2s1-2 2-2 2 1 2 2"/></svg>`,
-  },
-  {
-    keys: ['judo', 'karaté', 'aikido', 'arts martiaux', 'krav'],
-    color: '#1A3FCC',
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
-    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
-    stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
-  },
-  {
-    keys: ['boxe', 'muay'],
-    color: '#FF6B00',
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
-    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
-    stroke-linecap="round" stroke-linejoin="round">
-    <path d="M8 12v-2a4 4 0 0 1 8 0v6a4 4 0 0 1-8 0"/>
-    <path d="M8 12h8M6 10H4a2 2 0 0 0 0 4h2"/></svg>`,
-  },
-  {
-    keys: ['escalade', 'grimpe', 'bloc'],
-    color: '#FF6B00',
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
-    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
-    stroke-linecap="round" stroke-linejoin="round">
-    <path d="M3 20l5-10 4 5 3-7 6 12H3z"/></svg>`,
-  },
-  {
-    keys: ['volley'],
-    color: '#1A3FCC',
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
-    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
-    stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="10"/>
-    <path d="M12 2c3 4 3 16 0 20"/>
-    <path d="M2 12h20"/></svg>`,
-  },
-  {
-    keys: ['golf'],
-    color: '#1A3FCC',
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
-    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
-    stroke-linecap="round" stroke-linejoin="round">
-    <path d="M5 21h14M12 3v12M16 6l-4-3-4 3"/></svg>`,
-  },
-  {
-    keys: ['voile', 'aviron'],
-    color: '#1A3FCC',
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
-    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
-    stroke-linecap="round" stroke-linejoin="round">
-    <path d="M2 20h20M5 20V10l7-7v17"/></svg>`,
-  },
-  {
-    keys: ['kayak', 'canoe'],
-    color: '#FF6B00',
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
-    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
-    stroke-linecap="round" stroke-linejoin="round">
-    <path d="M2 12h20M12 2v20M6 7l-4 5 4 5M18 7l4 5-4 5"/></svg>`,
-  },
-  {
-    keys: ['tir'],
-    color: '#FF6B00',
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
-    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
-    stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="10"/>
-    <circle cx="12" cy="12" r="6"/>
-    <circle cx="12" cy="12" r="2"/></svg>`,
-  },
-  {
-    keys: ['ski', 'glisse', 'patinage', 'snowboard'],
-    color: '#1A3FCC',
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" 
-    viewBox="0 0 24 24" fill="none" stroke="COLOR" stroke-width="1.8" 
-    stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 2v20M4.93 4.93l14.14 14.14M2 12h20M4.93 19.07L19.07 4.93"/></svg>`,
-  },
-];
-
-function getSportDominant(activites) {
-  if (!activites) return { color: '#AAAAAA', svg: DEFAULT_PIN_SVG };
-
-  const activitesList = activites.toLowerCase().split(',');
-
-  for (const activite of activitesList) {
-    const trimmed = activite.trim();
-    for (const s of SPORT_MAP) {
-      if (s.keys.some((k) => trimmed.includes(k))) {
-        return { color: s.color, svg: s.svg.replace(/COLOR/g, s.color) };
-      }
-    }
+  if (
+    a.includes('football') ||
+    a.includes('foot') ||
+    a.includes('handball') ||
+    a.includes('rugby') ||
+    a.includes('basket') ||
+    a.includes('volley') ||
+    a.includes('tennis') ||
+    a.includes('padel') ||
+    a.includes('badminton') ||
+    a.includes('squash') ||
+    a.includes('golf') ||
+    a.includes('voile') ||
+    a.includes('judo') ||
+    a.includes('karaté') ||
+    a.includes('arts martiaux') ||
+    a.includes('aikido') ||
+    a.includes('ski') ||
+    a.includes('glisse') ||
+    a.includes('patinage') ||
+    a.includes('escalade')
+  ) {
+    return '#1A3FCC';
   }
 
-  return { color: '#AAAAAA', svg: DEFAULT_PIN_SVG };
+  if (
+    a.includes('natation') ||
+    a.includes('piscine') ||
+    a.includes('nage') ||
+    a.includes('aqua') ||
+    a.includes('fitness') ||
+    a.includes('musculation') ||
+    a.includes('gym') ||
+    a.includes('crossfit') ||
+    a.includes('athlét') ||
+    a.includes('course') ||
+    a.includes('running') ||
+    a.includes('cycl') ||
+    a.includes('vélo') ||
+    a.includes('yoga') ||
+    a.includes('pilates') ||
+    a.includes('danse') ||
+    a.includes('boxe') ||
+    a.includes('muay') ||
+    a.includes('kayak') ||
+    a.includes('tir')
+  ) {
+    return '#FF6B00';
+  }
+
+  return '#AAAAAA';
 }
 
-function makePointPin(color) {
-  return L.divIcon({
-    html: `<div style="
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: ${color};
-      border: 2px solid #ffffff;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
-    "></div>`,
-    className: '',
-    iconSize: [12, 12],
-    iconAnchor: [6, 6],
-    popupAnchor: [0, -10],
-  });
-}
-
-function makeIconPin(sport) {
-  const svgWhite = sport.svg
-    .replace(/stroke="[^"]*"/g, 'stroke="#ffffff"')
-    .replace(/fill="[^"]*"/g, 'fill="none"');
+function makePulsePin(color) {
+  const pulse =
+    color === '#AAAAAA'
+      ? ''
+      : `<div style="
+        position:absolute;
+        top:50%;left:50%;
+        transform:translate(-50%,-50%);
+        width:28px;height:28px;
+        border-radius:50%;
+        background:${color};
+        opacity:0.2;
+        animation:pulse2gain 2s ease-out infinite;
+      "></div>`;
 
   return L.divIcon({
-    html: `<div style="
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: ${sport.color};
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    ">${svgWhite}</div>`,
+    html: `
+      <style>
+        @keyframes pulse2gain {
+          0% { transform:translate(-50%,-50%) scale(0.8); opacity:0.3; }
+          70% { transform:translate(-50%,-50%) scale(1.8); opacity:0; }
+          100% { transform:translate(-50%,-50%) scale(1.8); opacity:0; }
+        }
+      </style>
+      <div style="
+        position:relative;
+        width:28px;height:28px;
+        display:flex;align-items:center;justify-content:center;
+      ">
+        ${pulse}
+        <div style="
+          position:relative;
+          width:14px;height:14px;
+          border-radius:50%;
+          background:${color};
+          border:2.5px solid #ffffff;
+          box-shadow:0 1px 6px rgba(0,0,0,0.2);
+          z-index:1;
+        "></div>
+      </div>
+    `,
     className: '',
-    iconSize: [36, 36],
-    iconAnchor: [18, 18],
-    popupAnchor: [0, -22],
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+    popupAnchor: [0, -16],
   });
 }
 
 const userIcon = L.divIcon({
-  html: `<div style="
-    width: 18px;
-    height: 18px;
-    background: #FF6B00;
-    border: 3px solid #ffffff;
-    border-radius: 50%;
-    box-shadow: 0 0 0 4px rgba(255,107,0,0.25),
-                0 2px 8px rgba(0,0,0,0.2);
-  "></div>`,
+  html: `
+    <style>
+      @keyframes userPulse {
+        0% { transform:translate(-50%,-50%) scale(0.8); opacity:0.4; }
+        70% { transform:translate(-50%,-50%) scale(2.2); opacity:0; }
+        100% { transform:translate(-50%,-50%) scale(2.2); opacity:0; }
+      }
+    </style>
+    <div style="
+      position:relative;width:32px;height:32px;
+      display:flex;align-items:center;justify-content:center;
+    ">
+      <div style="
+        position:absolute;top:50%;left:50%;
+        width:32px;height:32px;border-radius:50%;
+        background:#FF6B00;opacity:0.25;
+        animation:userPulse 1.5s ease-out infinite;
+      "></div>
+      <div style="
+        position:relative;
+        width:16px;height:16px;
+        border-radius:50%;
+        background:#FF6B00;
+        border:3px solid #ffffff;
+        box-shadow:0 2px 8px rgba(255,107,0,0.4);
+        z-index:1;
+      "></div>
+    </div>
+  `,
   className: '',
-  iconSize: [18, 18],
-  iconAnchor: [9, 9],
+  iconSize: [32, 32],
+  iconAnchor: [16, 16],
 });
 
 export default function MapsScreen() {
@@ -309,24 +205,6 @@ export default function MapsScreen() {
     mapInstanceRef.current = map;
     clusterGroupRef.current = clusterGroup;
 
-    const markerData = [];
-    let lastPinMode = map.getZoom() >= 13 ? 'icon' : 'point';
-
-    const onZoomEnd = () => {
-      if (cancelled) return;
-      const zoom = map.getZoom();
-      const newMode = zoom >= 13 ? 'icon' : 'point';
-      if (newMode === lastPinMode) return;
-      lastPinMode = newMode;
-      markerData.forEach(({ marker, sport }) => {
-        marker.setIcon(
-          newMode === 'icon' ? makeIconPin(sport) : makePointPin(sport.color)
-        );
-      });
-    };
-
-    map.on('zoomend', onZoomEnd);
-
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -387,33 +265,44 @@ export default function MapsScreen() {
         placed.add(key);
         n++;
 
-        const sport = getSportDominant(item.activites);
-        const currentZoom = map.getZoom();
-        const icon = currentZoom >= 13 ? makeIconPin(sport) : makePointPin(sport.color);
+        const color = getSportColor(item.activites);
+        const marker = L.marker(
+          [+item.coordonnees.lat, +item.coordonnees.lon],
+          { icon: makePulsePin(color) }
+        ).addTo(clusterGroup);
 
-        const marker = L.marker([+item.coordonnees.lat, +item.coordonnees.lon], { icon }).addTo(
-          clusterGroup
-        );
-
-        const activites = item.activites || '';
         marker.bindPopup(
           `
-  <div style="padding:12px;min-width:170px;font-family:Arial,sans-serif;">
-    <div style="font-weight:700;font-size:13px;color:#111;margin-bottom:2px;">
-      ${item.nom_install || 'Lieu sportif'}
+    <div style="
+      padding:12px;
+      min-width:180px;
+      font-family:Arial,sans-serif;
+    ">
+      <div style="
+        display:flex;align-items:center;gap:8px;
+        margin-bottom:6px;
+      ">
+        <div style="
+          width:10px;height:10px;
+          border-radius:50%;
+          background:${color};
+          flex-shrink:0;
+        "></div>
+        <div style="
+          font-weight:700;font-size:13px;color:#111;
+        ">${item.nom_install || 'Lieu sportif'}</div>
+      </div>
+      <div style="font-size:11px;color:#888;margin-bottom:4px;">
+        ${item.lib_bdv || ''}
+      </div>
+      <div style="font-size:10px;color:#bbb;line-height:1.5;">
+        ${(item.activites || '').slice(0, 100)}
+        ${(item.activites || '').length > 100 ? '…' : ''}
+      </div>
     </div>
-    <div style="font-size:11px;color:#888;margin-bottom:6px;">
-      ${item.lib_bdv || ''}
-    </div>
-    <div style="font-size:10px;color:#bbb;line-height:1.5;">
-      ${activites.slice(0, 100)}${activites.length > 100 ? '…' : ''}
-    </div>
-  </div>
-`,
+  `,
           { maxWidth: 220 }
         );
-
-        markerData.push({ marker, sport });
       });
 
       if (!cancelled) {
@@ -434,7 +323,6 @@ export default function MapsScreen() {
 
     return () => {
       cancelled = true;
-      map.off('zoomend', onZoomEnd);
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
@@ -484,24 +372,6 @@ export default function MapsScreen() {
           }}
         >
           Aucun lieu sportif trouvé
-        </div>
-      )}
-      {!loading && count > 0 && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 16,
-            right: 16,
-            background: '#FF6B00',
-            color: '#ffffff',
-            borderRadius: 20,
-            padding: '4px 12px',
-            fontSize: 12,
-            fontWeight: 700,
-            zIndex: 999,
-          }}
-        >
-          {count} lieux
         </div>
       )}
       <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
