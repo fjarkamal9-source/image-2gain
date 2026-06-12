@@ -2229,3 +2229,14 @@ input.onboarding-input,
 .marker-cluster div {
   background: transparent !important;
 }
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large {
+  background: transparent !important;
+}
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div {
+  background: transparent !important;
+  box-shadow: none !important;
+}

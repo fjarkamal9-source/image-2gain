@@ -270,7 +270,9 @@ export default function MapsScreen() {
     const map = L.map(mapRef.current, {
       zoomControl: true,
       attributionControl: false,
-    }).setView([47.28, 5.18], 11);
+    });
+
+    map.fitBounds([[47.092, 5.041], [47.322, 6.024]], { padding: [40, 40] });
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       subdomains: 'abcd',
@@ -333,12 +335,14 @@ export default function MapsScreen() {
       const allResults = [];
       let offset = 0;
       const limit = 100;
+      let totalCount = Infinity;
 
-      while (offset < 500) {
+      while (offset < totalCount && offset < 2000) {
         const url = `https://equipements.sports.gouv.fr/api/explore/v2.1/catalog/datasets/data-es/records?where=lib_bdv%3D%22${encodeURIComponent(commune)}%22&limit=${limit}&offset=${offset}&select=inst_nom,equip_nom,aps_name,equip_coordonnees,lib_bdv`;
         const r = await fetch(url);
         if (!r.ok) break;
         const d = await r.json();
+        if (offset === 0) totalCount = d.total_count || 0;
         const results = d.results || [];
         allResults.push(...results);
         if (results.length < limit) break;
@@ -368,7 +372,7 @@ export default function MapsScreen() {
       all.forEach((item) => {
         if (cancelled) return;
         if (!item.coordonnees?.lat || !item.coordonnees?.lon) return;
-        const key = `${(+item.coordonnees.lat).toFixed(3)},${(+item.coordonnees.lon).toFixed(3)}`;
+        const key = `${(+item.coordonnees.lat).toFixed(4)},${(+item.coordonnees.lon).toFixed(4)}`;
         if (placed.has(key)) return;
         placed.add(key);
         n++;
