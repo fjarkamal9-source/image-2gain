@@ -255,9 +255,15 @@ function normalizeOverpass(element) {
   return { lat, lon, nom, activites, commune };
 }
 
+const OVERPASS_INSTANCES = [
+  'https://overpass.private.coffee/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+  'https://overpass-api.de/api/interpreter',
+];
+
 async function loadVenues() {
   const query = `
-    [out:json][timeout:30];
+    [out:json][timeout:25];
     (
       node["leisure"="sports_centre"](47.0,4.9,47.4,6.1);
       node["leisure"="fitness_centre"](47.0,4.9,47.4,6.1);
@@ -277,14 +283,36 @@ async function loadVenues() {
     out center;
   `;
 
-  const response = await fetch('https://overpass-api.de/api/interpreter', {
-    method: 'POST',
-    body: query,
-  });
+  for (const instance of OVERPASS_INSTANCES) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(
+        () => controller.abort(),
+        20000
+      );
 
-  if (!response.ok) throw new Error('Overpass API error');
-  const data = await response.json();
-  return data.elements || [];
+      const response = await fetch(instance, {
+        method: 'POST',
+        body: query,
+        signal: controller.signal,
+        headers: { 'Content-Type': 'text/plain' },
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) continue;
+
+      const data = await response.json();
+      if (data.elements && data.elements.length > 0) {
+        console.log(`Overpass OK: ${instance} — ${data.elements.length} éléments`);
+        return data.elements;
+      }
+    } catch (e) {
+      console.warn(`Overpass échec: ${instance}`, e.message);
+    }
+  }
+
+  throw new Error('Toutes les instances Overpass ont échoué');
 }
 
 const userIcon = L.divIcon({
