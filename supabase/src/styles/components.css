@@ -2239,3 +2239,16 @@ input.onboarding-input,
   background: transparent !important;
   box-shadow: none !important;
 }
+
+/* 2GAIN Maps — animations pins */
+@keyframes pulse2gain {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.3; }
+  70% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
+}
+
+@keyframes userPulse {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.4; }
+  70% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
+}

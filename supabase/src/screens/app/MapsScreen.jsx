@@ -79,13 +79,6 @@ function makePulsePin(color) {
 
   return L.divIcon({
     html: `
-      <style>
-        @keyframes pulse2gain {
-          0% { transform:translate(-50%,-50%) scale(0.8); opacity:0.3; }
-          70% { transform:translate(-50%,-50%) scale(1.8); opacity:0; }
-          100% { transform:translate(-50%,-50%) scale(1.8); opacity:0; }
-        }
-      </style>
       <div style="
         position:relative;
         width:28px;height:28px;
@@ -112,13 +105,6 @@ function makePulsePin(color) {
 
 const userIcon = L.divIcon({
   html: `
-    <style>
-      @keyframes userPulse {
-        0% { transform:translate(-50%,-50%) scale(0.8); opacity:0.4; }
-        70% { transform:translate(-50%,-50%) scale(2.2); opacity:0; }
-        100% { transform:translate(-50%,-50%) scale(2.2); opacity:0; }
-      }
-    </style>
     <div style="
       position:relative;width:32px;height:32px;
       display:flex;align-items:center;justify-content:center;
@@ -257,6 +243,12 @@ export default function MapsScreen() {
       const placed = new Set();
       let n = 0;
 
+      const pinCache = {
+        '#1A3FCC': makePulsePin('#1A3FCC'),
+        '#FF6B00': makePulsePin('#FF6B00'),
+        '#AAAAAA': makePulsePin('#AAAAAA'),
+      };
+
       all.forEach((item) => {
         if (cancelled) return;
         if (!item.coordonnees?.lat || !item.coordonnees?.lon) return;
@@ -268,7 +260,7 @@ export default function MapsScreen() {
         const color = getSportColor(item.activites);
         const marker = L.marker(
           [+item.coordonnees.lat, +item.coordonnees.lon],
-          { icon: makePulsePin(color) }
+          { icon: pinCache[color] }
         ).addTo(clusterGroup);
 
         marker.bindPopup(
