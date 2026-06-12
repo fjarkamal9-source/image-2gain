@@ -246,7 +246,11 @@ function normalizeOverpass(element) {
     .filter(Boolean)
     .join(', ');
 
-  const commune = tags['addr:city'] || tags['addr:town'] || '';
+  const commune = tags['addr:city']
+    || tags['addr:town']
+    || tags['addr:suburb']
+    || tags['addr:village']
+    || '';
 
   return { lat, lon, nom, activites, commune };
 }
@@ -265,6 +269,8 @@ async function loadVenues() {
       way["leisure"="fitness_centre"](47.0,4.9,47.4,6.1);
       way["leisure"="swimming_pool"](47.0,4.9,47.4,6.1);
       way["leisure"="pitch"](47.0,4.9,47.4,6.1);
+      way["leisure"="track"](47.0,4.9,47.4,6.1);
+      way["amenity"="sports_centre"](47.0,4.9,47.4,6.1);
       way["sport"](47.0,4.9,47.4,6.1);
       node["sport"](47.0,4.9,47.4,6.1);
     );
@@ -316,6 +322,7 @@ export default function MapsScreen() {
   const [loading, setLoading] = useState(true);
   const [count, setCount] = useState(0);
   const [selectedVenue, setSelectedVenue] = useState(null);
+  const [mapError, setMapError] = useState(false);
 
   useEffect(() => {
     if (mapInstanceRef.current) return;
@@ -393,6 +400,8 @@ export default function MapsScreen() {
     async function loadAndPlaceVenues() {
       try {
         const elements = await loadVenues();
+        if (cancelled) return;
+
         const venueMap = new Map();
 
         elements.forEach((element) => {
@@ -415,7 +424,9 @@ export default function MapsScreen() {
               const newTags = venue.activites
                 .split(',')
                 .map((s) => s.trim())
-                .filter((t) => t && !existingTags.includes(t));
+                .filter((t) => t && !existingTags
+                  .map((e) => e.toLowerCase())
+                  .includes(t.toLowerCase()));
               existing.activites = [...existingTags, ...newTags].join(', ');
             }
           } else {
@@ -454,7 +465,10 @@ export default function MapsScreen() {
         }
       } catch (e) {
         console.error('Overpass error:', e);
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setMapError(true);
+          setLoading(false);
+        }
       }
     }
 
@@ -495,7 +509,28 @@ export default function MapsScreen() {
           Chargement des lieux sportifs…
         </div>
       )}
-      {!loading && count === 0 && (
+      {!loading && mapError && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 100,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: '#ffffff',
+            borderRadius: 12,
+            padding: '12px 20px',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
+            fontSize: 13,
+            color: '#FF6B00',
+            zIndex: 999,
+            whiteSpace: 'nowrap',
+            fontWeight: 600,
+          }}
+        >
+          Impossible de charger les lieux
+        </div>
+      )}
+      {!loading && count === 0 && !mapError && (
         <div
           style={{
             position: 'absolute',
