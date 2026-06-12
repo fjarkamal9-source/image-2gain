@@ -177,46 +177,51 @@ const SPORT_MAP = [
   },
 ];
 
-function getIcons(activites) {
-  if (!activites) return [{ color: '#AAAAAA', svg: DEFAULT_PIN_SVG }];
+function getSportDominant(activites) {
+  if (!activites) return { color: '#AAAAAA', svg: DEFAULT_PIN_SVG };
   const a = activites.toLowerCase();
-  const found = [];
-  const seen = new Set();
   for (const s of SPORT_MAP) {
-    if (s.keys.some((k) => a.includes(k)) && !seen.has(s.svg)) {
-      seen.add(s.svg);
-      found.push({ color: s.color, svg: s.svg.replace(/COLOR/g, s.color) });
-      if (found.length >= 4) break;
+    if (s.keys.some((k) => a.includes(k))) {
+      return { color: s.color, svg: s.svg.replace(/COLOR/g, s.color) };
     }
   }
-  return found.length ? found : [{ color: '#AAAAAA', svg: DEFAULT_PIN_SVG }];
+  return { color: '#AAAAAA', svg: DEFAULT_PIN_SVG };
 }
 
-function makePin(icons) {
-  const sz = 36;
-  const off = 13;
-  const w = sz + (icons.length - 1) * off;
-  const circles = icons
-    .map(
-      (ic, i) => `
-    <div style="
-      position:absolute;left:${i * off}px;top:0;
-      width:${sz}px;height:${sz}px;
-      border-radius:50%;
-      background:#ffffff;
-      border:2.5px solid ${ic.color};
-      display:flex;align-items:center;justify-content:center;
-      box-shadow:0 2px 8px rgba(0,0,0,0.12);
-    ">${ic.svg}</div>
-  `
-    )
-    .join('');
+function makePointPin(color) {
   return L.divIcon({
-    html: `<div style="position:relative;width:${w}px;height:${sz}px;">${circles}</div>`,
+    html: `<div style="
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: ${color};
+      border: 2px solid #ffffff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    "></div>`,
     className: '',
-    iconSize: [w, sz],
-    iconAnchor: [w / 2, sz / 2],
-    popupAnchor: [0, -sz / 2 - 6],
+    iconSize: [10, 10],
+    iconAnchor: [5, 5],
+    popupAnchor: [0, -8],
+  });
+}
+
+function makeIconPin(sport) {
+  return L.divIcon({
+    html: `<div style="
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2.5px solid ${sport.color};
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    ">${sport.svg}</div>`,
+    className: '',
+    iconSize: [36, 36],
+    iconAnchor: [18, 18],
+    popupAnchor: [0, -20],
   });
 }
 
@@ -232,30 +237,6 @@ const userIcon = L.divIcon({
   iconSize: [14, 14],
   iconAnchor: [7, 7],
 });
-
-function makePopupContent(nom_install, lib_bdv, activites) {
-  const nom = nom_install || 'Lieu sportif';
-  const act = activites || '';
-  const truncated = act.length > 90 ? `${act.slice(0, 90)}…` : act;
-  return `
-  <div style="
-    padding:12px;
-    min-width:170px;
-    font-family:Arial,sans-serif;
-  ">
-    <div style="
-      font-weight:700;font-size:13px;
-      color:#111111;margin-bottom:2px;
-    ">${nom}</div>
-    <div style="font-size:11px;color:#888;margin-bottom:4px;">
-      ${lib_bdv || ''}
-    </div>
-    <div style="font-size:10px;color:#bbbbbb;line-height:1.5;">
-      ${truncated}
-    </div>
-  </div>
-`;
-}
 
 export default function MapsScreen() {
   const mapRef = useRef(null);
@@ -367,6 +348,7 @@ export default function MapsScreen() {
       const results = await Promise.all(communes.map(loadCommune));
       const all = results.flat().map(normalizeItem);
       const placed = new Set();
+      const markerData = [];
       let n = 0;
 
       all.forEach((item) => {
@@ -377,16 +359,44 @@ export default function MapsScreen() {
         placed.add(key);
         n++;
 
-        const icons = getIcons(item.activites);
-        L.marker([+item.coordonnees.lat, +item.coordonnees.lon], { icon: makePin(icons) })
-          .addTo(clusterGroup)
-          .bindPopup(
-            makePopupContent(item.nom_install, item.lib_bdv, item.activites),
-            { maxWidth: 220 }
-          );
+        const sport = getSportDominant(item.activites);
+        const currentZoom = map.getZoom();
+        const icon = currentZoom >= 13 ? makeIconPin(sport) : makePointPin(sport.color);
+
+        const marker = L.marker([+item.coordonnees.lat, +item.coordonnees.lon], { icon }).addTo(
+          clusterGroup
+        );
+
+        const activites = item.activites || '';
+        marker.bindPopup(
+          `
+  <div style="padding:12px;min-width:170px;font-family:Arial,sans-serif;">
+    <div style="font-weight:700;font-size:13px;color:#111;margin-bottom:2px;">
+      ${item.nom_install || 'Lieu sportif'}
+    </div>
+    <div style="font-size:11px;color:#888;margin-bottom:6px;">
+      ${item.lib_bdv || ''}
+    </div>
+    <div style="font-size:10px;color:#bbb;line-height:1.5;">
+      ${activites.slice(0, 100)}${activites.length > 100 ? '…' : ''}
+    </div>
+  </div>
+`,
+          { maxWidth: 220 }
+        );
+
+        markerData.push({ marker, sport });
       });
 
       if (!cancelled) {
+        map.on('zoomend', () => {
+          if (cancelled) return;
+          const zoom = map.getZoom();
+          markerData.forEach(({ marker, sport }) => {
+            marker.setIcon(zoom >= 13 ? makeIconPin(sport) : makePointPin(sport.color));
+          });
+        });
+
         setCount(n);
         setLoading(false);
       }
