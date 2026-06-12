@@ -7,56 +7,62 @@ import 'leaflet.markercluster';
 
 function getSportColor(activites) {
   if (!activites) return '#AAAAAA';
-  const a = activites.toLowerCase().split(',')[0].trim();
 
-  if (
-    a.includes('football') ||
-    a.includes('foot') ||
-    a.includes('handball') ||
-    a.includes('rugby') ||
-    a.includes('basket') ||
-    a.includes('volley') ||
-    a.includes('tennis') ||
-    a.includes('padel') ||
-    a.includes('badminton') ||
-    a.includes('squash') ||
-    a.includes('golf') ||
-    a.includes('voile') ||
-    a.includes('judo') ||
-    a.includes('karaté') ||
-    a.includes('arts martiaux') ||
-    a.includes('aikido') ||
-    a.includes('ski') ||
-    a.includes('glisse') ||
-    a.includes('patinage') ||
-    a.includes('escalade')
-  ) {
-    return '#1A3FCC';
-  }
+  const segments = activites.toLowerCase().split(',');
 
-  if (
-    a.includes('natation') ||
-    a.includes('piscine') ||
-    a.includes('nage') ||
-    a.includes('aqua') ||
-    a.includes('fitness') ||
-    a.includes('musculation') ||
-    a.includes('gym') ||
-    a.includes('crossfit') ||
-    a.includes('athlét') ||
-    a.includes('course') ||
-    a.includes('running') ||
-    a.includes('cycl') ||
-    a.includes('vélo') ||
-    a.includes('yoga') ||
-    a.includes('pilates') ||
-    a.includes('danse') ||
-    a.includes('boxe') ||
-    a.includes('muay') ||
-    a.includes('kayak') ||
-    a.includes('tir')
-  ) {
-    return '#FF6B00';
+  for (const segment of segments) {
+    const a = segment.trim();
+
+    if (
+      a.includes('football') ||
+      a.includes('foot') ||
+      a.includes('handball') ||
+      a.includes('rugby') ||
+      a.includes('basket') ||
+      a.includes('volley') ||
+      a.includes('tennis') ||
+      a.includes('padel') ||
+      a.includes('badminton') ||
+      a.includes('squash') ||
+      a.includes('golf') ||
+      a.includes('voile') ||
+      a.includes('judo') ||
+      a.includes('karaté') ||
+      a.includes('arts martiaux') ||
+      a.includes('aikido') ||
+      a.includes('ski') ||
+      a.includes('glisse') ||
+      a.includes('patinage') ||
+      a.includes('escalade')
+    ) {
+      return '#1A3FCC';
+    }
+
+    if (
+      a.includes('natation') ||
+      a.includes('piscine') ||
+      a.includes('nage') ||
+      a.includes('aqua') ||
+      a.includes('fitness') ||
+      a.includes('musculation') ||
+      a.includes('gym') ||
+      a.includes('crossfit') ||
+      a.includes('athlét') ||
+      a.includes('course') ||
+      a.includes('running') ||
+      a.includes('cycl') ||
+      a.includes('vélo') ||
+      a.includes('velo') ||
+      a.includes('yoga') ||
+      a.includes('pilates') ||
+      a.includes('danse') ||
+      a.includes('boxe') ||
+      a.includes('muay') ||
+      a.includes('kayak') ||
+      a.includes('tir')
+    ) {
+      return '#FF6B00';
+    }
   }
 
   return '#AAAAAA';
@@ -347,9 +353,14 @@ export default function MapsScreen() {
         if (venueMap.has(key)) {
           const existing = venueMap.get(key);
           if (item.activites) {
-            existing.activites = existing.activites
-              ? `${existing.activites}, ${item.activites}`
-              : item.activites;
+            const existingTags = existing.activites
+              ? existing.activites.split(',').map((s) => s.trim())
+              : [];
+            const newTags = item.activites
+              .split(',')
+              .map((s) => s.trim())
+              .filter((t) => t && !existingTags.includes(t));
+            existing.activites = [...existingTags, ...newTags].join(', ');
           }
         } else {
           venueMap.set(key, {
