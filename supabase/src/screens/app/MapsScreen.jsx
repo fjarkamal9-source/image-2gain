@@ -255,12 +255,6 @@ function normalizeOverpass(element) {
   return { lat, lon, nom, activites, commune };
 }
 
-const OVERPASS_INSTANCES = [
-  'https://overpass.private.coffee/api/interpreter',
-  'https://overpass.kumi.systems/api/interpreter',
-  'https://overpass-api.de/api/interpreter',
-];
-
 async function loadVenues() {
   const query = `
     [out:json][timeout:25];
@@ -283,36 +277,63 @@ async function loadVenues() {
     out center;
   `;
 
+  const OVERPASS_INSTANCES = [
+    'https://overpass.private.coffee/api/interpreter',
+    'https://overpass.kumi.systems/api/interpreter',
+    'https://overpass-api.de/api/interpreter',
+  ];
+
   for (const instance of OVERPASS_INSTANCES) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(
         () => controller.abort(),
-        20000
+        15000
       );
-
       const response = await fetch(instance, {
         method: 'POST',
         body: query,
         signal: controller.signal,
         headers: { 'Content-Type': 'text/plain' },
       });
-
       clearTimeout(timeoutId);
-
       if (!response.ok) continue;
-
       const data = await response.json();
-      if (data.elements && data.elements.length > 0) {
-        console.log(`Overpass OK: ${instance} — ${data.elements.length} éléments`);
+      if (data.elements?.length > 0) {
+        console.log(`Overpass OK direct: ${instance}`);
         return data.elements;
       }
     } catch (e) {
-      console.warn(`Overpass échec: ${instance}`, e.message);
+      console.warn(`Direct échec: ${instance}`, e.message);
     }
   }
 
-  throw new Error('Toutes les instances Overpass ont échoué');
+  try {
+    const proxyUrl = 'https://corsproxy.io/?url='
+      + encodeURIComponent('https://overpass.private.coffee/api/interpreter');
+    const controller = new AbortController();
+    const timeoutId = setTimeout(
+      () => controller.abort(),
+      20000
+    );
+    const response = await fetch(proxyUrl, {
+      method: 'POST',
+      body: query,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (response.ok) {
+      const data = await response.json();
+      if (data.elements?.length > 0) {
+        console.log('Overpass OK via corsproxy.io');
+        return data.elements;
+      }
+    }
+  } catch (e) {
+    console.warn('corsproxy.io échec:', e.message);
+  }
+
+  throw new Error('Toutes les instances ont échoué');
 }
 
 const userIcon = L.divIcon({
