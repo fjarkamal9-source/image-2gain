@@ -241,7 +241,7 @@ function normalizeOverpass(element) {
 
   const sportRaw = tags.sport || tags.leisure || '';
   const activites = sportRaw
-    .split(';')
+    .split(/[;,]/)
     .map((s) => s.trim())
     .filter(Boolean)
     .join(', ');
@@ -256,40 +256,18 @@ function normalizeOverpass(element) {
 }
 
 async function loadVenues() {
-  const query = `
-    [out:json][timeout:25];
-    (
-      node["leisure"="sports_centre"](47.0,4.9,47.4,6.1);
-      node["leisure"="fitness_centre"](47.0,4.9,47.4,6.1);
-      node["leisure"="swimming_pool"](47.0,4.9,47.4,6.1);
-      node["leisure"="pitch"](47.0,4.9,47.4,6.1);
-      node["leisure"="track"](47.0,4.9,47.4,6.1);
-      node["amenity"="sports_centre"](47.0,4.9,47.4,6.1);
-      way["leisure"="sports_centre"](47.0,4.9,47.4,6.1);
-      way["leisure"="fitness_centre"](47.0,4.9,47.4,6.1);
-      way["leisure"="swimming_pool"](47.0,4.9,47.4,6.1);
-      way["leisure"="pitch"](47.0,4.9,47.4,6.1);
-      way["leisure"="track"](47.0,4.9,47.4,6.1);
-      way["amenity"="sports_centre"](47.0,4.9,47.4,6.1);
-      way["sport"](47.0,4.9,47.4,6.1);
-      node["sport"](47.0,4.9,47.4,6.1);
-    );
-    out center;
-  `;
-
   const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
   const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
   const response = await fetch(
     `${SUPABASE_URL}/functions/v1/overpass-proxy`,
     {
-      method: 'POST',
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         apikey: SUPABASE_ANON_KEY,
         Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
       },
-      body: JSON.stringify({ query }),
     }
   );
 
@@ -478,7 +456,7 @@ export default function MapsScreen() {
           setLoading(false);
         }
       } catch (e) {
-        console.error('Overpass error:', e);
+        console.error('Maps load error:', e);
         if (!cancelled) {
           setMapError(true);
           setLoading(false);
