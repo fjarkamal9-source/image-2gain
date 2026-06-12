@@ -15,11 +15,14 @@ function getSportColor(activites) {
 
     if (
       a.includes('football') ||
+      a.includes('soccer') ||
       a.includes('foot') ||
       a.includes('handball') ||
       a.includes('rugby') ||
       a.includes('basket') ||
+      a.includes('basketball') ||
       a.includes('volley') ||
+      a.includes('volleyball') ||
       a.includes('tennis') ||
       a.includes('padel') ||
       a.includes('badminton') ||
@@ -29,37 +32,49 @@ function getSportColor(activites) {
       a.includes('judo') ||
       a.includes('karaté') ||
       a.includes('arts martiaux') ||
+      a.includes('martial_arts') ||
       a.includes('aikido') ||
       a.includes('ski') ||
       a.includes('glisse') ||
       a.includes('patinage') ||
-      a.includes('escalade')
+      a.includes('ice_rink') ||
+      a.includes('escalade') ||
+      a.includes('climbing')
     ) {
       return '#1A3FCC';
     }
 
     if (
       a.includes('natation') ||
+      a.includes('swimming') ||
       a.includes('piscine') ||
       a.includes('nage') ||
       a.includes('aqua') ||
       a.includes('fitness') ||
       a.includes('musculation') ||
       a.includes('gym') ||
+      a.includes('gymnastics') ||
       a.includes('crossfit') ||
       a.includes('athlét') ||
+      a.includes('athletics') ||
       a.includes('course') ||
       a.includes('running') ||
       a.includes('cycl') ||
+      a.includes('cycling') ||
       a.includes('vélo') ||
       a.includes('velo') ||
       a.includes('yoga') ||
       a.includes('pilates') ||
       a.includes('danse') ||
+      a.includes('dance') ||
       a.includes('boxe') ||
+      a.includes('boxing') ||
       a.includes('muay') ||
       a.includes('kayak') ||
-      a.includes('tir')
+      a.includes('tir') ||
+      a.includes('archery') ||
+      a.includes('multi') ||
+      a.includes('sports_centre')
     ) {
       return '#FF6B00';
     }
@@ -182,6 +197,24 @@ function getActivityTags(activites) {
     halterophi: 'Haltérophilie',
     voile: 'Voile',
     aviron: 'Aviron',
+    soccer: 'Football',
+    swimming: 'Natation',
+    athletics: 'Athlétisme',
+    climbing: 'Escalade',
+    martial_arts: 'Arts martiaux',
+    gymnastics: 'Gymnastique',
+    volleyball: 'Volley',
+    basketball: 'Basketball',
+    ice_rink: 'Patinage',
+    archery: 'Tir à l arc',
+    multi: 'Multisports',
+    boxing: 'Boxe',
+    cycling: 'Cyclisme',
+    dance: 'Danse',
+    pitch: 'Terrain',
+    sports_centre: 'Centre sportif',
+    fitness_centre: 'Salle de fitness',
+    swimming_pool: 'Piscine',
   };
   const tags = [];
   const seen = new Set();
@@ -196,6 +229,56 @@ function getActivityTags(activites) {
     }
   });
   return tags.slice(0, 6);
+}
+
+function normalizeOverpass(element) {
+  const tags = element.tags || {};
+
+  const lat = element.lat || element.center?.lat;
+  const lon = element.lon || element.center?.lon;
+
+  const nom = tags.name || tags['name:fr'] || 'Lieu sportif';
+
+  const sportRaw = tags.sport || tags.leisure || '';
+  const activites = sportRaw
+    .split(';')
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .join(', ');
+
+  const commune = tags['addr:city'] || tags['addr:town'] || '';
+
+  return { lat, lon, nom, activites, commune };
+}
+
+async function loadVenues() {
+  const query = `
+    [out:json][timeout:30];
+    (
+      node["leisure"="sports_centre"](47.0,4.9,47.4,6.1);
+      node["leisure"="fitness_centre"](47.0,4.9,47.4,6.1);
+      node["leisure"="swimming_pool"](47.0,4.9,47.4,6.1);
+      node["leisure"="pitch"](47.0,4.9,47.4,6.1);
+      node["leisure"="track"](47.0,4.9,47.4,6.1);
+      node["amenity"="sports_centre"](47.0,4.9,47.4,6.1);
+      way["leisure"="sports_centre"](47.0,4.9,47.4,6.1);
+      way["leisure"="fitness_centre"](47.0,4.9,47.4,6.1);
+      way["leisure"="swimming_pool"](47.0,4.9,47.4,6.1);
+      way["leisure"="pitch"](47.0,4.9,47.4,6.1);
+      way["sport"](47.0,4.9,47.4,6.1);
+      node["sport"](47.0,4.9,47.4,6.1);
+    );
+    out center;
+  `;
+
+  const response = await fetch('https://overpass-api.de/api/interpreter', {
+    method: 'POST',
+    body: query,
+  });
+
+  if (!response.ok) throw new Error('Overpass API error');
+  const data = await response.json();
+  return data.elements || [];
 }
 
 const userIcon = L.divIcon({
@@ -301,112 +384,81 @@ export default function MapsScreen() {
       L.marker([47.322, 5.041], { icon: userIcon, zIndexOffset: 9999 }).addTo(map);
     }
 
-    async function loadCommune(commune) {
-      const allResults = [];
-      let offset = 0;
-      const limit = 100;
-      let totalCount = Infinity;
+    const pinCache = {
+      '#1A3FCC': makePulsePin('#1A3FCC'),
+      '#FF6B00': makePulsePin('#FF6B00'),
+      '#AAAAAA': makePulsePin('#AAAAAA'),
+    };
 
-      while (offset < totalCount && offset < 2000) {
-        const url = `https://equipements.sports.gouv.fr/api/explore/v2.1/catalog/datasets/data-es/records?where=lib_bdv%3D%22${encodeURIComponent(commune)}%22&limit=${limit}&offset=${offset}&select=inst_nom,equip_nom,aps_name,equip_coordonnees,lib_bdv`;
-        const r = await fetch(url);
-        if (!r.ok) break;
-        const d = await r.json();
-        if (offset === 0) totalCount = d.total_count || 0;
-        const results = d.results || [];
-        allResults.push(...results);
-        if (results.length < limit) break;
-        offset += limit;
-      }
-      return allResults;
-    }
+    async function loadAndPlaceVenues() {
+      try {
+        const elements = await loadVenues();
+        const venueMap = new Map();
 
-    function normalizeItem(item) {
-      const coordonnees = item.coordonnees || item.equip_coordonnees;
-      const activites = item.activites
-        || (Array.isArray(item.aps_name) ? item.aps_name.join(', ') : item.aps_name || '');
-      const nom_install = item.nom_install
-        || [item.inst_nom, item.equip_nom].filter(Boolean).join(' — ')
-        || item.equip_nom
-        || '';
-      return { ...item, coordonnees, activites, nom_install };
-    }
+        elements.forEach((element) => {
+          if (cancelled) return;
 
-    async function loadVenues() {
-      const communes = ['Dijon', 'Besançon', 'Dole'];
-      const results = await Promise.all(communes.map(loadCommune));
-      const all = results.flat().map(normalizeItem);
-      const pinCache = {
-        '#1A3FCC': makePulsePin('#1A3FCC'),
-        '#FF6B00': makePulsePin('#FF6B00'),
-        '#AAAAAA': makePulsePin('#AAAAAA'),
-      };
-
-      const venueMap = new Map();
-
-      all.forEach((item) => {
-        if (cancelled) return;
-        if (!item.coordonnees?.lat || !item.coordonnees?.lon) return;
-
-        const key = `${(+item.coordonnees.lat).toFixed(2)},${(+item.coordonnees.lon).toFixed(2)}`;
-
-        if (venueMap.has(key)) {
-          const existing = venueMap.get(key);
-          if (item.activites) {
-            const existingTags = existing.activites
-              ? existing.activites.split(',').map((s) => s.trim())
-              : [];
-            const newTags = item.activites
-              .split(',')
-              .map((s) => s.trim())
-              .filter((t) => t && !existingTags.includes(t));
-            existing.activites = [...existingTags, ...newTags].join(', ');
+          const venue = normalizeOverpass(element);
+          if (!venue.lat || !venue.lon) return;
+          if (!venue.nom || venue.nom === 'Lieu sportif') {
+            if (!element.tags?.name) return;
           }
-        } else {
-          venueMap.set(key, {
-            lat: +item.coordonnees.lat,
-            lng: +item.coordonnees.lon,
-            nom: item.nom_install || 'Lieu sportif',
-            commune: item.lib_bdv || '',
-            activites: item.activites || '',
-          });
-        }
-      });
 
-      venueMap.forEach((venue) => {
-        if (cancelled) return;
+          const key = `${venue.lat.toFixed(3)},${venue.lon.toFixed(3)}`;
 
-        const color = getSportColor(venue.activites);
-        const marker = L.marker(
-          [venue.lat, venue.lng],
-          { icon: pinCache[color] }
-        ).addTo(clusterGroup);
+          if (venueMap.has(key)) {
+            const existing = venueMap.get(key);
+            if (venue.activites) {
+              const existingTags = existing.activites
+                ? existing.activites.split(',').map((s) => s.trim())
+                : [];
+              const newTags = venue.activites
+                .split(',')
+                .map((s) => s.trim())
+                .filter((t) => t && !existingTags.includes(t));
+              existing.activites = [...existingTags, ...newTags].join(', ');
+            }
+          } else {
+            venueMap.set(key, {
+              lat: venue.lat,
+              lng: venue.lon,
+              nom: venue.nom,
+              commune: venue.commune,
+              activites: venue.activites,
+            });
+          }
+        });
 
-        marker.on('click', () => {
-          setSelectedVenue({
-            nom: venue.nom,
-            commune: venue.commune,
-            activites: venue.activites,
-            color,
+        venueMap.forEach((venue) => {
+          if (cancelled) return;
+
+          const color = getSportColor(venue.activites);
+          const marker = L.marker(
+            [venue.lat, venue.lng],
+            { icon: pinCache[color] }
+          ).addTo(clusterGroup);
+
+          marker.on('click', () => {
+            setSelectedVenue({
+              nom: venue.nom,
+              commune: venue.commune,
+              activites: venue.activites,
+              color,
+            });
           });
         });
-      });
 
-      if (!cancelled) {
-        setCount(venueMap.size);
-        setLoading(false);
+        if (!cancelled) {
+          setCount(venueMap.size);
+          setLoading(false);
+        }
+      } catch (e) {
+        console.error('Overpass error:', e);
+        if (!cancelled) setLoading(false);
       }
     }
 
-    (async () => {
-      try {
-        await loadVenues();
-      } catch (e) {
-        console.error('Maps load error:', e);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
+    loadAndPlaceVenues();
 
     return () => {
       cancelled = true;
