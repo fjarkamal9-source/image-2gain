@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import 'leaflet.markercluster';
 
 const DEFAULT_PIN_SVG =
   '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#AAAAAA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
@@ -257,6 +260,7 @@ function makePopupContent(nom_install, lib_bdv, activites) {
 export default function MapsScreen() {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
+  const clusterGroupRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [count, setCount] = useState(0);
 
@@ -266,14 +270,48 @@ export default function MapsScreen() {
     const map = L.map(mapRef.current, {
       zoomControl: true,
       attributionControl: false,
-    }).setView([47.28, 5.18], 10);
+    }).setView([47.28, 5.18], 11);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       subdomains: 'abcd',
       maxZoom: 19,
     }).addTo(map);
 
+    const clusterGroup = L.markerClusterGroup({
+      maxClusterRadius: 60,
+      spiderfyOnMaxZoom: true,
+      showCoverageOnHover: false,
+      zoomToBoundsOnClick: true,
+      iconCreateFunction: (cluster) => {
+        const childCount = cluster.getChildCount();
+        const size = childCount < 10 ? 36 : childCount < 50 ? 44 : 52;
+        return L.divIcon({
+          html: `<div style="
+        width:${size}px;
+        height:${size}px;
+        border-radius:50%;
+        background:#1A3FCC;
+        border:3px solid #ffffff;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color:#ffffff;
+        font-family:Arial Black,Arial,sans-serif;
+        font-size:${childCount < 10 ? 14 : 12}px;
+        font-weight:900;
+        box-shadow:0 2px 8px rgba(26,63,204,0.3);
+      ">${childCount}</div>`,
+          className: '',
+          iconSize: [size, size],
+          iconAnchor: [size / 2, size / 2],
+        });
+      },
+    });
+
+    map.addLayer(clusterGroup);
+
     mapInstanceRef.current = map;
+    clusterGroupRef.current = clusterGroup;
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -338,7 +376,7 @@ export default function MapsScreen() {
 
         const icons = getIcons(item.activites);
         L.marker([+item.coordonnees.lat, +item.coordonnees.lon], { icon: makePin(icons) })
-          .addTo(map)
+          .addTo(clusterGroup)
           .bindPopup(
             makePopupContent(item.nom_install, item.lib_bdv, item.activites),
             { maxWidth: 220 }
@@ -363,6 +401,7 @@ export default function MapsScreen() {
 
     return () => {
       cancelled = true;
+      clusterGroupRef.current = null;
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
