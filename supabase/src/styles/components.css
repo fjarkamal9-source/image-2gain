@@ -2203,3 +2203,19 @@ input.onboarding-input,
 .match-continue:active {
   opacity: 0.85;
 }
+
+/* --- Leaflet map --- */
+.leaflet-control-attribution {
+  display: none !important;
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+  padding: 0 !important;
+}
+.leaflet-popup-tip {
+  display: none !important;
+}
+.leaflet-popup-content {
+  margin: 0 !important;
+}
