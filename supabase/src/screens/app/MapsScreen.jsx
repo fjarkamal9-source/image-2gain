@@ -277,63 +277,28 @@ async function loadVenues() {
     out center;
   `;
 
-  const OVERPASS_INSTANCES = [
-    'https://overpass.private.coffee/api/interpreter',
-    'https://overpass.kumi.systems/api/interpreter',
-    'https://overpass-api.de/api/interpreter',
-  ];
+  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+  const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-  for (const instance of OVERPASS_INSTANCES) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(
-        () => controller.abort(),
-        15000
-      );
-      const response = await fetch(instance, {
-        method: 'POST',
-        body: query,
-        signal: controller.signal,
-        headers: { 'Content-Type': 'text/plain' },
-      });
-      clearTimeout(timeoutId);
-      if (!response.ok) continue;
-      const data = await response.json();
-      if (data.elements?.length > 0) {
-        console.log(`Overpass OK direct: ${instance}`);
-        return data.elements;
-      }
-    } catch (e) {
-      console.warn(`Direct échec: ${instance}`, e.message);
-    }
-  }
-
-  try {
-    const proxyUrl = 'https://corsproxy.io/?url='
-      + encodeURIComponent('https://overpass.private.coffee/api/interpreter');
-    const controller = new AbortController();
-    const timeoutId = setTimeout(
-      () => controller.abort(),
-      20000
-    );
-    const response = await fetch(proxyUrl, {
+  const response = await fetch(
+    `${SUPABASE_URL}/functions/v1/overpass-proxy`,
+    {
       method: 'POST',
-      body: query,
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-    if (response.ok) {
-      const data = await response.json();
-      if (data.elements?.length > 0) {
-        console.log('Overpass OK via corsproxy.io');
-        return data.elements;
-      }
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+      body: JSON.stringify({ query }),
     }
-  } catch (e) {
-    console.warn('corsproxy.io échec:', e.message);
+  );
+
+  if (!response.ok) {
+    throw new Error(`Proxy error: ${response.status}`);
   }
 
-  throw new Error('Toutes les instances ont échoué');
+  const data = await response.json();
+  return data.elements || [];
 }
 
 const userIcon = L.divIcon({
