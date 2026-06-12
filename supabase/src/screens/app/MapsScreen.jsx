@@ -318,7 +318,6 @@ export default function MapsScreen() {
         (pos) => {
           const { latitude: lat, longitude: lng } = pos.coords;
           L.marker([lat, lng], { icon: userIcon, zIndexOffset: 9999 }).addTo(map);
-          map.setView([lat, lng], 13);
         },
         () => {
           L.marker([47.322, 5.041], { icon: userIcon, zIndexOffset: 9999 }).addTo(map);
@@ -326,7 +325,6 @@ export default function MapsScreen() {
       );
     } else {
       L.marker([47.322, 5.041], { icon: userIcon, zIndexOffset: 9999 }).addTo(map);
-      map.setView([47.322, 5.041], 13);
     }
 
     let cancelled = false;
@@ -368,6 +366,7 @@ export default function MapsScreen() {
       let n = 0;
 
       all.forEach((item) => {
+        if (cancelled) return;
         if (!item.coordonnees?.lat || !item.coordonnees?.lon) return;
         const key = `${(+item.coordonnees.lat).toFixed(3)},${(+item.coordonnees.lon).toFixed(3)}`;
         if (placed.has(key)) return;
@@ -395,7 +394,7 @@ export default function MapsScreen() {
       } catch (e) {
         console.error('Maps load error:', e);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     })();
 
