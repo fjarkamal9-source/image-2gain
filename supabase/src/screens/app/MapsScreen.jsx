@@ -230,7 +230,7 @@ const userIcon = L.divIcon({
   iconAnchor: [7, 7],
 });
 
-function makePopupContent(nom_install, commune_label, activites) {
+function makePopupContent(nom_install, lib_bdv, activites) {
   const nom = nom_install || 'Lieu sportif';
   const act = activites || '';
   const truncated = act.length > 90 ? `${act.slice(0, 90)}…` : act;
@@ -245,7 +245,7 @@ function makePopupContent(nom_install, commune_label, activites) {
       color:#111111;margin-bottom:2px;
     ">${nom}</div>
     <div style="font-size:11px;color:#888;margin-bottom:4px;">
-      ${commune_label || ''}
+      ${lib_bdv || ''}
     </div>
     <div style="font-size:10px;color:#bbbbbb;line-height:1.5;">
       ${truncated}
@@ -286,20 +286,36 @@ export default function MapsScreen() {
           L.marker([47.322, 5.041], { icon: userIcon, zIndexOffset: 9999 }).addTo(map);
         }
       );
+    } else {
+      L.marker([47.322, 5.041], { icon: userIcon, zIndexOffset: 9999 }).addTo(map);
+      map.setView([47.322, 5.041], 13);
+    }
+
+    let cancelled = false;
+
+    async function loadCommune(commune) {
+      const url = `https://equipements.sports.gouv.fr/api/explore/v2.1/catalog/datasets/data-es/records?where=lib_bdv%3D%22${encodeURIComponent(commune)}%22&limit=100&select=inst_nom%2Cequip_nom%2Caps_name%2Cequip_coordonnees%2Clib_bdv&offset=0`;
+      const r = await fetch(url);
+      if (!r.ok) return [];
+      const d = await r.json();
+      return d.results || [];
+    }
+
+    function normalizeItem(item) {
+      const coordonnees = item.coordonnees || item.equip_coordonnees;
+      const activites = item.activites
+        || (Array.isArray(item.aps_name) ? item.aps_name.join(', ') : item.aps_name || '');
+      const nom_install = item.nom_install
+        || [item.inst_nom, item.equip_nom].filter(Boolean).join(' — ')
+        || item.equip_nom
+        || '';
+      return { ...item, coordonnees, activites, nom_install };
     }
 
     async function loadVenues() {
       const communes = ['Dijon', 'Besançon', 'Dole'];
-      const results = await Promise.all(
-        communes.map(async (commune) => {
-          const url = `https://data.sports.gouv.fr/api/explore/v2.1/catalog/datasets/data-es/records?where=commune_label%3D%22${encodeURIComponent(commune)}%22&limit=100&select=nom_install,activites,coordonnees,commune_label`;
-          const r = await fetch(url);
-          const d = await r.json();
-          return d.results || [];
-        })
-      );
-
-      const all = results.flat();
+      const results = await Promise.all(communes.map(loadCommune));
+      const all = results.flat().map(normalizeItem);
       const placed = new Set();
       let n = 0;
 
@@ -314,18 +330,29 @@ export default function MapsScreen() {
         L.marker([+item.coordonnees.lat, +item.coordonnees.lon], { icon: makePin(icons) })
           .addTo(map)
           .bindPopup(
-            makePopupContent(item.nom_install, item.commune_label, item.activites),
+            makePopupContent(item.nom_install, item.lib_bdv, item.activites),
             { maxWidth: 220 }
           );
       });
 
-      setCount(n);
-      setLoading(false);
+      if (!cancelled) {
+        setCount(n);
+        setLoading(false);
+      }
     }
 
-    loadVenues();
+    (async () => {
+      try {
+        await loadVenues();
+      } catch (e) {
+        console.error('Maps load error:', e);
+      } finally {
+        setLoading(false);
+      }
+    })();
 
     return () => {
+      cancelled = true;
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
