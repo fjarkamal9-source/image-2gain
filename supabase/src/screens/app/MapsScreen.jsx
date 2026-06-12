@@ -197,51 +197,56 @@ function getSportDominant(activites) {
 function makePointPin(color) {
   return L.divIcon({
     html: `<div style="
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
       background: ${color};
       border: 2px solid #ffffff;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
     "></div>`,
     className: '',
-    iconSize: [10, 10],
-    iconAnchor: [5, 5],
-    popupAnchor: [0, -8],
+    iconSize: [12, 12],
+    iconAnchor: [6, 6],
+    popupAnchor: [0, -10],
   });
 }
 
 function makeIconPin(sport) {
+  const svgWhite = sport.svg
+    .replace(/stroke="[^"]*"/g, 'stroke="#ffffff"')
+    .replace(/fill="[^"]*"/g, 'fill="none"');
+
   return L.divIcon({
     html: `<div style="
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      background: #ffffff;
-      border: 2.5px solid ${sport.color};
+      background: ${sport.color};
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-    ">${sport.svg}</div>`,
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    ">${svgWhite}</div>`,
     className: '',
     iconSize: [36, 36],
     iconAnchor: [18, 18],
-    popupAnchor: [0, -20],
+    popupAnchor: [0, -22],
   });
 }
 
 const userIcon = L.divIcon({
   html: `<div style="
-    width:14px;height:14px;
-    background:#FF6B00;
-    border:3px solid #ffffff;
-    border-radius:50%;
-    box-shadow:0 0 0 6px rgba(255,107,0,0.2);
+    width: 18px;
+    height: 18px;
+    background: #FF6B00;
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(255,107,0,0.25),
+                0 2px 8px rgba(0,0,0,0.2);
   "></div>`,
   className: '',
-  iconSize: [14, 14],
-  iconAnchor: [7, 7],
+  iconSize: [18, 18],
+  iconAnchor: [9, 9],
 });
 
 export default function MapsScreen() {
