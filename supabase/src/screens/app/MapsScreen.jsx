@@ -294,11 +294,21 @@ export default function MapsScreen() {
     let cancelled = false;
 
     async function loadCommune(commune) {
-      const url = `https://equipements.sports.gouv.fr/api/explore/v2.1/catalog/datasets/data-es/records?where=lib_bdv%3D%22${encodeURIComponent(commune)}%22&limit=100&select=inst_nom%2Cequip_nom%2Caps_name%2Cequip_coordonnees%2Clib_bdv&offset=0`;
-      const r = await fetch(url);
-      if (!r.ok) return [];
-      const d = await r.json();
-      return d.results || [];
+      const allResults = [];
+      let offset = 0;
+      const limit = 100;
+
+      while (offset < 500) {
+        const url = `https://equipements.sports.gouv.fr/api/explore/v2.1/catalog/datasets/data-es/records?where=lib_bdv%3D%22${encodeURIComponent(commune)}%22&limit=${limit}&offset=${offset}&select=inst_nom,equip_nom,aps_name,equip_coordonnees,lib_bdv`;
+        const r = await fetch(url);
+        if (!r.ok) break;
+        const d = await r.json();
+        const results = d.results || [];
+        allResults.push(...results);
+        if (results.length < limit) break;
+        offset += limit;
+      }
+      return allResults;
     }
 
     function normalizeItem(item) {
@@ -379,6 +389,44 @@ export default function MapsScreen() {
           }}
         >
           Chargement des lieux sportifs…
+        </div>
+      )}
+      {!loading && count === 0 && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 100,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: '#ffffff',
+            borderRadius: 12,
+            padding: '12px 20px',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
+            fontSize: 13,
+            color: '#555',
+            zIndex: 999,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          Aucun lieu sportif trouvé
+        </div>
+      )}
+      {!loading && count > 0 && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 16,
+            right: 16,
+            background: '#FF6B00',
+            color: '#ffffff',
+            borderRadius: 20,
+            padding: '4px 12px',
+            fontSize: 12,
+            fontWeight: 700,
+            zIndex: 999,
+          }}
+        >
+          {count} lieux
         </div>
       )}
       <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
